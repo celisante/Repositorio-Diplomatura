@@ -1,8 +1,7 @@
 ---
-title: "Trabajo Final Celina Santellán"
-author: "Celina Santellán"
-date: "`r Sys.Date()`"
+title: "trabajo_final_montano"
 output: html_document
+date: "2026-09-15"
 ---
 
 ```{r setup, include=FALSE}
