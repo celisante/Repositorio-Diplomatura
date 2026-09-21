@@ -91,9 +91,9 @@ desindustrialización y la nueva división internacional del trabajo
 
 La hipótesis de partida sostiene que la participación de la manufactura
 habría disminuido en Argentina, Brasil, Estados Unidos y Reino Unido, y
-aumentado en China y Corea del Sur. Para evaluarla se construyen tres
+aumentado en China y Corea del Sur; como se detalla más adelante, estas trayectorias se verifican con particular consistencia en producción y empleo, mientras que la dimensión exportadora muestra un comportamiento más heterogéneo. Para evaluarla se construyen tres
 indicadores que observan el fenómeno desde dimensiones distintas: el
-valor agregado manufacturero como porcentaje del PBI, el empleo
+valor agregado manufacturero como porcentaje del valor agregado total (VAM/PBI, ver aclaración metodológica en 4.2), el empleo
 manufacturero como porcentaje del empleo total y la participación de las
 exportaciones manufactureras en las exportaciones totales de bienes.
 
@@ -262,6 +262,8 @@ sobreestimaría la participación industrial.
 **Denominador del indicador de empleo.** Se utiliza la ocupación total
 de la economía, de modo que el indicador capta el lugar de la industria
 como fuente de empleo en el conjunto del mercado de trabajo.
+
+**Aclaración sobre el denominador de VAM/PBI.** El denominador utilizado es *Total Value Added* de la base de Naciones Unidas, no el PBI en sentido estricto (que además suma impuestos netos sobre los productos). Se mantiene la sigla convencional "VAM/PBI" a lo largo del informe por ser la denominación habitual del indicador en la literatura, pero corresponde precisarla como valor agregado manufacturero sobre valor agregado total, una aproximación cercana pero no idéntica al PBI sectorial.
 
 ## 4.3 Limitaciones de cobertura
 
@@ -516,14 +518,7 @@ la caída más pronunciada de la muestra: de 33,1% del empleo total en
 Unidos desciende de 22,8% a 8,6%. Argentina cae de 19,6% a 10,5% y
 Brasil se mantiene relativamente estable en torno al 10-11%, aunque
 partiendo de un nivel considerablemente más bajo. En el otro extremo, China asciende de 17,1% en 1978 a 27,6% en 2018 y
-Corea del Sur de 17,7% a 23,2%. La forma de la curva coreana es
-particularmente ilustrativa del argumento del texto sobre las "oleadas"
-de industrialización: crece con fuerza hasta alcanzar su máximo hacia
-comienzos de los años noventa y luego desciende, en el mismo momento en
-que China inicia su ascenso. Corea no se desindustrializa porque su
-economía haya madurado, sino porque su propio éxito industrial elevó sus
-salarios y la producción más simple se desplazó hacia destinos más
-baratos.
+Corea del Sur de 17,7% a 23,2%. La forma de la curva coreana es compatible con la interpretación de Graña y Terranova sobre las sucesivas "oleadas" de industrialización, según la cual el desarrollo industrial de un país eleva progresivamente sus costos laborales, lo que favorece la relocalización posterior de la producción más simple hacia destinos de menores salarios — aunque este informe, al no medir salarios ni productividad, no puede verificar ese mecanismo de manera directa.
 
 Presentar este indicador desagregado por grupo de países -la variante
 que se introduce en esta visualización- permite ver que la magnitud de
@@ -605,7 +600,7 @@ tabla_antes_despues %>%
 
 La tabla anterior permite comparar, de un vistazo, el punto de partida y de llegada de cada país en las tres dimensiones. La hipótesis se cumple de manera completa en producción y empleo: los cuatro países del primer grupo terminan el período por debajo de donde arrancaron, y China y Corea del Sur por encima. La excepción aparece en exportaciones, donde Argentina y Brasil también terminan por encima del valor inicial, a pesar de haber perdido peso manufacturero en las otras dos dimensiones.
 
-## 6.5 ¿Hubo desindustrialización a nivel mundial?
+## 6.5 ¿Qué sugieren estos casos sobre la desindustrialización?
 
 ```{r fig-promedio}
 panel %>%
@@ -635,15 +630,9 @@ panel %>%
   )
 ```
 
-La pregunta de la consigna tiene, a la luz de estos datos, una respuesta
-negativa matizada. Sí hubo desindustrialización en los países
-desarrollados y en América Latina, con intensidades muy distintas. Pero
-el grupo del Este asiático sostiene e incluso incrementa su
-participación de empleo manufacturero durante casi todo el período, de
-modo que lo que se observa a escala agregada no es una desaparición de
-la industria sino un desplazamiento geográfico.
+Los seis casos analizados permiten matizar la idea de una desindustrialización generalizada, aunque no permiten extraer conclusiones sobre la economía mundial en su conjunto: el ejercicio compara un promedio simple de seis países, no una muestra representativa ponderada por tamaño económico. Con esa salvedad, los datos son elocuentes: los países desarrollados y latinoamericanos de la muestra muestran una reducción sostenida del peso del empleo manufacturero, mientras que China y Corea del Sur muestran trayectorias de expansión o mantenimiento durante buena parte del período. Estos resultados son compatibles con la interpretación de Graña y Terranova sobre una reconfiguración geográfica de la actividad manufacturera, aunque el ejercicio no permite por sí mismo establecer la evolución de la manufactura a escala mundial.
 
-Esto respalda el argumento de Graña y Terranova. Lo que explica la
+En este sentido, lo que explica la
 desindustrialización de unos países es, precisamente, la
 industrialización de otros: no se trata de un proceso mecánico que
 acompaña la madurez de las economías, sino de *la deslocalización de los
@@ -656,11 +645,7 @@ salarios ni su productividad le permitieron competir en esa disputa.
 
 # 7. Conclusiones
 
-El ejercicio permite sostener la hipótesis, aunque con una precisión
-importante. Entre 1970 y 2019 el peso relativo de la manufactura
-efectivamente siguió trayectorias diferentes según el país: cayó en
-Argentina, Brasil, Estados Unidos y Reino Unido, y aumentó en China y
-Corea del Sur. Esa divergencia se verifica de manera consistente en la
+El ejercicio permite sostener la hipótesis, aunque con una precisión importante. Durante el período de estudio, y considerando la disponibilidad efectiva de cada indicador para cada país (detallada en la sección 4.3), el peso relativo de la manufactura siguió trayectorias diferentes según el país: cayó en Argentina, Brasil, Estados Unidos y Reino Unido, y aumentó en China y Corea del Sur. Esa divergencia se verifica de manera consistente en la
 dimensión productiva y en la laboral. En la dimensión exportadora, en cambio, la hipótesis se cumple para
 cuatro de los seis países pero se invierte para Argentina y Brasil, que
 aumentan la participación de manufacturas en sus exportaciones mientras
