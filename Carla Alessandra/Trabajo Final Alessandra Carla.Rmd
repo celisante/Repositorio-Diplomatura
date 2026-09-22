@@ -1,7 +1,7 @@
 ---
-title: "Trabajo Final - Restelli"
+title: "Trabajo Final Alessandra Carla"
 output: html_document
-date: "2026-09-08"
+date: "2026-09-21"
 ---
 
 ```{r setup, include=FALSE}
@@ -27,8 +27,3 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-
-  
-  
