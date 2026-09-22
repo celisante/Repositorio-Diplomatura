@@ -28,22 +28,7 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-git pull
 
-system('git config --global user.name "BrunoR257"')
-system('git config --global user.email "lacasadelashamacas2@gmail.com"')
 
-git config --global user.email "lacasadelashamacas2@gmail.com"
-  git config --global user.name "BrunoR257"
-
-git config --global user.email 
-"lacasadelashamacas2@gmail.com"
-git config --global user.name "BrunoR257"
-
-system('git config --global user.name "BrunoR257"')
-system('git config --global user.email "lacasadelashamacas2@gmail.com"')
-
-git config user.email "lacasadelashamacas2@gmail.com
-  git config user.name "BrunoR257"
   
   
