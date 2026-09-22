@@ -7,6 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(usethis)
+use_git_config(user.name = "b0mberjacket", user.email = "cortezmateo05@gmail.com")
 ```
 
 ## R Markdown
