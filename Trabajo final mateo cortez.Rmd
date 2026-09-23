@@ -1,14 +1,19 @@
 ---
-title: "Trabajo Final - Restelli"
+title: "Trabajo final Cortez Mateo"
+author: "Cortez Jaramillo Mateo"
+date: "`r Sys.Date()`"
 output: html_document
-date: "2026-09-08"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(usethis)
+use_git_config(user.name = "b0mberjacket", user.email = "cortezmateo05@gmail.com")
 ```
 
 ## R Markdown
+texto
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
@@ -27,8 +32,3 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-
-  
-  
