@@ -73,3 +73,4 @@ base_25_4 <- get_microdata(year = 2025, trimester = 4, vars = mis_variables)
 
 base_26_1 <- get_microdata(year = 2026, trimester = 1, vars = mis_variables)
 base_26_2 <- get_microdata(year = 2026, trimester = 2, vars = mis_variables)
+
