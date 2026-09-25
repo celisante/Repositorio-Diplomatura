@@ -1,3 +1,5 @@
+rm(list = ls())
+
 options(scipen = 999) 
 
 # ============================================================
@@ -13,63 +15,909 @@ library(paletteer)
 # ==============================================================================
 # 1. VARIABLES A DESCARGAR
 # ==============================================================================
-mis_variables <- c("CODUSU", "NRO_HOGAR", "COMPONENTE", "ANO4", "TRIMESTRE", "CH06", "ESTADO", "CAT_OCUP", 
-                   "PP07H", "INTENSI", "PP07C", "PONDERA","PP03G")
 
+mis_variables <- c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH06", "PP3E_TOT", "PP03G", "PP03H","PP03J", "PONDERA", "PONDIH", "ESTADO", "CAT_OCUP", "PP04B_COD", "PP04A", "PP04B1", "PP04C", "PP04C99", "PP07H", "P21", "PONDIIO", "ITF", "INTENSI")
 
 # ==============================================================================
-# 2. DESCARGA BASES (2ºT 2016 a 2ºT 2026)
+# 2. DESCARGA BASES (2ºT 2016 a 1ºT 2026)
 # ==============================================================================
 
 
-base_16_2 <- get_microdata(year = 2016, trimester = 2, vars = mis_variables)
-base_16_3 <- get_microdata(year = 2016, trimester = 3, vars = mis_variables)
-base_16_4 <- get_microdata(year = 2016, trimester = 4, vars = mis_variables)
+# Año 2016
+base_16_2 <- get_microdata(year = 2016, period = 2, type = "individual", vars = mis_variables)
+base_16_3 <- get_microdata(year = 2016, period = 3, type = "individual", vars = mis_variables)
+base_16_4 <- get_microdata(year = 2016, period = 4, type = "individual", vars = mis_variables)
 
-base_17_1 <- get_microdata(year = 2017, trimester = 1, vars = mis_variables)
-base_17_2 <- get_microdata(year = 2017, trimester = 2, vars = mis_variables)
-base_17_3 <- get_microdata(year = 2017, trimester = 3, vars = mis_variables)
-base_17_4 <- get_microdata(year = 2017, trimester = 4, vars = mis_variables)
+# Año 2017
+base_17_1 <- get_microdata(year = 2017, period = 1, type = "individual", vars = mis_variables)
+base_17_2 <- get_microdata(year = 2017, period = 2, type = "individual", vars = mis_variables)
+base_17_3 <- get_microdata(year = 2017, period = 3, type = "individual", vars = mis_variables)
+base_17_4 <- get_microdata(year = 2017, period = 4, type = "individual", vars = mis_variables)
 
-base_18_1 <- get_microdata(year = 2018, trimester = 1, vars = mis_variables)
-base_18_2 <- get_microdata(year = 2018, trimester = 2, vars = mis_variables)
-base_18_3 <- get_microdata(year = 2018, trimester = 3, vars = mis_variables)
-base_18_4 <- get_microdata(year = 2018, trimester = 4, vars = mis_variables)
+# Año 2018
+base_18_1 <- get_microdata(year = 2018, period = 1, type = "individual", vars = mis_variables)
+base_18_2 <- get_microdata(year = 2018, period = 2, type = "individual", vars = mis_variables)
+base_18_3 <- get_microdata(year = 2018, period = 3, type = "individual", vars = mis_variables)
+base_18_4 <- get_microdata(year = 2018, period = 4, type = "individual", vars = mis_variables)
 
-base_19_1 <- get_microdata(year = 2019, trimester = 1, vars = mis_variables)
-base_19_2 <- get_microdata(year = 2019, trimester = 2, vars = mis_variables)
-base_19_3 <- get_microdata(year = 2019, trimester = 3, vars = mis_variables)
-base_19_4 <- get_microdata(year = 2019, trimester = 4, vars = mis_variables)
+# Año 2019
+base_19_1 <- get_microdata(year = 2019, period = 1, type = "individual", vars = mis_variables)
+base_19_2 <- get_microdata(year = 2019, period = 2, type = "individual", vars = mis_variables)
+base_19_3 <- get_microdata(year = 2019, period = 3, type = "individual", vars = mis_variables)
+base_19_4 <- get_microdata(year = 2019, period = 4, type = "individual", vars = mis_variables)
 
-base_20_1 <- get_microdata(year = 2020, trimester = 1, vars = mis_variables)
-base_20_2 <- get_microdata(year = 2020, trimester = 2, vars = mis_variables)
-base_20_3 <- get_microdata(year = 2020, trimester = 3, vars = mis_variables)
-base_20_4 <- get_microdata(year = 2020, trimester = 4, vars = mis_variables)
+# Año 2020
+base_20_1 <- get_microdata(year = 2020, period = 1, type = "individual", vars = mis_variables)
+base_20_2 <- get_microdata(year = 2020, period = 2, type = "individual", vars = mis_variables)
+base_20_3 <- get_microdata(year = 2020, period = 3, type = "individual", vars = mis_variables)
+base_20_4 <- get_microdata(year = 2020, period = 4, type = "individual", vars = mis_variables)
 
-base_21_1 <- get_microdata(year = 2021, trimester = 1, vars = mis_variables)
-base_21_2 <- get_microdata(year = 2021, trimester = 2, vars = mis_variables)
-base_21_3 <- get_microdata(year = 2021, trimester = 3, vars = mis_variables)
-base_21_4 <- get_microdata(year = 2021, trimester = 4, vars = mis_variables)
+# Año 2021
+base_21_1 <- get_microdata(year = 2021, period = 1, type = "individual", vars = mis_variables)
+base_21_2 <- get_microdata(year = 2021, period = 2, type = "individual", vars = mis_variables)
+base_21_3 <- get_microdata(year = 2021, period = 3, type = "individual", vars = mis_variables)
+base_21_4 <- get_microdata(year = 2021, period = 4, type = "individual", vars = mis_variables)
 
-base_22_1 <- get_microdata(year = 2022, trimester = 1, vars = mis_variables)
-base_22_2 <- get_microdata(year = 2022, trimester = 2, vars = mis_variables)
-base_22_3 <- get_microdata(year = 2022, trimester = 3, vars = mis_variables)
-base_22_4 <- get_microdata(year = 2022, trimester = 4, vars = mis_variables)
+# Año 2022
+base_22_1 <- get_microdata(year = 2022, period = 1, type = "individual", vars = mis_variables)
+base_22_2 <- get_microdata(year = 2022, period = 2, type = "individual", vars = mis_variables)
+base_22_3 <- get_microdata(year = 2022, period = 3, type = "individual", vars = mis_variables)
+base_22_4 <- get_microdata(year = 2022, period = 4, type = "individual", vars = mis_variables)
 
-base_23_1 <- get_microdata(year = 2023, trimester = 1, vars = mis_variables)
-base_23_2 <- get_microdata(year = 2023, trimester = 2, vars = mis_variables)
-base_23_3 <- get_microdata(year = 2023, trimester = 3, vars = mis_variables)
-base_23_4 <- get_microdata(year = 2023, trimester = 4, vars = mis_variables)
+# Año 2023
+base_23_1 <- get_microdata(year = 2023, period = 1, type = "individual", vars = mis_variables)
+base_23_2 <- get_microdata(year = 2023, period = 2, type = "individual", vars = mis_variables)
+base_23_3 <- get_microdata(year = 2023, period = 3, type = "individual", vars = mis_variables)
+base_23_4 <- get_microdata(year = 2023, period = 4, type = "individual", vars = mis_variables)
 
-base_24_1 <- get_microdata(year = 2024, trimester = 1, vars = mis_variables)
-base_24_2 <- get_microdata(year = 2024, trimester = 2, vars = mis_variables)
-base_24_3 <- get_microdata(year = 2024, trimester = 3, vars = mis_variables)
-base_24_4 <- get_microdata(year = 2024, trimester = 4, vars = mis_variables)
+# Año 2024
+base_24_1 <- get_microdata(year = 2024, period = 1, type = "individual", vars = mis_variables)
+base_24_2 <- get_microdata(year = 2024, period = 2, type = "individual", vars = mis_variables)
+base_24_3 <- get_microdata(year = 2024, period = 3, type = "individual", vars = mis_variables)
+base_24_4 <- get_microdata(year = 2024, period = 4, type = "individual", vars = mis_variables)
 
-base_25_1 <- get_microdata(year = 2025, trimester = 1, vars = mis_variables)
-base_25_2 <- get_microdata(year = 2025, trimester = 2, vars = mis_variables)
-base_25_3 <- get_microdata(year = 2025, trimester = 3, vars = mis_variables)
-base_25_4 <- get_microdata(year = 2025, trimester = 4, vars = mis_variables)
+# Año 2025
+base_25_1 <- get_microdata(year = 2025, period = 1, type = "individual", vars = mis_variables)
+base_25_2 <- get_microdata(year = 2025, period = 2, type = "individual", vars = mis_variables)
+base_25_3 <- get_microdata(year = 2025, period = 3, type = "individual", vars = mis_variables)
+base_25_4 <- get_microdata(year = 2025, period = 4, type = "individual", vars = mis_variables)
 
-base_26_1 <- get_microdata(year = 2026, trimester = 1, vars = mis_variables)
-base_26_2 <- get_microdata(year = 2026, trimester = 2, vars = mis_variables)
+# Año 2026
+base_26_1 <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables)
+
+
+### UNION Y ORDEN DE LAS BASES ###
+
+nombres_bases <- ls(pattern = "^base_[0-9]{2}_[1-4]$")
+
+base_completa <- mget(nombres_bases) %>%
+  bind_rows(.id = "nombre_base")
+
+base_completa <- base_completa %>%
+  mutate(
+    año = 2000 + as.numeric(substr(nombre_base, 6, 7)),
+    trimestre = as.numeric(substr(nombre_base, 9, 9)),
+    periodo = paste0(trimestre, "T", año)
+  ) %>% 
+
+arrange(año, trimestre) %>%
+  
+  select(-nombre_base)
+
+base_completa <- base_completa %>%
+  relocate(periodo, año, trimestre, .before = 1)
+
+
+# ============================================================
+# CATEGORIAS OCUPACIONALES
+# ============================================================
+
+base_proc <- base_completa %>%
+  rename(
+    codusu = CODUSU,
+    nro_hogar = NRO_HOGAR,
+    componente = COMPONENTE,
+    pondera = PONDERA,
+    pondera_hogar = PONDIH,
+    edad = CH06,
+    cat_ocup = CAT_OCUP,
+    estado = ESTADO,
+    pondera_in = PONDIIO,
+    ingreso_hogar = ITF
+  ) %>% 
+  
+  mutate(
+    
+    ocupado = if_else(
+      estado == 1,
+      1,
+      0),
+    
+    desocupado = if_else(
+      estado == 2,
+      1,
+      0),
+    
+    activo = if_else(
+      estado %in% c(1, 2),
+      1,
+      0),
+    
+    subocupado = if_else(
+      ocupado == 1 &
+        PP3E_TOT < 35 &
+        PP03G == 1 &
+        PP03H == 1,
+      1,
+      0),
+    
+    ocupado_demandante = if_else(
+      ocupado == 1 &
+        PP03J == 1,
+      1,
+      0
+    ),
+    asalariado = if_else(
+      ocupado == 1 &
+        cat_ocup == 3,
+      1,
+      0),
+    
+    no_asal = if_else(
+      ocupado == 1 &
+        cat_ocup %in% c(1, 2, 4),
+      1,
+      0),
+    
+    asareg = if_else(
+      ocupado == 1 &
+        cat_ocup == 3 &
+        PP07H == 1,
+      1,
+      0),
+    
+    asanreg = if_else(
+      ocupado == 1 &
+        cat_ocup == 3 &
+        PP07H == 2,
+      1,
+      0),
+    
+    # 1 = informal / no registrado
+    informal = if_else(
+      asanreg == 1,
+      1,
+      0),
+    
+    cuenta_prop = if_else(
+      ocupado == 1 &
+        cat_ocup == 2,
+      1,
+      0),
+    
+    patron = if_else(
+      ocupado == 1 &
+        cat_ocup == 1,
+      1,
+      0),
+    fam_no_remu = if_else(
+      ocupado == 1 &
+        cat_ocup == 4,
+      1,
+      0),
+    
+    serdom = if_else(
+      ocupado == 1 &
+        PP04B1 == 1,
+      1,
+      0)
+  )
+
+# ============================================================
+# TASAS LABORALES
+# ============================================================
+tasas_laborales <- base_proc %>%
+  group_by(año, trimestre) %>%
+  summarise(
+    
+    periodo = first(periodo),
+    
+    PEA = sum(activo * pondera, na.rm = TRUE),
+    
+    ocupados = sum(ocupado * pondera, na.rm = TRUE),
+    
+    desocupados = sum(desocupado * pondera, na.rm = TRUE),
+    
+    ocupados_demandantes = sum(
+      ocupado_demandante * pondera,
+      na.rm = TRUE
+    ),
+    
+    asalariados = sum(
+      (ocupado == 1 & cat_ocup == 3) * pondera,
+      na.rm = TRUE
+    ),
+    
+    asalariados_no_registrados = sum(
+      informal * pondera,
+      na.rm = TRUE
+    ),
+    
+    tasa_actividad =
+      PEA / sum(pondera, na.rm = TRUE) * 100,
+    
+    tasa_ocupacion =
+      ocupados / sum(pondera, na.rm = TRUE) * 100,
+    
+    tasa_desocupacion =
+      desocupados / PEA * 100,
+    
+    tasa_ocupados_demandantes =
+      ocupados_demandantes / PEA * 100,
+    
+    tasa_demandantes =
+      (desocupados + ocupados_demandantes) / PEA * 100,
+    
+    tasa_informalidad =
+      asalariados_no_registrados / asalariados * 100,
+    
+    .groups = "drop"
+  )
+
+tasas_laborales <- tasas_laborales %>%
+  relocate(periodo, .before = 1)
+
+
+tasas_laborales <- tasas_laborales %>% 
+  arrange(año, trimestre)%>%
+  mutate(
+    across(
+      -periodo,
+      ~ round(.x , 1)
+    )
+  )
+
+# SE AGREGAN DATOS PROCESADOS DEL INFORME INDEC EPH 2T 2026 #
+
+tasas_laborales <- tasas_laborales %>%
+  add_row(
+    periodo = "2T2026",
+    año = 2026,
+    trimestre = 2,
+    tasa_actividad = 48.9,
+    tasa_ocupacion = 45.0,
+    tasa_desocupacion = 7.9,
+    tasa_ocupados_demandantes = 16.9,
+    tasa_demandantes = 24.8,
+    tasa_informalidad = 37.9
+  )
+
+
+# CALCULO DE TASA DE INFORMALIDAD NUEVA  4T 2023 - 2T 2026 #
+
+mis_variables_informalidad <- c(
+  "CODUSU",
+  "NRO_HOGAR",
+  "COMPONENTE",
+  "CH06",
+  "PONDERA",
+  "ESTADO",
+  "EMPLEO",
+  "CAT_OCUP"
+)
+
+base_23_4_inf <- get_microdata(year = 2023, period = 4, type = "individual", vars = mis_variables_informalidad)
+
+base_24_1_inf <- get_microdata(year = 2024, period = 1, type = "individual", vars = mis_variables_informalidad)
+base_24_2_inf <- get_microdata(year = 2024, period = 2, type = "individual", vars = mis_variables_informalidad)
+base_24_3_inf <- get_microdata(year = 2024, period = 3, type = "individual", vars = mis_variables_informalidad)
+base_24_4_inf <- get_microdata(year = 2024, period = 4, type = "individual", vars = mis_variables_informalidad)
+
+base_25_1_inf <- get_microdata(year = 2025, period = 1, type = "individual", vars = mis_variables_informalidad)
+base_25_2_inf <- get_microdata(year = 2025, period = 2, type = "individual", vars = mis_variables_informalidad)
+base_25_3_inf <- get_microdata(year = 2025, period = 3, type = "individual", vars = mis_variables_informalidad)
+base_25_4_inf <- get_microdata(year = 2025, period = 4, type = "individual", vars = mis_variables_informalidad)
+
+base_26_1_inf <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables_informalidad)
+
+
+
+
+
+nombres_bases_inf <- ls(pattern = "^base_[0-9]{2}_[1-4]_inf$")
+
+base_informalidad <- mget(nombres_bases_inf) %>%
+  bind_rows(.id = "nombre_base")
+
+base_informalidad <- base_informalidad %>%
+  mutate(
+    año = 2000 + as.numeric(substr(nombre_base, 6, 7)),
+    trimestre = as.numeric(substr(nombre_base, 9, 9)),
+    periodo = paste0(trimestre, "T", año)
+  ) %>%
+  arrange(año, trimestre) %>%
+  select(-nombre_base)
+
+base_informalidad <- base_informalidad %>%
+  relocate(periodo, año, trimestre, .before = 1)
+
+
+tasa_informalidad_nueva <- base_informalidad %>%
+  filter(
+    ESTADO == 1,
+    EMPLEO %in% c(1, 2)
+  ) %>%
+  group_by(año, trimestre) %>%
+  summarise(
+    formales = sum(PONDERA[EMPLEO == 1], na.rm = TRUE),
+    informales = sum(PONDERA[EMPLEO == 2], na.rm = TRUE),
+    ocupados_validos = sum(PONDERA, na.rm = TRUE),
+    
+    tasa_informalidad_nueva = informales / ocupados_validos * 100,
+    
+    .groups = "drop"
+  ) %>%
+  mutate(
+    tasa_informalidad_nueva = round(tasa_informalidad_nueva, 1)
+  ) %>%
+  arrange(año, trimestre)
+
+
+tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
+  mutate(
+    periodo = paste0(trimestre, "T", año)
+  ) %>%
+  relocate(periodo, .before = 1)
+
+
+
+
+tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
+  add_row(
+    año = 2026,
+    trimestre = 2,
+    periodo = "2T2026",
+    tasa_informalidad_nueva = 45.0
+  ) %>%
+  arrange(año, trimestre)
+
+# COMPARACION DE LAS MEDICIONES DE INFORMALIDAD #
+
+comparacion_informalidad <- tasas_laborales %>%
+  select(
+    periodo,
+    año,
+    trimestre,
+    tasa_informalidad
+  ) %>%
+  inner_join(
+    tasa_informalidad_nueva %>%
+      select(
+        año,
+        trimestre,
+        tasa_informalidad_nueva
+      ),
+    by = c("año", "trimestre")
+  ) %>%
+  mutate(
+    diferencia_informalidad = tasa_informalidad_nueva - tasa_informalidad
+    )
+  arrange(año, trimestre)
+
+
+  comparacion_informalidad_grafico <- comparacion_informalidad %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number(),
+    posicion_etiqueta =
+      (tasa_informalidad + tasa_informalidad_nueva) / 2
+  )
+
+      
+  informalidad_categoria <- base_informalidad %>%
+    filter(
+      ESTADO == 1,
+      EMPLEO %in% c(1, 2)
+    ) %>%
+    mutate(
+      categoria_ocupacional = factor(
+        CAT_OCUP,
+        levels = c(1, 2, 3, 4),
+        labels = c(
+          "Patrón",
+          "Cuenta propia",
+          "Obrero o empleado",
+          "Trabajador familiar sin remuneración"
+        )
+      )
+    ) %>%
+    group_by(año, trimestre, categoria_ocupacional) %>%
+    summarise(
+      ocupados = sum(PONDERA, na.rm = TRUE),
+      informales = sum(
+        PONDERA[EMPLEO == 2],
+        na.rm = TRUE
+      ),
+      .groups = "drop"
+    ) %>%
+    group_by(año, trimestre) %>%
+    mutate(
+      ocupados_totales = sum(ocupados),
+      
+      # Peso de cada categoría en el empleo
+      peso_categoria =
+        ocupados / ocupados_totales * 100,
+      
+      # Aporte de cada categoría a la informalidad total
+      contribucion_informalidad =
+        informales / ocupados_totales * 100,
+      
+      # Tasa de informalidad dentro de cada categoría
+      tasa_informalidad_categoria =
+        informales / ocupados * 100
+    ) %>%
+    ungroup()
+  
+  cambio_categoria <- informalidad_categoria %>%
+    filter(
+      (año == 2023 & trimestre == 4) |
+        (año == 2026 & trimestre == 1)
+    ) %>%
+    select(
+      año,
+      trimestre,
+      categoria_ocupacional,
+      peso_categoria,
+      tasa_informalidad_categoria,
+      contribucion_informalidad
+    ) %>%
+    pivot_wider(
+      names_from = c(año, trimestre),
+      values_from = c(
+        peso_categoria,
+        tasa_informalidad_categoria,
+        contribucion_informalidad
+      )
+    ) %>%
+    mutate(
+      cambio_contribucion =
+        contribucion_informalidad_2026_1 -
+        contribucion_informalidad_2023_4,
+      
+      cambio_tasa_categoria =
+        tasa_informalidad_categoria_2026_1 -
+        tasa_informalidad_categoria_2023_4,
+      
+      cambio_peso_categoria =
+        peso_categoria_2026_1 -
+        peso_categoria_2023_4
+    ) %>%
+    arrange(desc(cambio_contribucion))
+  
+  
+  grafico_cambio_contribucion <- cambio_categoria %>%
+    ggplot(
+      aes(
+        x = categoria_ocupacional,
+        y = cambio_contribucion
+      )
+    ) +
+    geom_col() +
+    geom_hline(
+      yintercept = 0,
+      linewidth = 0.5
+    ) +
+    geom_text(
+      aes(
+        label = paste0(
+          ifelse(cambio_contribucion > 0, "+", ""),
+          round(cambio_contribucion, 1),
+          " pp"
+        ),
+        vjust = ifelse(cambio_contribucion >= 0, -0.5, 1.5)
+      ),
+      fontface = "bold",
+      size = 3.5
+    ) +
+    labs(
+      title = "Contribución de cada categoría al aumento de la informalidad",
+      subtitle = "Cambio entre 4T2023 y 1T2026",
+      x = NULL,
+      y = "Cambio en la contribución (puntos porcentuales)",
+      caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+    ) +
+    theme_classic() +
+    theme(
+      axis.text.x = element_text(
+        angle = 25,
+        hjust = 1
+      ),
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(size = 10)
+    )
+
+  grafico_cambio_contribucion <- cambio_categoria %>%
+    filter(
+      categoria_ocupacional != "Trabajador familiar sin remuneración"
+    ) %>%
+    mutate(
+      categoria_ocupacional = forcats::fct_reorder(
+        categoria_ocupacional,
+        cambio_contribucion,
+        .desc = TRUE
+      )
+    ) %>%
+    ggplot(
+      aes(
+        x = categoria_ocupacional,
+        y = cambio_contribucion
+      )
+    ) +
+    geom_col(
+      fill = "#9DD9E8",
+      width = 0.65
+    ) +
+    geom_hline(
+      yintercept = 0,
+      linewidth = 0.5
+    ) +
+    geom_text(
+      aes(
+        label = paste0(
+          ifelse(cambio_contribucion > 0, "+", ""),
+          round(cambio_contribucion, 2),
+          " pp"
+        ),
+        vjust = ifelse(
+          cambio_contribucion >= 0,
+          -0.5,
+          1.5
+        )
+      ),
+      fontface = "bold",
+      size = 3.5
+    ) +
+    scale_y_continuous(
+      limits = c(0, 2.0),
+      breaks = seq(0, 2, 0.5),
+      labels = function(x) paste0(x, " pp"),
+      expand = expansion(mult = c(0, 0.05))
+    ) +
+    labs(
+      title = "Contribución de cada categoría al aumento de la informalidad",
+      subtitle = "Cambio entre 4T2023 y 1T2026",
+      x = NULL,
+      y = NULL,
+      caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+    ) +
+    theme_classic() +
+    theme(
+      axis.text.x = element_text(
+        angle = 20,
+        hjust = 1
+      ),
+      plot.title = element_text(face = "bold"),
+      plot.subtitle = element_text(size = 10),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+  
+  grafico_cambio_contribucion
+  
+  ### GRAFICOS ####
+
+# GRAFICO TASAS 2016-2026 ACTIVIDAD, OCUPACION E INFORMALIDAD #
+tasas_laborales_grafico <- tasas_laborales %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number()
+  )
+grafico_tasas <- ggplot(
+  tasas_laborales_grafico,
+  aes(x = periodo_num)
+) +
+  
+  # Líneas verticales de cada período
+  geom_vline(
+    xintercept = tasas_laborales_grafico$periodo_num,
+    color = "grey90",
+    linewidth = 0.4
+  ) +
+  
+  # Tasa de actividad
+  geom_line(
+    aes(
+      y = tasa_actividad,
+      color = "Tasa de actividad",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de ocupación
+  geom_line(
+    aes(
+      y = tasa_ocupacion,
+      color = "Tasa de ocupación",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de informalidad
+  geom_line(
+    aes(
+      y = tasa_informalidad,
+      color = "Tasa de informalidad",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Puntos
+  geom_point(
+    aes(y = tasa_actividad, color = "Tasa de actividad"),
+    size = 1.5
+  ) +
+  
+  geom_point(
+    aes(y = tasa_ocupacion, color = "Tasa de ocupación"),
+    size = 1.5
+  ) +
+  
+  geom_point(
+    aes(y = tasa_informalidad, color = "Tasa de informalidad"),
+    size = 1.5
+  ) +
+  
+  scale_x_continuous(
+    breaks = tasas_laborales_grafico$periodo_num,
+    labels = tasas_laborales_grafico$periodo
+  ) +
+  
+  scale_y_continuous(
+    limits = c(20, 60),
+    breaks = seq(20, 60, 5),
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  labs(
+    title = "Evolución de las principales tasas laborales",
+    subtitle = "2T2016–2T2026",
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  
+  theme_classic() +
+  
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_tasas
+
+# GRAFICO DE TASAS DE DESOCUPACION, OCUPADOS DEMANDANTES Y DEMANDA DE TRBAJO #
+
+tasas_laborales_grafico <- tasas_laborales %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number()
+  )
+
+grafico_tasas_demanda <- ggplot(
+  tasas_laborales_grafico,
+  aes(x = periodo_num)
+) +
+  
+  # Líneas verticales de cada período
+  geom_vline(
+    xintercept = tasas_laborales_grafico$periodo_num,
+    color = "grey90",
+    linewidth = 0.4
+  ) +
+  
+  # Tasa de desocupación
+  geom_line(
+    aes(
+      y = tasa_desocupacion,
+      color = "Desocupados",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de ocupados demandantes
+  geom_line(
+    aes(
+      y = tasa_ocupados_demandantes,
+      color = "Ocupados demandantes",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de demandantes
+  geom_line(
+    aes(
+      y = tasa_demandantes,
+      color = "Demandantes",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Puntos de desocupados
+  geom_point(
+    aes(
+      y = tasa_desocupacion,
+      color = "Desocupados"
+    ),
+    size = 1.5
+  ) +
+  
+  # Puntos de ocupados demandantes
+  geom_point(
+    aes(
+      y = tasa_ocupados_demandantes,
+      color = "Ocupados demandantes"
+    ),
+    size = 1.5
+  ) +
+  
+  # Puntos de demandantes
+  geom_point(
+    aes(
+      y = tasa_demandantes,
+      color = "Demandantes"
+    ),
+    size = 1.5
+  ) +
+  
+  scale_x_continuous(
+    breaks = tasas_laborales_grafico$periodo_num,
+    labels = tasas_laborales_grafico$periodo
+  ) +
+  
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, 5),
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  labs(
+    title = "Evolución de las tasas de desocupación y demanda de empleo",
+    subtitle = "2T2016–2T2026",
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  
+  theme_classic() +
+  
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_tasas_demanda
+
+
+comparacion_informalidad_grafico <- comparacion_informalidad %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number(),
+    posicion_etiqueta =
+      (tasa_informalidad + tasa_informalidad_nueva) / 2
+  )
+
+grafico_comparacion_informalidad <- ggplot(
+  comparacion_informalidad_grafico,
+  aes(x = periodo_num)
+) +
+  
+  # Líneas verticales de cada período
+  geom_vline(
+    xintercept = comparacion_informalidad_grafico$periodo_num,
+    color = "grey90",
+    linewidth = 0.4
+  ) +
+  
+  # Tasa de informalidad original
+  geom_line(
+    aes(
+      y = tasa_informalidad,
+      color = "Tasa de informalidad"
+    ),
+    group = 1,
+    linewidth = 0.8
+  ) +
+  
+  geom_point(
+    aes(
+      y = tasa_informalidad,
+      color = "Tasa de informalidad"
+    ),
+    size = 1.5
+  ) +
+  
+  # Nueva tasa de informalidad
+  geom_line(
+    aes(
+      y = tasa_informalidad_nueva,
+      color = "Nueva tasa de informalidad"
+    ),
+    group = 1,
+    linewidth = 0.8
+  ) +
+  
+  geom_point(
+    aes(
+      y = tasa_informalidad_nueva,
+      color = "Nueva tasa de informalidad"
+    ),
+    size = 1.5
+  ) +
+  
+  # Diferencia entre ambas tasas
+  geom_text(
+    aes(
+      y = posicion_etiqueta,
+      label = paste0(
+        ifelse(diferencia_informalidad > 0, "+", ""),
+        round(diferencia_informalidad, 1),
+        " pp"
+      )
+    ),
+    size = 3,
+    fontface = "bold"
+  ) +
+  
+  # Eje X
+  scale_x_continuous(
+    breaks = comparacion_informalidad_grafico$periodo_num,
+    labels = comparacion_informalidad_grafico$periodo
+  ) +
+  
+  # Eje Y
+  scale_y_continuous(
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  labs(
+    title = "Comparación de las tasas de informalidad",
+    subtitle = "4T2023–2T2026",
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  
+  theme_classic() +
+  
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_comparacion_informalidad
+
+
+
