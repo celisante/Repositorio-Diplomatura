@@ -292,6 +292,106 @@ tasas_laborales <- tasas_laborales %>%
     tasa_informalidad = 37.9
   )
 
+# ASALARIADOS NUEVOS SEGUN CONDICION DE REGISTRO #
+
+condicion_nuevos_asalariados <- tasas_laborales_grafico %>%
+  filter(
+    periodo %in% c("2T2016", "1T2026")
+  ) %>%
+  mutate(
+    asalariados_registrados =
+      asalariados - asalariados_no_registrados
+  ) %>%
+  select(
+    periodo,
+    asalariados,
+    asalariados_registrados,
+    asalariados_no_registrados
+  ) %>%
+  summarise(
+    aumento_total =
+      asalariados[periodo == "1T2026"] -
+      asalariados[periodo == "2T2016"],
+    
+    aumento_registrados =
+      asalariados_registrados[periodo == "1T2026"] -
+      asalariados_registrados[periodo == "2T2016"],
+    
+    aumento_no_registrados =
+      asalariados_no_registrados[periodo == "1T2026"] -
+      asalariados_no_registrados[periodo == "2T2016"]
+  ) %>%
+  mutate(
+    porcentaje_registrados =
+      aumento_registrados / aumento_total * 100,
+    
+    porcentaje_no_registrados =
+      aumento_no_registrados / aumento_total * 100
+  )
+
+view(condicion_nuevos_asalariados)
+
+
+grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
+  pivot_longer(
+    cols = c(
+      porcentaje_registrados,
+      porcentaje_no_registrados
+    ),
+    names_to = "tipo",
+    values_to = "porcentaje"
+  ) %>%
+  mutate(
+    tipo = recode(
+      tipo,
+      porcentaje_registrados = "Registrados",
+      porcentaje_no_registrados = "No registrados"
+    ),
+    tipo = factor(
+      tipo,
+      levels = c("Registrados", "No registrados")
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = tipo,
+      y = porcentaje
+    )
+  ) +
+  geom_col(
+    fill = "#9DD9E8",
+    width = 0.6
+  ) +
+  geom_text(
+    aes(
+      label = paste0(round(porcentaje, 1), "%"),
+      vjust = -0.5
+    ),
+    fontface = "bold",
+    size = 4
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Condición de los nuevos asalariados",
+    subtitle = "Participación en el aumento neto entre 2T2016 y 1T2026",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_condicion_nuevos_asalariados
+
+
 
 # CALCULO DE TASA DE INFORMALIDAD NUEVA  4T 2023 - 2T 2026 #
 
@@ -401,7 +501,7 @@ comparacion_informalidad <- tasas_laborales %>%
   ) %>%
   mutate(
     diferencia_informalidad = tasa_informalidad_nueva - tasa_informalidad
-    )
+    ) %>% 
   arrange(año, trimestre)
 
 
@@ -495,114 +595,6 @@ comparacion_informalidad <- tasas_laborales %>%
     arrange(desc(cambio_contribucion))
   
   
-  grafico_cambio_contribucion <- cambio_categoria %>%
-    ggplot(
-      aes(
-        x = categoria_ocupacional,
-        y = cambio_contribucion
-      )
-    ) +
-    geom_col() +
-    geom_hline(
-      yintercept = 0,
-      linewidth = 0.5
-    ) +
-    geom_text(
-      aes(
-        label = paste0(
-          ifelse(cambio_contribucion > 0, "+", ""),
-          round(cambio_contribucion, 1),
-          " pp"
-        ),
-        vjust = ifelse(cambio_contribucion >= 0, -0.5, 1.5)
-      ),
-      fontface = "bold",
-      size = 3.5
-    ) +
-    labs(
-      title = "Contribución de cada categoría al aumento de la informalidad",
-      subtitle = "Cambio entre 4T2023 y 1T2026",
-      x = NULL,
-      y = "Cambio en la contribución (puntos porcentuales)",
-      caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
-    ) +
-    theme_classic() +
-    theme(
-      axis.text.x = element_text(
-        angle = 25,
-        hjust = 1
-      ),
-      plot.title = element_text(face = "bold"),
-      plot.subtitle = element_text(size = 10)
-    )
-
-  grafico_cambio_contribucion <- cambio_categoria %>%
-    filter(
-      categoria_ocupacional != "Trabajador familiar sin remuneración"
-    ) %>%
-    mutate(
-      categoria_ocupacional = forcats::fct_reorder(
-        categoria_ocupacional,
-        cambio_contribucion,
-        .desc = TRUE
-      )
-    ) %>%
-    ggplot(
-      aes(
-        x = categoria_ocupacional,
-        y = cambio_contribucion
-      )
-    ) +
-    geom_col(
-      fill = "#9DD9E8",
-      width = 0.65
-    ) +
-    geom_hline(
-      yintercept = 0,
-      linewidth = 0.5
-    ) +
-    geom_text(
-      aes(
-        label = paste0(
-          ifelse(cambio_contribucion > 0, "+", ""),
-          round(cambio_contribucion, 2),
-          " pp"
-        ),
-        vjust = ifelse(
-          cambio_contribucion >= 0,
-          -0.5,
-          1.5
-        )
-      ),
-      fontface = "bold",
-      size = 3.5
-    ) +
-    scale_y_continuous(
-      limits = c(0, 2.0),
-      breaks = seq(0, 2, 0.5),
-      labels = function(x) paste0(x, " pp"),
-      expand = expansion(mult = c(0, 0.05))
-    ) +
-    labs(
-      title = "Contribución de cada categoría al aumento de la informalidad",
-      subtitle = "Cambio entre 4T2023 y 1T2026",
-      x = NULL,
-      y = NULL,
-      caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
-    ) +
-    theme_classic() +
-    theme(
-      axis.text.x = element_text(
-        angle = 20,
-        hjust = 1
-      ),
-      plot.title = element_text(face = "bold"),
-      plot.subtitle = element_text(size = 10),
-      plot.margin = margin(10, 10, 10, 10)
-    )
-  
-  grafico_cambio_contribucion
-  
   ### GRAFICOS ####
 
 # GRAFICO TASAS 2016-2026 ACTIVIDAD, OCUPACION E INFORMALIDAD #
@@ -681,7 +673,7 @@ grafico_tasas <- ggplot(
   ) +
   
   labs(
-    title = "Evolución de las principales tasas laborales",
+    title = "Evolución conjunta de las tasas de actividad, ocupacion e informalidad",
     subtitle = "2T2016–2T2026",
     x = NULL,
     y = NULL,
@@ -920,4 +912,69 @@ grafico_comparacion_informalidad <- ggplot(
 grafico_comparacion_informalidad
 
 
+grafico_cambio_contribucion <- cambio_categoria %>%
+  filter(
+    categoria_ocupacional != "Trabajador familiar sin remuneración"
+  ) %>%
+  mutate(
+    categoria_ocupacional = forcats::fct_reorder(
+      categoria_ocupacional,
+      cambio_contribucion,
+      .desc = TRUE
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = categoria_ocupacional,
+      y = cambio_contribucion
+    )
+  ) +
+  geom_col(
+    fill = "#9DD9E8",
+    width = 0.65
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linewidth = 0.5
+  ) +
+  geom_text(
+    aes(
+      label = paste0(
+        ifelse(cambio_contribucion > 0, "+", ""),
+        round(cambio_contribucion, 2),
+        " pp"
+      ),
+      vjust = ifelse(
+        cambio_contribucion >= 0,
+        -0.5,
+        1.5
+      )
+    ),
+    fontface = "bold",
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 2.0),
+    breaks = seq(0, 2, 0.5),
+    labels = function(x) paste0(x, " pp"),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Contribución de cada categoría al aumento de la informalidad",
+    subtitle = "Cambio entre 4T2023 y 1T2026",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(
+      angle = 20,
+      hjust = 1
+    ),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    plot.margin = margin(10, 10, 10, 10)
+  )
 
+grafico_cambio_contribucion
