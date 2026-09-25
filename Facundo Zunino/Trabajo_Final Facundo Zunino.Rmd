@@ -1,30 +1,537 @@
 ---
-title: "Trabajo_Final Facundo Zunino"
+title: "Desindustrialización relativa en Argentina"
+subtitle: "Una comparación con economías de América del Sur, 2000-2025"
 author: "Facundo Zunino"
-date: "2026-09-08"
-output: html_document
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{=html}
+<style>
+p {
+  text-align: justify;
+}
+</style>
 ```
 
-## R Markdown
+```{r librerias, echo=FALSE, warning=FALSE, message=FALSE}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+library(tidyverse)
+library(imfweo)
+library(WDI)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+options(scipen = 999)
 
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+```{r diccionario, echo=FALSE, warning=FALSE, message=FALSE}
 
-You can also embed plots, for example:
+paises <- c(
+  "Argentina",
+  "Brazil",
+  "Chile",
+  "Colombia",
+  "Peru",
+  "Uruguay")
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+periodo <- 2000:2025
+
+diccionario_indicadores <- tribble(
+  
+  ~id,       ~codigo,          ~indicador,                  ~unidad,                              ~fuente,
+  
+  "CREC_01", "NGDP_RPCH",      "Crecimiento del PIB real", "Porcentaje anual",                   "FMI",
+  
+  "LAB_01",  "LUR",            "Tasa de desempleo",        "Porcentaje de la 
+  población activa", "FMI",
+  
+  "IND_01",  "NV.IND.MANF.ZS", "Industria manufacturera",  "Porcentaje del PIB",                 "Banco Mundial",
+  "IND_02",  "NV.IND.MANF.KN", "valor agregado manufacturero", "Moneda local a 
+  precios constantes","Banco Mundial")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r descarga, echo=FALSE, warning=FALSE, message=FALSE}
+
+codigos_paises <- c(
+  Argentina = "ARG",
+  Brazil    = "BRA",
+  Chile     = "CHL",
+  Colombia  = "COL",
+  Peru      = "PER",
+  Uruguay   = "URY")
+
+datos_weo <- weo_get(
+  entities = codigos_paises,
+  series = diccionario_indicadores %>%
+    filter(fuente == "FMI") %>%
+    pull(codigo),
+  start_year = min(periodo),
+  end_year = max(periodo))
+
+datos_bm <- WDI(
+  country = unname(codigos_paises[paises]),
+  indicator = diccionario_indicadores %>%
+    filter(fuente == "Banco Mundial") %>%
+    pull(codigo),
+  start = min(periodo),
+  end = max(periodo))
+
+```
+
+```{r limpieza, echo=FALSE, warning=FALSE, message=FALSE}
+
+datos_weo <- datos_weo %>%
+  select(
+    pais = entity_name,
+    codigo_pais = entity_id,
+    year,
+    series_id,
+    value) %>%
+  pivot_wider(
+    id_cols = c(pais, codigo_pais, year),
+    names_from = series_id,
+    values_from = value)
+
+datos_bm <- datos_bm %>%
+  select(-iso2c) %>%
+  rename(
+    pais = country,
+    codigo_pais = iso3c)
+
+datos <- datos_weo %>%
+  full_join(
+    datos_bm,
+    by = c("pais", "codigo_pais", "year"))
+
+nombres_indicadores <- diccionario_indicadores %>%
+  select(codigo, id) %>%
+  deframe()
+
+datos <- datos %>%
+  rename_with(~ nombres_indicadores[.x],
+    .cols = any_of(names(nombres_indicadores))) %>%
+  mutate(
+    pais = recode(
+      pais,"Brazil" = "Brasil")) %>%
+  arrange(codigo_pais, year)
+
+```
+
+```{r indicadores, echo=FALSE, warning=FALSE, message=FALSE}
+
+datos <- datos %>%
+  group_by(pais) %>%
+  mutate(
+    industria_real_indice =
+      IND_02 / IND_02[year == 2000] * 100) %>%
+  ungroup()
+
+indicadores <- datos %>%
+  group_by(
+    pais,
+    codigo_pais) %>%
+  summarise(
+    crecimiento_promedio =
+      mean(CREC_01, na.rm = TRUE),
+    volatilidad_crecimiento =
+      sd(CREC_01, na.rm = TRUE),
+    desempleo_promedio =
+      mean(LAB_01, na.rm = TRUE),
+    industria_promedio =
+      mean(IND_01, na.rm = TRUE),
+    industria_inicial =
+      first(IND_01[!is.na(IND_01)]),
+    industria_final =
+      last(IND_01[!is.na(IND_01)]),
+    industria_real_cambio =
+      last(industria_real_indice[!is.na(industria_real_indice)]) - 100,
+    .groups = "drop") %>%
+  mutate(
+    cambio_industria_pp =industria_final - industria_inicial) %>%
+  arrange(pais)
+
+```
+
+# Resumen ejecutivo
+
+Este trabajo analiza las particularidades de la desindustrialización 
+relativa de Argentina entre 2000 y 2025, en comparación con un grupo de países 
+de América del Sur (Brasil, Chile, Colombia, Perú y Uruguay). 
+El análisis se concentra en la evolución de la participación 
+de la industria manufacturera en el Producto Interno Bruto (PIB) 
+y complementa esta dimensión con indicadores de crecimiento económico 
+y desempleo.
+
+Para ello se utilizan datos del Banco Mundial **(BM)** y del Fondo
+Monetario Internacional **(FMI)**. La comparación permite evaluar si la
+pérdida de participación manufacturera observada en Argentina constituye
+una trayectoria particular o forma parte de un proceso general entre
+las economías consideradas.
+
+# Introducción
+
+La desindustrialización constituye una de las dimensiones relevantes
+para analizar las transformaciones de la estructura productiva de un país. Sin
+embargo, cabe aclarar que una disminución de la participación de la industria 
+manufacturera en el producto muestra una pérdida relativa del sector, 
+pero no implica necesariamente una contracción de la producción industrial en
+términos absolutos.
+
+En este marco, el presente trabajo estudia la trayectoria de Argentina
+durante el período 2000-2025 desde una perspectiva comparada con Brasil,
+Chile, Colombia, Perú y Uruguay.
+
+La pregunta que guía el análisis es:
+
+> **¿Qué particularidades presenta la trayectoria de
+> desindustrialización relativa de Argentina entre 2000 y 2025 en
+> comparación con los países de la región?**
+
+Complementariamente, se analiza el desempeño de estas economías en términos 
+de crecimiento y desempleo con el objetivo de caracterizar el contexto 
+macroeconómico y laboral en el que se desarrolla la transformación productiva.
+
+A su vez, la comparación regional permite evaluar en qué medida la trayectoria
+argentina presenta características propias o se inscribe dentro de
+tendencias compartidas en la región.
+
+# Desarrollo conceptual
+
+Las transformaciones de la economía mundial iniciadas en la década de 1970 
+pueden analizarse a partir del concepto de Nueva División Internacional del 
+Trabajo (NDIT). A diferencia de la división internacional clásica, caracterizada 
+por una separación marcada entre países industriales y economías proveedoras 
+de materias primas, la nueva configuración supone una creciente fragmentación e
+internacionalización de los procesos productivos. 
+
+Los avances tecnológicos, la automatización y las mejoras en transporte y
+comunicaciones permitieron distribuir distintas etapas de un mismo proceso 
+de producción entre diferentes países.
+
+En América Latina, estas transformaciones estuvieron asociadas con cambios 
+importantes en las estructuras productivas y en las formas de inserción 
+internacional. En el caso argentino, desde la década de 1970 se combinaron 
+procesos de reestructuración industrial, mayor exposición a la competencia 
+internacional y cambios en la composición de la producción. 
+
+En este marco, resulta importante distinguir entre desindustrialización
+absoluta y relativa. La primera supone una contracción de la producción
+industrial en términos absolutos, mientras que la segunda refiere a una
+pérdida de participación de la industria dentro de la estructura económica 
+general. Una disminución de la participación manufacturera en el PIB
+no implica necesariamente que la producción industrial haya disminuido.
+
+Las transformaciones productivas también se relacionan con cambios en el
+mercado de trabajo. La automatización y la reorganización de los procesos 
+productivos modifican los requerimientos de fuerza de trabajo y pueden producir 
+efectos heterogéneos sobre las calificaciones y las formas de empleo. 
+En las economías menos desarolladas, estos procesos pueden coexistir además con informalidad, precariedad, subempleo y otras formas de inserción laboral.
+
+Con este contexto de base, el trabajo analiza dos dimensiones complementarias. 
+Por un lado, la participación de la industria manufacturera en el PIB permite 
+aproximarse a la desindustrialización relativa, es decir, a la pérdida de peso 
+de la manufactura dentro de la estructura económica general del país. 
+Por otro, la evolución del valor agregado manufacturero a precios constantes 
+permite observar si esa pérdida de participación estuvo acompañada por una 
+contracción o una expansión de la actividad manufacturera en términos reales. 
+La comparación  entre Argentina y otras economías sudamericanas permite evaluar 
+si estas trayectorias constituyen una particularidad argentina o forman parte de 
+tendencias regionales más amplias. 
+
+# Metodología
+
+El análisis se organiza a partir de tres dimensiones. La principal corresponde 
+a la evolución de la industria manufacturera y se estudia mediante dos 
+indicadores complementarios a los cuales se hizo referencia anteriormente: 
+su participación en el PIB y el valor agregado manufacturero a precios 
+constantes. 
+
+Para facilitar la comparación entre países, el valor agregado manufacturero 
+real se transforma en un índice con base 2000=100. De esta manera se compara 
+la evolución de cada país respecto de su propio nivel inicial, evitando 
+comparar directamente valores expresados en distintas monedas locales.
+
+Como dimensiones complementarias se utilizan el crecimiento anual del PIB real
+y la tasa de desempleo, ambos provenientes del FMI. Para el crecimiento se 
+calculan el promedio del período y su volatilidad mediante el desvío estándar 
+de las tasas anuales.
+
+# Resultados y análisis
+
+## Evolución de la participación manufacturera
+
+El primer paso consiste en analizar la evolución de la participación de
+la industria manufacturera en el PIB. Este indicador permite observar si
+la manufactura ganó o perdió peso relativo dentro de cada una de las
+economías consideradas durante el período analizado.
+
+```{r grafico-industria, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=4, fig.align="center"}
+
+ggplot(datos, aes(x = year, y = IND_01, color = pais)) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.1)) +
+  labs(
+    title = "Participación de la industria manufacturera",
+    subtitle = "Período 2000-2025",
+    x = NULL,
+    y = "% del PIB",
+    color = "País",
+    caption = "Fuente: elaboración propia sobre datos del Banco Mundial.") +
+  theme_classic() +
+  theme(
+    axis.title.x = element_text(
+      margin = margin(t = 30)))
+
+```
+
+Lo que se puede observar es que la pérdida de peso relativo de la industria no 
+constituye un fenómeno exclusivo de Argentina, sino una tendencia presente, 
+aunque con diferencias, en las seis economías analizadas.
+
+En Argentina, la participación de la manufactura presenta una trayectoria 
+particular. Parte de 16,5% del PIB en 2000 y alcanza un máximo en 2003, luego 
+de la fuerte contracción económica de 2002. A partir de allí comienza una 
+tendencia predominantemente descendente y alcanza un mínimo en 2017. .
+Entre 2020 y 2023, probablemente como  consecuencia de las restricciones por la
+pandemia del COVID, se observa una recuperación transitoria. Posteriormente, 
+para 2025 cierra la serie representando el 13,6% del PIB.
+
+La comparación regional permite observar que las trayectorias no son
+homogéneas. Mientras algunos países presentan descensos relativamente
+continuos, Argentina combina períodos de fuerte variación con una tendencia 
+descendiente de largo plazo. Por lo que el caso argentino no parece ser algo 
+exclusivo en lo referido a la desindustrialización relativa, ya que también se 
+observa en las demás economías; en cambio si es marcada, y es un rasgo 
+característico de la economía argentina, la variabilidad de su trayectoria.
+
+## Magnitud del cambio en la participación manufacturera
+
+La evolución manufacturera se complementa con la comparación entre el primer y
+el último dato disponible para cada país. La variación se expresa en puntos 
+porcentuales y permite comparar la magnitud de la pérdida o ganancia de 
+participación a partir de los datos del producto.
+
+```{r grafico-cambio-industria, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=4, fig.align="center"}
+
+ggplot(indicadores, aes(x = reorder(pais, cambio_industria_pp),
+                        y = cambio_industria_pp)) +
+  geom_col() +
+  coord_flip() +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.1)) +
+  labs(
+    title = "Cambio en la participación de la industria manufacturera",
+    subtitle = "Diferencia entre 2000 y 2025",
+    x = NULL,
+    y = "Puntos porcentuales",
+    caption = "Fuente: elaboración propia sobre datos del Banco Mundial.") +
+  theme_classic()
+
+```
+
+Este indicador confirma que los seis países registran una pérdida de 
+participación de la manufactura en el PIB. Sin embargo, la magnitud del proceso 
+presenta diferencias importantes.
+
+Argentina muestra una disminución de 2,9 puntos porcentuales (pp). Esta caída es 
+similar a la registrada por Perú (-3,0 pp) y algo superior a la de 
+Uruguay (-2,6). Brasil presenta la reducción más moderada del grupo, con una 
+caída de 1,4 pp.
+
+En tanto que Chile y Colombia muestran pérdidas considerablemente mayores.
+La participación manufacturera chilena disminuye 6,2 pp, mientras que en 
+Colombia la reducción alcanza 4,0 puntos.
+
+Por lo tanto, durante el período considerado, Argentina no presenta la
+mayor pérdida relativa de participación manufacturera y si permite observa un 
+proceso regional de reducción  del peso de la manufactura, aunque con diferentes intensidades. 
+
+## Evolución real de la industria manufacturera
+
+La pérdida de participación de la manufactura no implica necesariamente una 
+contracción de la actividad. Para distinguir ambos fenómenos, se analiza la 
+evolución del valor agregado manufacturero a precios constantes mediante un 
+índice con base 2000=100.
+
+```{r grafico-evolucion-industria, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=4, fig.align="center"}
+ggplot(datos, aes(x = year, y = industria_real_indice, color = pais)) +
+  geom_hline(
+    yintercept = 100,
+    linetype = "dashed",
+    linewidth = 0.5) +
+  geom_line(linewidth = 1) +
+  labs(
+    title = "Evolución real de la industria manufacturera",
+    subtitle = "Índice de valor agregado manufacturero a precios constantes, 2000 = 100",
+    x = NULL,
+    y = "Índice (2000 = 100)",
+    color = "País",
+    caption = "Fuente: elaboración propia sobre datos del Banco Mundial.") +
+  theme_classic() +
+  theme(
+    axis.title.y = element_text(
+      margin = margin(r = 10)))
+```
+
+La comparación muestra que la pérdida de peso relativo de la manufactura 
+respecto del PIB coexistió con un aumento de su valor agregado real en las 
+seis economías analizadas. Entre 2000 y 2025, Argentina registra un crecimiento 
+de aproximadamente 27,4%. Este incremento es superior únicamente  al de Brasil 
+(16,0%) y considerablemente menor que los observados en Chile (68,4%), 
+Uruguay (77,1%), Colombia (82,0%) y Perú (112,2%).
+
+Por lo que, la caída de 2,9 pp de la participación manufacturera, entre los 
+extremos del período, no estuvo acompañada por una reducción del valor agregado 
+manufacturero real. 
+
+## Crecimiento económico y volatilidad
+
+Una segunda dimensión del análisis corresponde al desempeño económico.
+Para cada país se compara la tasa de crecimiento promedio del PIB real
+con la volatilidad de ese crecimiento durante el período analizado.
+
+```{r grafico-crecimiento, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=4, fig.align="center"}
+
+ggplot(indicadores, aes(x = volatilidad_crecimiento, 
+                        y = crecimiento_promedio)) +
+  geom_point(size = 3) +
+  geom_text(
+    data = indicadores %>% filter(!pais %in% c("Argentina","Chile")),
+    aes(label = pais),nudge_y = 0.15,
+    check_overlap = TRUE) +
+  geom_text(
+    data = indicadores %>% filter(pais == "Chile"),
+    aes(label = pais),
+    nudge_y = -0.15) +
+  geom_text(
+  data = indicadores %>% filter(pais == "Argentina"),
+  aes(label = pais),
+  nudge_y = 0.15,
+  nudge_x = -0.15) +
+  scale_x_continuous(
+    labels = scales::label_number(accuracy = 0.1)) +
+  labs(
+    title = "Crecimiento económico y volatilidad",
+    subtitle = "Promedio y desvío estándar, 2000-2025",
+    x = "Volatilidad del crecimiento",
+    y = "Crecimiento promedio (%)",
+    caption = "Fuente: elaboración propia sobre datos del FMI.") +
+  theme_classic()+
+  theme(
+    axis.title.y = element_text(
+      margin = margin(r = 10)),
+    axis.title.x = element_text(
+      margin = margin(t = 10)))
+
+```
+
+La comparación del crecimiento económico permite identificar la diferencia más 
+marcada del caso argentino. Entre 2000 y 2025, Argentina registra un crecimiento 
+promedio anual de 1,8%, el menor entre las seis economías analizadas. 
+Al mismo tiempo, presenta una volatilidad de 6,1 pp medida mediante el desvío 
+estándar de las tasas anuales de crecimiento, el valor más elevado del grupo.
+
+El contraste regional es significativo. Perú presenta el mayor crecimiento 
+promedio del período (4,1%), seguido por Colombia (3,5%) y Chile (3,4%). 
+Brasil y Uruguay registran tasas promedio cercanas a 2,4% y 2,3%, respectivamente. 
+En todos estos casos, la volatilidad del crecimiento es inferior a la argentina.
+
+En consecuencia, la particularidad argentina aparece con mayor claridad
+cuando la transformación productiva se observa junto con el desempeño
+macroeconómico. La pérdida de participación manufacturera argentina no
+es excepcional por su magnitud, pero se desarrolla en una economía
+caracterizada por un crecimiento promedio comparativamente bajo y una elevada 
+volatilidad.
+
+## Evolución del desempleo
+
+La tercera, y última, dimensión considerada corresponde al mercado laboral. La
+evolución de la tasa de desempleo permite comparar las trayectorias
+laborales de las seis economías durante el mismo período.
+
+```{r grafico-desempleo, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=4, fig.align="center"}
+
+ggplot(indicadores, aes(x = reorder(pais, desempleo_promedio),
+                        y = desempleo_promedio)) +
+  geom_col() +
+  coord_flip() +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.1)) +
+  labs(
+    title = "Tasa de desempleo promedio",
+    subtitle = "América del Sur, 2000-2025",
+    x = NULL,
+    y = "Porcentaje") +
+  theme_classic()+
+  theme(
+    axis.title.y = element_text(
+      margin = margin(t = 10)))
+
+```
+
+La evolución del desempleo muestra nuevamente diferencias importantes
+entre países y, en particular, una elevada variabilidad en el caso
+argentino. Argentina comienza el período con una tasa de desempleo de
+17,1%, que aumenta hasta alcanzar 22,5% en 2002. Posteriormente se
+observa una disminución sostenida, hasta ubicarse en torno al 7% entre
+2008 y 2015. El desempleo vuelve a aumentar entre 2016 y 2020, año en
+que alcanza 11,6%, para descender nuevamente durante la recuperación
+posterior.
+
+Considerando el conjunto del período, Argentina registra una tasa de
+desempleo promedio de 10,1%. Este valor es inferior al promedio de
+Colombia (11,0%), pero superior a los registrados por Perú (7,9%), Chile
+(8,3%) y muy cerca de los valores de Uruguay (9,6%) y Brasil (9,7%).
+
+La trayectoria argentina se caracteriza por variaciones importantes a lo largo 
+del período. Sin embargo, los datos no muestran una correspondencia simple 
+entre pérdida de participación manufacturera y aumento del desempleo. }
+Por ejemplo, durante varios años en los que disminuye el peso relativo de la
+manufactura también se reduce el desempleo. 
+
+En este caso, sería de mayor utilidad, hacer un estudio del desempleo por 
+rama de actividad para conocer las dinamicas y trayectorias y poder construir 
+una conclusión más especifica, en lo referido a la Desindustrialización.
+
+## Síntesis de resultados
+
+La evidencia analizada muestra que la desindustrialización relativa no 
+constituye una particularidad exclusiva de Argentina. Entre 2000 y 2025, 
+los seis países registraron una reducción de la participación manufacturera 
+en el PIB. En Argentina, esta pasó de 16,5% a 13,6%, una caída de 2,9 pp, 
+menor que la observada en Chile y Colombia y similar a la de Perú. 
+Sin embargo, esta pérdida relativa coexistió con un aumento de 27,4% del valor 
+agregado manufacturero real respecto de 2000. Por lo tanto, la reducción del 
+peso de la industria no implicó una contracción de su nivel real en el período.
+
+La particularidad argentina aparece al considerar conjuntamente estas 
+dimensiones. El crecimiento real de la manufactura fue relativamente moderado 
+frente a la mayoría de los países analizados y coexistió con el menor 
+crecimiento promedio del PIB y la mayor volatilidad macroeconómica del grupo. 
+En materia laboral, Argentina también presentó importantes  variaciones en el 
+desempleo, aunque no se observa una correspondencia directa entre esta variable 
+y la pérdida de participación manufacturera, ya que para  sería necesario un 
+análisis del empleo por rama de actividad.
+
+En conjunto, los resultados permiten caracterizar la experiencia argentina como 
+un proceso de desindustrialización relativa inserto en una tendencia regional
+más amplia, pero desarrollado en un contexto de desempeño macroeconómico 
+particularmente inestable. 
+
+# Referencias
+
+Monteforte, E. y Bonals, S. (2014). *La Nueva División Internacional del Trabajo y sus consecuencias en la producción y en el mercado de trabajo argentino. 1970-2013*.
+I Congreso de Economía Política Internacional, Universidad Nacional de Moreno, 
+Moreno.
+
+Piva, A. (2024). *Las transformaciones en el capitalismo contemporáneo y los desafíos para la acción colectiva de los trabajadores. El caso argentino (1989-2019).* 
+Trabajo y Sociedad, 42, 249-270.
