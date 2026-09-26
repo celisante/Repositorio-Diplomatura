@@ -1,3 +1,45 @@
+---
+title: "Mercado de trabajo e informalidad"
+subtitle: "Evolución del mercado laboral y de la informalidad en Argentina"
+author: "Bruno Restelli"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    html-math-method: katex
+---
+
+```{=html}
+<style>
+p {
+  text-align: justify;
+}
+</style>
+```
+
+# Resumen ejecutivo
+
+Texto
+
+# Introducción
+
+Texto
+
+# Desarrollo conceptual
+
+Texto
+
+# Metodología
+
+Texto
+
+## Procesamiento de las bases de la EPH
+
+El procesamiento se realiza a partir de los microdatos de la Encuesta Permanente de Hogares (EPH-INDEC), utilizando información trimestral desde el segundo trimestre de 2016 hasta el segundo trimestre de 2026.
+
+```{r codigo, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE, cache=TRUE}
 rm(list = ls())
 
 options(scipen = 999) 
@@ -294,7 +336,7 @@ tasas_laborales <- tasas_laborales %>%
 
 # ASALARIADOS NUEVOS SEGUN CONDICION DE REGISTRO #
 
-condicion_nuevos_asalariados <- tasas_laborales_grafico %>%
+condicion_nuevos_asalariados <- tasas_laborales %>%
   filter(
     periodo %in% c("2T2016", "1T2026")
   ) %>%
@@ -330,6 +372,67 @@ condicion_nuevos_asalariados <- tasas_laborales_grafico %>%
   )
 
 view(condicion_nuevos_asalariados)
+
+
+grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
+  pivot_longer(
+    cols = c(
+      porcentaje_registrados,
+      porcentaje_no_registrados
+    ),
+    names_to = "tipo",
+    values_to = "porcentaje"
+  ) %>%
+  mutate(
+    tipo = recode(
+      tipo,
+      porcentaje_registrados = "Registrados",
+      porcentaje_no_registrados = "No registrados"
+    ),
+    tipo = factor(
+      tipo,
+      levels = c("Registrados", "No registrados")
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = tipo,
+      y = porcentaje
+    )
+  ) +
+  geom_col(
+    fill = "#9DD9E8",
+    width = 0.6
+  ) +
+  geom_text(
+    aes(
+      label = paste0(round(porcentaje, 1), "%"),
+      vjust = -0.5
+    ),
+    fontface = "bold",
+    size = 4
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Condición de los nuevos asalariados",
+    subtitle = "Participación en el aumento neto entre 2T2016 y 1T2026",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_condicion_nuevos_asalariados
+
 
 
 # CALCULO DE TASA DE INFORMALIDAD NUEVA  4T 2023 - 2T 2026 #
@@ -917,62 +1020,65 @@ grafico_cambio_contribucion <- cambio_categoria %>%
   )
 
 grafico_cambio_contribucion
+```
 
-grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
-  pivot_longer(
-    cols = c(
-      porcentaje_registrados,
-      porcentaje_no_registrados
-    ),
-    names_to = "tipo",
-    values_to = "porcentaje"
-  ) %>%
-  mutate(
-    tipo = recode(
-      tipo,
-      porcentaje_registrados = "Registrados",
-      porcentaje_no_registrados = "No registrados"
-    ),
-    tipo = factor(
-      tipo,
-      levels = c("Registrados", "No registrados")
-    )
-  ) %>%
-  ggplot(
-    aes(
-      x = tipo,
-      y = porcentaje
-    )
-  ) +
-  geom_col(
-    fill = "#9DD9E8",
-    width = 0.6
-  ) +
-  geom_text(
-    aes(
-      label = paste0(round(porcentaje, 1), "%"),
-      vjust = -0.5
-    ),
-    fontface = "bold",
-    size = 4
-  ) +
-  scale_y_continuous(
-    limits = c(0, 100),
-    breaks = seq(0, 100, 20),
-    labels = function(x) paste0(x, "%"),
-    expand = expansion(mult = c(0, 0.05))
-  ) +
-  labs(
-    title = "Condición de los nuevos asalariados",
-    subtitle = "Participación en el aumento neto entre 2T2016 y 1T2026",
-    x = NULL,
-    y = NULL,
-    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
-  ) +
-  theme_classic() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    plot.subtitle = element_text(size = 10)
-  )
+# Resultados y análisis
 
+## Evolución de las tasas de actividad, ocupación e informalidad
+
+Texto
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+    
+grafico_tasas
+```
+
+Texto
+
+## Evolución de la desocupación y la demanda de empleo
+
+Texto
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_tasas_demanda
+```
+
+Texto
+
+## Condición de registro de los nuevos asalariados
+
+Texto
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 grafico_condicion_nuevos_asalariados
+```
+
+Texto
+
+## Comparación de las mediciones de informalidad
+
+Texto
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_comparacion_informalidad
+```
+
+Texto
+
+## Contribución de las categorías ocupacionales al aumento de la informalidad
+
+Texto
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_cambio_contribucion
+```
+
+Texto
+
+# Síntesis de resultados
+
+Texto
+
+# Referencias
+
+Texto
