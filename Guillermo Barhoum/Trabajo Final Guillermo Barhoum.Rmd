@@ -26,14 +26,86 @@ execute:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 
+#La Informalidad laboral en Argentina y su problematica regional
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+rm(list = ls())
+
+options(scipen = 999)
+
+#########################################################
+### Cargamos las librerias
+########################################################
+
+library(tidyverse)
+library(eph)
+library(dplyr)
+library(ggplot2)
+library(paletteer)
+library(plotly)
+library(scales)
+```
+
+
+```{r,message=FALSE, warning=FALSE, include=FALSE}
+
+#########################################################
+### Variables a descargar
+########################################################
+
+mis_variables <- c("CODUSU","ANO4","TRIMESTRE", "NRO_HOGAR", "COMPONENTE",                          "SECTOR", "CH03", 
+                   "CH04", "CH06", "CH07", "CH10", "CH12", "CH13", "CH14",
+                   "PP3E_TOT", "PP03G", "PP03H", "NIVEL_ED", "REGION", 
+                   "AGLOMERADO", "PONDERA", "PONDIH", "ESTADO", "CAT_OCUP", 
+                   "PP04B_COD", "PP04A", "PP04B1", "PP04C", "PP04C99", "PP07H", 
+                   "P21", "PONDIIO", "ITF", "EMPLEO")
+
+#########################################################
+### Descarga manual de (T4 2023+Todo 2025)
+########################################################
+
+base_24_4 <- get_microdata(year = 2024, trimester = 4, vars = mis_variables)
+base_25_1 <- get_microdata(year = 2025, trimester = 1, vars = mis_variables)
+base_25_2 <- get_microdata(year = 2025, trimester = 2, vars = mis_variables)
+base_25_3 <- get_microdata(year = 2025, trimester = 3, vars = mis_variables)
+base_25_4 <- get_microdata(year = 2025, trimester = 4, vars = mis_variables)
+
+
+```
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+#########################################################
+### Armamos pares (transicion de t a t+1)
+########################################################
+
+# Transición 1(Final 2024 -> Inicio 2025)
+panel_1 <- inner_join(base_24_4_pob, base_25_1_pob, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+# Transición 2(Primer semestre 2024)
+panel_2 <- inner_join(base_25_1_pob, base_25_2_pob, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+# Transición 3 (Mitad de año 2024)
+panel_3 <- inner_join(base_25_2_pob, base_25_3_pob, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+# Transición 4 (Cierre de año 2024)
+panel_4 <- inner_join(base_25_3_pob, base_25_4_pob, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+#########################################################
+### Pool de datos de panel
+########################################################
+
+# Unimos los paneles
+pool_final <- bind_rows(panel_1, panel_2, panel_3, panel_4)
+
+
 ```
 
 ## Including Plots
