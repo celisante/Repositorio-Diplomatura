@@ -3,6 +3,9 @@ title: "Trabajo Final Federico Glustein"
 author: "FedericoGlustein"
 date: "2026-09-15"
 output: html_document
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r setup, include=FALSE}
@@ -11,9 +14,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This is an R Markdown document.
+Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents.
+For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+You can embed an R code chunk like this:
 
 ```{r cars}
 summary(cars)
@@ -25,6 +31,8 @@ You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
+
+Listado de Códigos
 
 library(tidyverse)
 library(eph)
@@ -735,3 +743,206 @@ ggsave(
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Informalidad asalariada, estructura productiva y brechas de ingresos en la Argentina urbana a partir de la EPH (al cuarto Trimestre 2024)
+
+**Introducción**
+
+La informalidad laboral constituye uno de los problemas persistentes de los mercados de trabajo latinoamericanos.
+Su importancia no radica únicamente en la proporción de trabajadores que se desempeñan sin acceso pleno a mecanismos de protección social, sino también en las fuertes desigualdades que existen dentro del propio mercado laboral: entre actividades económicas, niveles educativos, tamaños de empresa y niveles de ingreso.
+En ese sentido, analizar la informalidad como un fenómeno homogéneo puede ocultar diferencias importantes acerca de dónde se genera, qué trabajadores tienen mayor probabilidad de encontrarse en esa situación y qué consecuencias económicas tiene.
+Este trabajo busca estudiar la informalidad entre los trabajadores asalariados de la Argentina urbana durante el cuarto trimestre de 2024 utilizando los microdatos de la Encuesta Permanente de Hogares (EPH).
+El objetivo principal es analizar cómo se distribuye la informalidad asalariada entre distintas ramas de actividad y examinar su asociación con el nivel educativo y con el ingreso de la ocupación principal.
+La pregunta que guía el trabajo la puedo formular de la siguiente manera: ¿hasta qué punto la informalidad asalariada puede interpretarse como un problema asociado exclusivamente a características individuales de los trabajadores y hasta qué punto refleja diferencias persistentes de la estructura productiva?
+La elección de esta pregunta busca vincular el ejercicio empírico con la discusión teórica planteada por Fernández Franco, Graña, Lastra y Weksler (2022).
+Los autores retoman la tradición estructuralista latinoamericana y sostienen que los mercados de trabajo de la región deben ser comprendidos en relación con una estructura productiva marcadamente heterogénea.
+La coexistencia de empresas, sectores y puestos de trabajo con niveles muy diferentes de capitalización, productividad, tamaño y tecnología tendría como correlato una distribución igualmente desigual de salarios y calidad del empleo.
+El procesamiento realizado permite observar con bastante claridad esa heterogeneidad.
+Otra dimensión examinada es el ingreso.
+Los resultados muestran que los asalariados informales perciben ingresos de la ocupación principal considerablemente menores que los formales en casi todas las ramas.
+Este resultado permite conectar la falta de registro con una dimensión más amplia de calidad del empleo en la cual la informalidad no aparece solamente como ausencia de aportes jubilatorios, sino que en la gran mayoría de las actividades está asociada también con menores ingresos laborales.
+El argumento central que surge del ejercicio es que las características individuales importan, pero no alcanzan para explicar el fenómeno.
+La educación está asociada con menores tasas de informalidad, pero trabajadores con similar nivel educativo enfrentan probabilidades muy diferentes según la actividad en la que se insertan.
+De la misma manera, la brecha salarial formal-informal no presenta una magnitud uniforme.
+Esto sugiere que la calidad del empleo se relaciona tanto con las características de los trabajadores como con las condiciones productivas y organizativas de las ramas donde se generan los puestos.
+
+**1. Heterogeneidad estructural y mercado laboral**
+
+La tradición estructuralista latinoamericana ofrece un punto de partida particularmente útil para interpretar estos resultados.
+Según la reconstrucción presentada por Fernández Franco et al. (2022), los trabajos de Prebisch planteaban que la insuficiente capitalización de las economías latinoamericanas generaba dificultades para absorber de manera productiva a toda la fuerza de trabajo.
+Una parte de la población quedaba así vinculada a actividades de baja productividad y bajos ingresos.
+Esta coexistencia de segmentos con niveles muy diferentes de productividad dio lugar al concepto de heterogeneidad estructural.
+En su versión más esquemática, esta perspectiva distinguía un sector moderno, compuesto por empresas de mayor escala, capitalización y utilización de tecnología, y un sector de subsistencia o tradicional, caracterizado por baja productividad.
+El desarrollo de la teoría del sector informal urbano trasladó esta idea al mercado laboral.
+En esa perspectiva, la heterogeneidad productiva se expresa en una segmentación entre puestos de trabajo con diferente calidad.
+El sector informal quedó asociado a unidades productivas pequeñas, escasa capitalización, empleos poco calificados, menores salarios y menor protección social, mientras que el sector formal se vinculó con establecimientos más grandes, mayor productividad y predominio de relaciones laborales protegidas.
+El aporte central de esta corriente es que la informalidad no se interpreta simplemente como una elección del trabajador o como resultado de su falta de educación.
+Su origen se encuentra también en la capacidad de la estructura económica para generar puestos de trabajo productivos y protegidos Fernández Franco et al. incorporan además una actualización importante.
+La relación entre formalidad e informalidad contemporánea es más compleja que la imagen clásica de dos sectores completamente separados.
+Las transformaciones productivas de las últimas décadas dieron lugar a formas de subcontratación y tercerización mediante las cuales empresas pequeñas e informales pueden vincularse con empresas del sector moderno.
+También existe heterogeneidad dentro de la propia informalidad: no todo empleo informal tiene la misma productividad, remuneración ni carácter voluntario o involuntario.
+Los autores recuperan trabajos que distinguen una informalidad de subsistencia de segmentos informales relativamente más productivos.
+
+**¿Qué argumentos estructuralistas son reforzados por la evidencia latinoamericana?**
+
+El trabajo de Fernández Franco et al. encuentra varios resultados que respaldan los planteos clásicos.
+En primer lugar, los mercados de trabajo de América Latina continúan caracterizándose por una elevada participación de puestos de calificación baja y media y por la importancia de establecimientos de pequeña escala.
+En segundo lugar, existe una asociación sistemática entre tamaño del establecimiento, calificación e indicadores de calidad del empleo.
+Los trabajadores de establecimientos más grandes y posiciones más calificadas tienen, en promedio, mejores ingresos y mayor cobertura de seguridad social.
+Esto refuerza una de las intuiciones centrales del estructuralismo: las condiciones laborales no son independientes de la estructura productiva.
+La menor productividad no se expresa únicamente en una diferencia de producto por trabajador, sino también en la capacidad de las unidades productivas para pagar mejores salarios, sostener relaciones laborales estables y cumplir con mecanismos de protección social.
+Los resultados para Argentina a partir del análisis del trabajo son compatibles con esa interpretación.
+Las tasas de informalidad no aparecen distribuidas aleatoriamente.
+Las actividades caracterizadas por una fuerte presencia de relaciones laborales fragmentadas, establecimientos pequeños o modalidades de contratación más precarias presentan las tasas más elevadas.
+Por lo tanto, la heterogeneidad no es solamente una diferencia entre trabajadores: también es una diferencia entre espacios productivos en los que esos trabajadores se insertan.
+
+**2. ¿Qué ocurre con las teorías de la convergencia?**
+
+La consigna propone también discutir qué elementos de las teorías de la convergencia encuentran respaldo al observar los datos latinoamericanos.
+Fernández Franco et al. no construyen una sección autónoma denominada “teoría de la convergencia”; sin embargo, su comparación permite evaluar la expectativa de que el proceso de desarrollo tienda a reducir progresivamente las diferencias entre segmentos laborales y a acercar las condiciones de los países latinoamericanos a las economías desarrolladas.
+En algún sentido, existe evidencia compatible con una convergencia.
+Dentro de América Latina, los países con mercados laborales relativamente más desarrollados presentan mejores indicadores que los demás.
+Asimismo, los trabajadores de mayor calificación y los que se desempeñan en establecimientos grandes muestran condiciones laborales más favorables.
+Es decir, el aumento de la escala productiva, el capital humano y el desarrollo de segmentos modernos efectivamente está asociado con mayores salarios y mejor cobertura.
+Sin embargo, los resultados de Fernández Franco et al. cuestionan una lectura automática de la convergencia.
+Incluso los países latinoamericanos que integran el grupo relativamente más favorable —entre ellos Argentina— continúan mostrando distancias importantes respecto de Estados Unidos.
+Más aún, los autores encuentran que incluso trabajadores insertos en perfiles relativamente buenos dentro de América Latina reciben salarios muy inferiores a trabajadores con perfiles comparables en la economía estadounidense.
+Este punto modifica sustancialmente la interpretación.
+Si el problema fuera únicamente que América Latina tiene una proporción demasiado grande de empleos informales, bastaría con trasladar trabajadores hacia el sector formal para resolver la diferencia con las economías desarrolladas.
+Pero los autores señalan que el rezago productivo afecta a la economía regional en su conjunto, incluido el segmento considerado moderno.
+El sector formal latinoamericano puede ser mejor que el informal en términos relativos y, al mismo tiempo, encontrarse muy por debajo de los estándares de productividad e ingresos de economías desarrolladas.
+
+**3. Cambios recientes del mercado laboral latinoamericano**
+
+Las teorías tradicionales deben además ser contrastadas con una realidad laboral que cambió significativamente.
+Algunos elementos centrales se mantienen: la región sigue exhibiendo niveles elevados de informalidad, una importante participación de actividades de baja productividad y fuertes diferencias de calidad del empleo.
+Sin embargo, la informalidad actual no coincide exactamente con el sector informal urbano de los años setenta.
+La CEPAL muestra que entre 2013 y 2022 América Latina atravesó un período de crecimiento particularmente débil del producto y del empleo.
+En ese período, la población ocupada aumentó 10%, pero la ocupación informal creció 18,6%, mientras que la formal lo hizo apenas 3,3%.
+Esto indica que el problema no es solamente la existencia histórica de un “stock” de informalidad: una parte importante del empleo que se crea continúa generándose bajo modalidades informales.
+A su vez, las características individuales han adquirido un lugar importante en la explicación contemporánea.
+El estudio de CEPAL encuentra que una mayor educación reduce significativamente la probabilidad de informalidad.
+También identifica una mayor probabilidad para las mujeres, especialmente cuando viven en hogares con personas dependientes.
+Esto no invalida la perspectiva estructuralista.
+Más bien obliga a combinar dos planos.
+Por un lado, la estructura productiva genera oportunidades laborales de distinta calidad.
+Por otro, los trabajadores no tienen la misma capacidad de acceder a esas oportunidades.
+Educación, género, edad, responsabilidades de cuidado y otros atributos condicionan la distribución de las personas entre segmentos productivos.
+Además, aparecieron nuevas formas laborales que vuelven menos nítida la división entre formal e informal: tercerización, subcontratación, trabajo mediante plataformas digitales, contratos atípicos y relaciones laborales cuya dependencia puede resultar difícil de determinar.
+La informalidad ya no debe identificarse exclusivamente con una pequeña actividad de subsistencia desconectada de la economía moderna.
+En consecuencia, las teorías históricas continúan siendo útiles para explicar la persistencia de la heterogeneidad, pero la evolución reciente exige incorporar nuevas dimensiones de segmentación.
+
+**4. Datos y metodología**
+
+El análisis empírico utiliza la base individual de la Encuesta Permanente de Hogares correspondiente al cuarto trimestre de 2024.
+El universo de análisis se restringió a trabajadores ocupados asalariados.
+La condición de informalidad se construyó utilizando la variable PP07H, que identifica si al trabajador asalariado se le realiza descuento jubilatorio.
+Se clasificó como formal a quien declara descuento y como informal a quien declara no tenerlo.
+La rama de actividad fue construida a partir de PP04B_COD, que identifica la actividad del negocio, empresa o institución correspondiente a la ocupación principal según el clasificador CAES-Mercosur.
+Las divisiones fueron agrupadas en categorías amplias para facilitar la interpretación: agricultura, minería, industria manufacturera, servicios públicos, construcción, comercio, transporte, alojamiento y comidas, información y comunicaciones, finanzas, servicios profesionales, administración pública, enseñanza, salud, otros servicios y servicio doméstico.
+La informalidad se estimó utilizando PONDERA, mientras que para los ingresos se empleó el ponderador específico PONDIIO.
+Esta distinción es relevante porque la documentación de la EPH establece que PONDIIO incorpora la corrección correspondiente para el tratamiento del ingreso de la ocupación principal (P21).
+El nivel educativo se agrupó en tres categorías: bajo, medio y alto.
+A partir de estas decisiones se construyeron tres indicadores principales: tasa de informalidad asalariada por rama, tasa de informalidad por rama y nivel educativo, e ingreso promedio de la ocupación principal según rama y condición de formalidad.
+
+**5. Informalidad por rama: una estructura claramente desigual**
+
+El primer resultado es contundente: la informalidad asalariada no se distribuye homogéneamente entre las actividades económicas.
+El servicio doméstico presenta la mayor tasa, con 76,8%.
+Le sigue construcción, con 73,2%, y alojamiento y comidas, con 59,7%.
+En otros servicios la informalidad es 54,1%, en comercio y reparación 45,2%, y en transporte y almacenamiento 41,4%.
+La agricultura, ganadería y pesca registra 36,1%.
+En un nivel intermedio aparecen salud y servicios sociales (26,5%), servicios profesionales y empresariales (25,9%), industria manufacturera (25,0%) e información y comunicaciones (24,8%).
+Finalmente, las tasas más bajas corresponden a finanzas y seguros (12,5%), electricidad, gas, agua y saneamiento (12,4%), enseñanza (9,4%), administración pública (9,2%) y minería y petróleo (0,6%).
+La distancia entre los extremos es enorme.
+Entre servicio doméstico y minería existe una diferencia superior a 76 puntos porcentuales.
+Este patrón resulta difícil de explicar exclusivamente por decisiones individuales.
+No parece razonable pensar que la enorme informalidad de la construcción o el servicio doméstico sea simplemente el resultado de preferencias individuales por no realizar aportes.
+Existen características específicas de estas actividades que facilitan relaciones laborales más fragmentadas: alta rotación, unidades pequeñas, relaciones personales de contratación, trabajos temporales, múltiples empleadores o dificultades de fiscalización.
+Por ello, el gráfico de informalidad por rama constituye una evidencia descriptiva bastante clara a favor de la hipótesis de heterogeneidad estructural.
+
+**6. Educación e informalidad: un factor protector, pero no suficiente**
+
+Acá aparece un resultado igualmente importante.
+En la mayoría de las ramas, la tasa de informalidad disminuye a medida que aumenta el nivel educativo.
+La construcción ofrece el caso más nítido.
+Entre trabajadores con educación baja, la informalidad alcanza 81,2%.
+Entre quienes tienen educación media es todavía muy elevada, 72,0%, mientras que para el grupo educativo alto desciende a 15,7%.
+La diferencia entre los extremos alcanza aproximadamente 65,5 puntos porcentuales.
+En alojamiento y comidas, las tasas son 71,2% para educación baja, 57,6% para educación media y 30,0% para educación alta.
+La reducción entre el nivel bajo y alto es superior a 41 puntos.
+En transporte y almacenamiento, la informalidad pasa de 51,5% entre el nivel bajo a 41,3% en el medio y 13,8% en el alto.
+El mismo patrón aparece en comercio: 60,5%, 43,3% y 23,7%, respectivamente.
+Estos resultados son consistentes con la evidencia regional de CEPAL, según la cual la probabilidad de ser informal disminuye con el nivel educativo.
+Sin embargo, el hallazgo más interesante no es simplemente que “la educación protege”.
+El ejemplo más evidente es el servicio doméstico.
+La informalidad es 74,6% para el nivel bajo, 79,4% para el medio y 77,1% para el alto.
+Aquí prácticamente no existe gradiente educativo.
+Esto tiene una implicancia teórica central.
+Si la informalidad fuera esencialmente consecuencia de un déficit de capital humano, esperaríamos que la educación redujera de manera relativamente uniforme la probabilidad de informalidad en todas las actividades.
+No ocurre así.
+En determinadas ramas, la estructura de la actividad parece pesar más que la educación individual.
+Esto permite formular una interpretación más precisa: la educación mejora las probabilidades de acceder a un empleo formal, pero no puede compensar plenamente las características de determinadas ramas productivas.
+
+**7. Ingresos laborales y la penalización de la informalidad**
+
+El resultado general es muy claro.
+En prácticamente todas las ramas, los asalariados formales presentan ingresos promedio superiores a los informales.
+En industria manufacturera, el ingreso formal promedio alcanza aproximadamente \$1.006.839, mientras que el informal es de \$480.229.
+El asalariado informal percibe así alrededor del 47,7% del ingreso formal, lo que equivale a una brecha de 52,3%.
+En comercio y reparación, el ingreso formal promedio es de \$934.857, frente a \$406.088 para los informales.
+La brecha es de 56,6%.
+En construcción, los formales registran aproximadamente \$852.543, mientras los informales alcanzan \$387.274.
+El informal percibe alrededor de 45,4% del ingreso formal.
+Este punto es especialmente relevante para la discusión de Fernández Franco et al.
+La calidad del empleo no puede evaluarse únicamente como una comparación entre formal e informal dentro de cada rama.
+Hay sectores donde incluso el trabajador formal ocupa una posición relativamente desfavorable en la estructura salarial.
+
+**8. Entre la teoría y los datos**
+
+El capital humano importa.
+En construcción, industria, comercio, transporte, administración pública, salud y varias otras ramas, los trabajadores con educación alta exhiben tasas de informalidad claramente menores.
+Pero el mismo nivel educativo produce resultados muy distintos según la actividad.
+Un trabajador de educación alta tiene una tasa de informalidad de 4,0% en administración pública, 4,4% en enseñanza, 9,6% en finanzas, 10,9% en industria, 15,7% en construcción, 23,7% en comercio, 30,0% en alojamiento y comidas, 45,6% en otros servicios y 77,1% en servicio doméstico.
+Si solo observáramos educación en agregado, podríamos concluir que la informalidad es fundamentalmente una consecuencia de la falta de capital humano.
+Pero cuando mantenemos constante —al menos descriptivamente— el nivel educativo y comparamos ramas, las diferencias siguen siendo enormes.
+Por lo tanto, no alcanza con formar trabajadores si la estructura económica no genera una cantidad suficiente de puestos productivos y registrados capaces de absorberlos.
+Del mismo modo, el ingreso refleja tanto la formalidad como la rama.
+Ser formal generalmente mejora la remuneración, pero no coloca automáticamente al trabajador en la misma posición económica que un formal de otra actividad.
+Un asalariado formal de servicio doméstico registra un ingreso medio muy por debajo incluso del ingreso informal de transporte o de servicios profesionales.
+
+**9. Respondiendo la consigna**
+
+A partir de Fernández Franco et al. puede sostenerse que los datos latinoamericanos refuerzan tres argumentos estructuralistas fundamentales.
+El primero es la persistencia de la heterogeneidad productiva.
+Continúan coexistiendo puestos y unidades productivas con capacidades muy diferentes de generar valor, pagar salarios y brindar protección social.
+El segundo es que esa heterogeneidad productiva tiene un correlato directo en el mercado laboral.
+No todas las actividades generan empleos de similar calidad.
+El tercero es que los segmentos rezagados no desaparecen automáticamente a medida que la economía se desarrolla.
+En cuanto a las teorías de convergencia, los datos ofrecen un respaldo parcial.
+La educación, la mayor escala productiva y la inserción en segmentos modernos están asociados con mejores condiciones laborales.
+Esto indica que existe un gradiente consistente con la idea de que el desarrollo puede mejorar la calidad del empleo.
+Finalmente, la evolución reciente difiere de las formulaciones clásicas en varios aspectos.
+La informalidad ya no está confinada a un sector completamente separado de la economía moderna.
+La tercerización, las plataformas digitales, las nuevas formas de contratación y la integración entre empresas pequeñas y grandes desdibujan la frontera tradicional.
+Además, dimensiones como educación, género y responsabilidades de cuidado adquieren una importancia que las primeras formulaciones estructuralistas no desarrollaron suficientemente.
+El resultado contemporáneo es, por lo tanto, más complejo: la informalidad es simultáneamente estructural, sectorial e individual.
+
+**Conclusiones**
+
+El análisis realizado para el cuarto trimestre de 2024 muestra que la informalidad asalariada en la Argentina urbana constituye un fenómeno profundamente desigual.
+La primera conclusión es que la rama de actividad importa de manera decisiva.
+Mientras el servicio doméstico y la construcción tienen tasas superiores al 70%, la enseñanza y la administración pública se encuentran alrededor del 9%.
+Esta dispersión es consistente con la existencia de una estructura productiva heterogénea.
+La segunda conclusión es que la educación funciona como un factor protector, pero no de manera uniforme.
+En la mayoría de las ramas la informalidad disminuye con el nivel educativo.
+Sin embargo, esta reducción depende fuertemente de la actividad.
+La tercera conclusión es que la informalidad está asociada con una penalización salarial considerable.
+En casi todas las ramas el ingreso promedio informal es sustancialmente inferior al formal.
+En conjunto, los resultados respaldan una lectura en la que las oportunidades laborales dependen de la interacción entre atributos individuales y características de la estructura productiva.
+La educación mejora las posibilidades de formalización, pero esas posibilidades están condicionadas por dónde se crean los puestos de trabajo.
+La formalidad mejora los ingresos, pero no elimina las diferencias entre actividades.
+En definitiva, el principal resultado del trabajo puede resumirse de una manera sencilla: no todos los trabajadores enfrentan el mismo mercado laboral.
+Esta conclusión es relevante porque desplaza la pregunta desde “¿por qué algunos trabajadores son informales?”
+hacia otra más amplia: ¿qué tipo de estructura productiva genera empleos formales, protegidos y suficientemente remunerados, y qué segmentos permanecen sistemáticamente al margen de esas condiciones?
+Esa es, precisamente, una de las preguntas que la tradición estructuralista latinoamericana formuló hace décadas y que los datos actuales muestran que todavía conserva vigencia.
