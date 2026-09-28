@@ -1,6 +1,410 @@
 ---
-title: "trabajo_final_ledesma_adrian"
-output: html_document
-.
+title: "Desindustrialización y Nueva División Internacional del Trabajo: un balance del primer cuarto de siglo desde la perspectiva argentina (2000-2024)"
+subtitle: "Universidad Nacional de General San Martín (UNSAM) - CONICET"
+author: "Ledesma, Adrián"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    theme: flatly
 ---
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.align = "center",
+  fig.width = 10,
+  fig.height = 6,
+  dpi       = 300
+)
+
+library(WDI)
+library(tidyverse)
+library(ggplot2)
+library(scales)
+
+dir.create("datos",    showWarnings = FALSE)
+dir.create("graficos", showWarnings = FALSE)
+dir.create("scripts",  showWarnings = FALSE)
+
+```
+<div style="text-align: justify;">
+### **Abstract**
+
+En el presente trabajo, nos proponemos analizar la evolución de la industria manufacturera en Argentina en relación a la Nueva División Internacional del Trabajo (NDIT, desde ahora) en el primer cuarto del presente siglo. A estos fines, basándonos en el marco teórico que nos proporcionan Rowthorn y Wells (1987) y retoma Herrera Bartis (2021) para estudios comparados, pondremos la trayectoria de Argentina en relación a la de otros países, relevantes por la tipología de su desarrollo y por su relevancia en el concierto actual de la división del trabajo. Buscaremos así, acercar en el tiempo y ampliar en trayectorias comparadas, los trabajos existentes sobre nuestro objeto de estudio. Recurriendo, según la profundidad de análisis y las tesis lo demanden, a fundamentos tanto cuantitativos como cualitativos, de producción propia o de terceros. Los países con trabajo fundamentalmente cuali y cuantitativo, en mayor medida propio, son Argentina, Brasil, China, Estados Unidos, Alemania y Reino Unido, mientras que India y Rusia serán abordados exclusivamente con material externo. Los indicadores a considerar serán, fundamentalmente, tres: VAB manufacturero sobre PIB corriente, empleo industrial sobre empleo total y exportaciones manufactureras sobre totales. La idea central apoya la tesis de Graña y Terranova (2022) según la cual la desindustrialización argentina no es un fenómeno “mecánico ni natural”, sino la resultante de una regresiva reestructuración en el marco de la NDIT. Este proceso contrasta fuertemente con otros caminos como la exitosa industrialización china, las desindustrializaciones por madurez (EE. UU.) y reespecialización (Reino Unido) o lo que aquí caracterizamos como una desindustrialización contenida (Alemania).  
+
+
+### **Introducción**
+Sin lugar a dudas, la desindustrialización es uno de los fenómenos económicos más discutidos en las últimas décadas. Parte importante de la literatura aborda el asunto con una clasificación evolutiva: existirían, de una parte, una desindustrialización natural (relativa al cambio tecnológico y la tercerización, propia de las economías desarrolladas) y, de la otra, una desindustrialización prematura, correspondiente a países que no han logrado aún un elevado nivel de ingresos (Herrera Bartis, 2021; Palma, 2005; Rodrik, 2016). Las trayectorias de Argentina en particular y LATAM, en general, combinan elementos de ambos tipos, y solo pueden comprenderse a la luz de la profunda reorganización global de la producción de los años setenta, la NDIT (Fröbel, Heinrichs y Kreye, 1980; Graña y Terranova, 2022; Weksler, 2022).
+En este marco histórico y económico internacional, la pregunta que mueve nuestro trabajo es la siguiente: ¿Cómo evolucionó el peso relativo de la industria manufacturera en Argentina? ¿Cómo lo hizo en el contexto de la NDIT? ¿Cómo lo hicieron otros países? y ¿Qué conclusiones podemos extraer de un estudio comparado, para caracterizar nuestro desempeño en este primer cuarto de siglo? Comparar, caracterizar y extraer un balance, pueden ayudarnos a proyectar mejor el camino a seguir.
+
+ 
+### **Alcance del procesamiento y estructura del trabajo**
+
+Nuestro análisis se basará en tres indicadores construidos con material del Banco Mundial (WDI): VAB manufacturero sobre PIB, empleo industrial sobre empleo total y exportaciones manufactureras sobre exportaciones totales. El mismo se complementará y enriquecerá con una revisión conceptual de la bibliografía sobre el tema y reflexiones propias. Compararemos seis países, cada uno representante de algún tipo de relación con la industria en la NDIT. India y Rusia serán también clasificados dentro de la tipología de nuestro marco teórico. Consideramos relevante hacer este esfuerzo para compartir una aproximación, pues la relevancia de ambos países lo amerita, pero no se estudiarán en profundidad por una cuestión de extensión y claridad argumentativa. El trabajo se estructura en las siguientes secciones: marco teórico, metodología, resultados macroeconómicos y, finalmente, las conclusiones. 
+
+
+
+### **Marco teórico**
+
+#### **Definiciones y tipos de desindustrialización**
+
+En un sentido estricto, entendemos por desindustrialización la caída de la participación del empleo industrial en el empleo total. En un sentido amplio, empero, debemos incluir la contracción de la producción, el valor agregado o el número de establecimientos industriales (Herrera Bartis, 2021; Tregenna, 2009). La tipología canónica (Rowthorn y Wells, 1987) distingue tres caminos. La **desindustrialización por madurez**, que resulta endógenamente del desarrollo de una economía. En ella, la caída del empleo industrial relativo acompaña el aumento del PBI industrial per cápita, es decir, se trata de una reducción relativa del empleo secundario por aumento de la productividad. El caso prototípico es EE. UU. Luego tenemos aquella que sucede por **reespecialización sectorial**. Aquí, la caída del empleo industrial acompaña un giro de la economía general hacia los servicios dinámicos. El caso prototípico de esta reespecialización es el Reino Unido. Finalmente, la **desindustrialización fallida** —caso argentino—, donde la caída del empleo industrial acompaña la del PIB sectorial y el PIB agregado, amén de la pérdida cuantitativa de establecimientos. Hablamos de una desindustrialización negativa.
+
+#### **La reorganización global de la producción y la NDIT**
+
+La NDIT implica un cambio fundamental, de alcance histórico en la división del trabajo mundial. Sus aspectos geográfico-productivos sufren un cambio cualitativo. Mientras que hasta la segunda posguerra los roles de los países desarrollados y subdesarrollados eran nítidos (productores de manufacturas y materias primas, respectivamente), en la segunda mitad del siglo XX la inversión comienza a estar dominada por una tendencia al offshoring (deslocalización). De este modo, una serie de países subdesarrollados comienzan a convertirse en sedes de industrias de transformación competitivas en el mercado mundial (Fröbel, Heinrichs y Kreye, 1980). La desindustrialización —contrariamente a lo que dicen los autores y la bibliografía mecanicista— no es un proceso natural, sino precisamente, resultado del offshoring incentivado por la reducción de costos laborales. El caso chino es paradigmático, Graña y Terranova (2022) calculan que el Costo Laboral Unitario (CLU) de China se ubica en torno a 0,27 en términos relativos (contra 0,64 de paises desarrollados y 0,40 de LATAM), lo que refleja su extraordinaria ventaja competitiva en costos laborales. Si bien el CLU es un indicador relevante, no se replica en éste trabajo por falta de series completas en el BM.
+
+#### **Transformaciones del capitalismo contemporáneo**
+
+Según Piva (2024), hay tres procesos que dominan el capitalismo contemporáneo: la internacionalización productiva, la automatización y la financiarización. La primera extiende y profundiza la subsunción real de la producción mundial, generando un desarrollo desigual y combinado. El proceso de automatización torna los procesos productivos más heterogéneos, lo que polariza las calificaciones laborales y, por ende, las sobrepoblaciones relativas. La financiarización, en tanto, subordina la lógica productiva al corto plazo (en función de la dinámica de los mercados financieros), lo que reduce la tasa de acumulación y aumenta la vulnerabilidad sistémica. Estos tres procesos constituyen el marco general de las trayectorias de desindustrialización estudiadas. Solo en este contexto se explica, según el autor, la relocalización de la manufactura hacia Asia Oriental, mientras que la automatización explica la reducción del ingreso per cápita que entraña la desindustrialización de un país. Finalmente, la financiarización del capital subordina la producción como modo de valorización principal, siendo Argentina un caso paradigmático y problemático en este sentido. 
+
+#### **El caso argentino: reestructuración y valorización financiera**
+
+Es Basualdo (2006) quien sostiene que la interrupción de la ISI en 1976, impuesta por un nuevo bloque dominante, implicó un cambio radical en el eje de acumulación, ahora focalizado en la valorización financiera. Al igual que Piva, sostiene que no puede comprenderse el capitalismo contemporáneo —ni mucho menos la desindustrialización argentina— como un mero fenómeno económico, sino más bien como una síntesis de elementos económicos, políticos y sociales. En esta línea, Bonals y Monteforte (2014) analizan las consecuencias de la NDIT en Argentina. Registran que, insertos en este proceso del capitalismo global, la automatización degrada la subjetividad productiva del obrero argentino y que, al simplificar in extremis las tareas, el capital puede prescindir de la calificación del trabajador, lo que permite la deslocalización. La NDIT implica así una fuerte caída del empleo industrial y del VAB manufacturero, pero también del salario real, un conjunto de situaciones que conducen a una mayor precariedad laboral y a una creciente degradación social de la población. 
+
+
+### **Metodología**
+
+#### **Tipología de trayectorias según país**
+
+A continuación trataremos de hacer una tipología de las trayectorias de los paises seleccionados para la muestra. El procedimiento será el siguiente. Por un lado, retomaremos la clasificación canónica de Rowthorn y Wells (1987), continuada por Herrera Bartis (2021). Por el otro, trataremos de fundamentar que existen casos donde la desindustrialización se encuentra -al menos hasta la fecha- relativamente contenida. Encontramos en el caso alemán un ejemplo del tipo, y consideramos relevante observar sus condiciones y los desafíos económicos, políticos y sociales de esta situación.  Llamemos "A" a las tipologías fundadas en bibliografía externa y consolidadas en este estudio con los tres indicadores propios, y "B" a aquellas que solo se fundamentan con bibliografía externa. Nuestro mapa de trayectorias queda planteado del siguiente modo: 
+
+
+<br>
+
+```{r, echo=FALSE}
+library(knitr)
+library(kableExtra)
+
+# Creamos el dataframe
+tabla_paises <- data.frame(
+  País = c("Argentina", "Brasil", "China", "Estados Unidos", "Alemania", "Reino Unido", "India", "Rusia"),
+  Tipo = c("Desindustrialización fallida/prematura", 
+          "Desindustrialización prematura con matices", 
+          "Industrialización exitosa en la NDIT", 
+          "Desindustrialización por madurez", 
+          "Desindustrialización contenida con superávit industrial estructural", 
+          "Desindustrialización por re-especialización sectorial", 
+          "Desindustrialización prematura con re-especialización parcial en servicios", 
+          "Desindustrialización negativa con posible morigeración post-2022"),
+  Fundamento = c("A", "A", "A", "A", "A", "A", "B", "B")
+)
+
+# Generamos la tabla centrada
+kbl(tabla_paises, align = c("l", "l", "c")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    position = "center",  # Esto centra el cuadro en la página
+    full_width = FALSE   # Esto evita que la tabla se estire al 100%
+  )
+```
+
+<br>
+
+
+
+Los seis países del grupo A se estudian con datos propios construidos a partir del BM y con bibliografía específica. India y Rusia, del grupo B, se clasifican dentro de la tipología pero no se estudian en profundidad: su caracterización se basa exclusivamente en bibliografía y fuentes secundarias, como aclaramos anteriormente. 
+
+#### **Aspectos técnicos del enfoque**
+
+La base de datos principal, de la que extraemos tres indicadores, es el Banco Mundial, World Development Indicators (WDI). Los indicadores son los siguientes:
+
+- VAB manufacturero como porcentaje del PIB 
+- Empleo industrial como porcentaje del empleo total 
+- Exportaciones manufactureras como porcentaje de las exportaciones totales 
+
+(NV.IND.MANF.ZS, SL.IND.EMPL.ZS, TX.VAL.MANF.ZS.UN, respectivamente)
+
+El rango de cobertura temporal es 2000-2024. Debimos excluir, lamentablemente, el año 2025 porque el indicador de exportaciones manufactureras no presenta datos completos para todos los países trabajados. Asimismo, como antes señalamos, el cálculo del Costo Laboral Unitario (CLU) no se incluye en el análisis cuantitativo. Esto se debe a que el BM no provee series de salario manufacturero para todos los países del estudio y porque la serie de VAB manufacturero a precios constantes (NV.IND.MANF.KD) no tiene cobertura completa para China. De cualquier forma, consideramos que los indicadores abordados bastan para fundamentar las ideas centrales del trabajo, por lo cual ninguno de estos recortes tiene un impacto mayor en el espíritu de la investigación. 
+
+
+
+<!-- Descarga y procesamiento de datos -->
+
+
+``` {r descarga_datos_2000-2024, include = FALSE}
+paises <- c("AR", "BR", "CN", "US", "DE", "GB")
+
+#VAB mand const, incompleto →→→→ cambiar estrategia
+indicadores <- c(
+  vab_manuf    = "NV.IND.MANF.ZS",
+  vab_manuf_kd = "NV.IND.MANF.KD",
+  empleo_ind   = "SL.IND.EMPL.ZS",
+  exp_manuf    = "TX.VAL.MANF.ZS.UN",
+  poblacion    = "SP.POP.TOTL"
+)
+
+datos_crudos <- WDI(
+  country   = paises,
+  indicator = indicadores,
+  start     = 2000,
+  end       = 2024,
+  extra     = TRUE
+)
+
+datos_limpios <- datos_crudos %>%
+  select(iso2c, country, year, vab_manuf, vab_manuf_kd,
+         empleo_ind, exp_manuf, poblacion) %>%
+  rename(
+    codigo_pais     = iso2c,
+    pais            = country,
+    anio            = year,
+    vab_manuf_pib   = vab_manuf,
+    vab_manuf_const = vab_manuf_kd,
+    empleo_ind_pct  = empleo_ind,
+    exp_manuf_pct   = exp_manuf,
+    poblacion       = poblacion
+  ) %>%
+  filter(codigo_pais %in% paises) %>%
+  arrange(codigo_pais, anio) %>%
+  mutate(
+    pais = case_when(
+      codigo_pais == "AR" ~ "Argentina",
+      codigo_pais == "BR" ~ "Brasil",
+      codigo_pais == "CN" ~ "China",
+      codigo_pais == "US" ~ "Estados Unidos",
+      codigo_pais == "DE" ~ "Alemania",
+      codigo_pais == "GB" ~ "Reino Unido",
+      TRUE ~ pais
+    )
+  )
+
+datos_con_tasas <- datos_limpios %>%
+  group_by(pais) %>%
+  arrange(anio) %>%
+  mutate(
+    var_vab    = (vab_manuf_pib / lag(vab_manuf_pib) - 1) * 100,
+    var_empleo = (empleo_ind_pct / lag(empleo_ind_pct) - 1) * 100,
+    var_exp    = (exp_manuf_pct / lag(exp_manuf_pct) - 1) * 100
+  ) %>%
+  ungroup()
+
+write_csv(datos_con_tasas, "datos/wdi_desindustrializacion_2000_2024.csv")
+```
+
+### **Resultados macroeconómicos**
+
+<br>
+
+#### **VAB manufacturero sobre PIB**
+
+<br>
+El primer gráfico muestra la evolución del VAB manufacturero como porcentaje del PIB en los seis países entre 2000 y 2024. Cabe hacer una salvedad: el WDI no informa las series de China antes de 2004 ni la de Estados Unidos después de 2021.
+
+Si contrastamos los puntos de partida con los de llegada, detectamos con facilidad que la caída es un fenómeno generalizado, aunque con particularidades locales. China parte del 31% en 2004 para descender al 25% en el año final de la serie. El punto de partida de China es elevadísimo si lo comparamos con el siguiente actor en volumen, Alemania, que tiende a permanecer en torno al 20% para empezar a caer en 2018 y alcanzar los 18 puntos porcentuales en 2024, demostrando una voluntariosa resistencia en torno a los 15-17 puntos en sus peores momentos. Siguiendo con los países industrializados, vemos los casos norteamericano e inglés, cuyos recorridos tienen pocos sobresaltos y una pendiente decreciente discreta pero constante que avanza de modo casi paralelo, siendo los puntos de partida 15% y 13% y los de llegada 10% y 8%, respectivamente. Finalmente, las trayectorias de Argentina y Brasil tienen un comportamiento similar por dos razones: a) del principio al final de la serie, logran mantener las posiciones de partida y relativas en torno al 15-16% y 13-12%, respectivamente; y b) el recorrido general respeta un patrón probablemente ligado al impacto de las commodities y de los saltos del tipo de cambio sobre los precios nominales.
+
+De este indicador no podemos concluir que el deterioro argentino y brasilero sea más profundo que el de los países centrales. De hecho, en términos relativos, el VAB cae un 40% en el Reino Unido, un 30% en EE. UU. y un 11% en Alemania, mientras que Argentina, Brasil y China se encuentran entre los 7 y 8 puntos porcentuales de variación. La hipótesis de la desindustrialización prematura, sin embargo, encuentra apoyo en la periodización: si Argentina pierde un tercio de su VAB entre 2004 y 2017 (18,9% a 12,8%) y Brasil una proporción equivalente entre 2004 y 2019 (15,1% a 10,3%), dado que se trata de economías con un PIB per cápita muy inferior al de las economías más productivas, podemos recoger aquí el criterio de prematuridad de Palma (2005) y Rodrik (2016). La recuperación posterior y la dinámica subsecuente ameritan un estudio más detallado de la naturaleza e implicancias de estos ciclos.
+
+Ahora bien, visto que el indicador extraído del BM es un cociente a precios corrientes, combina efectos cantidad y precio. De este modo, la explicación de la caída de la participación de los países industrializados debe atribuirse más a un efecto precio por el aumento de productividad en la manufactura que a una pérdida de verdadero volumen físico del sector (Rowthorn y Ramaswamy, 1997). Esto explica la sobredimensión de los descensos del Reino Unido y Estados Unidos. En Argentina, por otro lado, el pico de 2003 coincide con la devaluación de 2002 y no necesariamente refleja una expansión física. En China, el índice de precios al productor permaneció negativo durante 54 meses hasta septiembre de 2016, lo que coincide con el descenso del VAB relativo entre 2012 y 2016. En Alemania, finalmente, la caída de 2009 (20% a 17%, con recuperación a 19,5% en 2010) coincide con la contracción industrial de comienzos de ese año y se revierte con rapidez, lo que sugiere un efecto cantidad y no un desplazamiento persistente de precios relativos. Sintetizando, el VAB manufacturero cae en los seis países, con mayor intensidad en los centrales, donde el efecto precio amplificó la caída nominal. En Argentina y Brasil registramos ciclos, no una caída constante y lineal. No podemos extraer conclusiones completas sobre la trayectoria industrial de estos dos países basándonos únicamente en este indicador.
+
+
+<br>
+
+``` {r grafico_1_VAB, echo = FALSE}
+colores_pais <- c(
+  "Argentina"      = "#1f77b4",
+  "Brasil"         = "#2ca02c",
+  "China"          = "#d62728",
+  "Estados Unidos" = "#9467bd",
+  "Alemania"       = "#8c564b",
+  "Reino Unido"    = "#e377c2"
+)
+
+tema_personalizado <- theme_minimal(base_size = 12) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 14),
+    plot.subtitle    = element_text(size = 11, color = "gray30"),
+    plot.caption     = element_text(size = 9, color = "gray50"),
+    legend.position  = "bottom",
+    legend.title     = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+g1 <- datos_con_tasas %>%
+  filter(!is.na(vab_manuf_pib)) %>%
+  ggplot(aes(x = anio, y = vab_manuf_pib, color = pais)) +
+  geom_line(linewidth = 1.1) +
+  scale_color_manual(values = colores_pais) +
+  scale_x_continuous(breaks = seq(2000, 2024, 4)) +
+  scale_y_continuous(labels = label_number(suffix = "%")) +
+  labs(
+    title    = "VAB manufacturero como porcentaje del PIB",
+    subtitle = "Argentina, Brasil, China, Estados Unidos, Alemania y Reino Unido, 2000-2024",
+    x        = "Año",
+    y        = "Porcentaje del PIB",
+    caption  = "Fuente: Banco Mundial, World Development Indicators (NV.IND.MANF.ZS)"
+  ) +
+  tema_personalizado
+
+print(g1)
+ggsave("graficos/vab_manuf_pib.png", g1, width = 10, height = 6, units = "in", dpi = 300)
+```
+
+<br>
+
+#### **Empleo industrial sobre empleo total**
+
+<br>
+
+El segundo gráfico muestra la evolución del empleo industrial como porcentaje del empleo total. Cabe aclarar, que el indicador  no se limita a la manufactura, sino que incluye también minería, construcción y servicios públicos, por lo que es una aproximación, bastante amplia, a la estructura ocupacional industrial (World Bank, 2026a).
+
+Aquí las trayectorias divergen con claridad. China es la única serie ascendente pasando de cerca de 25% (2000) a 32% (2024) con un mínimo en 2002, cercano al 22%, superando en 2010 a Alemania en este campo, en lo que casi sin dudas, marca un parte aguas en la NDIT. Reino unido se desplaza de 25% a 16% y alemania de 34% a 26% en el período, ambos con caidas cercanas a los 9 puntos. El descenso Americano se centra en 2008-2010 y consta de casi 3% (del 23% al 19% aproximadamente), con valores similares a los de brasil (de 23% a 20%). En este caso, el período de caida se concentra en 2014-2015. Argentina tiene, otra vez, un comportamiento singular. Acompasada con el crecimiento chino, logra sostener crecimiento del empleo industrial hasta 2014, para ceder a la tendencia del resto de los paises de la muestra, y volver al punto original. Es decir, en 2000 y 2024 el empleo total industrial argentino se situó en torno a los 22 puntos porcentuales, ahora encima de E.E.U.U y Reino Unido.
+
+Interesa rescatar, que este indicador no está expuesto a los efectos de valoracion de precios corrientes, por lo que es bueno para extraer información fisica. En China, es claro que el aumento del empleo industrial se relaciona con su proceso de industrialización, tay y como lo caracterizamos en las tipologías mas arriba. Quizas haya que restar la construcción al índice, pero aún así, entre lo conquistado y lo no perdido, dificilmente pueda alterarse la tendencia de ese indicador sobre la manufactura por una sola rama. Cabe destacar, en este campo tambien, los intentos de la economia alemana de frenar la tendencia, pues mientras la tendencia es acentuada hasta el 2011, en los diez años siguientes, se conquista amesetar la participacion del empleo industrial sobre el total. Es posible (aunque habría que probarlo) que en la caída post 2021, la pandemia primero y el corte del Nord-Stream puedan estar cumpliendo un papel importante. En ese caso, no está clara la tendencia que, a priori, pareciera poder corregirse en cualquier sentido. Finalmente la caída del Reino Unido es compatible con la re-especialización y la de Estados Unidos con la madurez, aunque su concentración en la crisis de 2008 invita a matizar el carácter estrictamente endógeno del proceso. Podríamos concluir que, mientras China muestra una clara expansión y Reino Unido inapelable contracción, Argentina no exhibe una caída neta del empleo industrial en el período, y a semejanza del caso alemán, el resultado es aún incierto. Esto desplaza el peso de la hipótesis de desindustrialización hacia otros indicadores, como las exportaciones.
+
+
+<br>
+```{r grafico_2_Empleo, echo = FALSE}
+g2 <- datos_con_tasas %>%
+  filter(!is.na(empleo_ind_pct)) %>%
+  ggplot(aes(x = anio, y = empleo_ind_pct, color = pais)) +
+  geom_line(linewidth = 1.1) +
+  scale_color_manual(values = colores_pais) +
+  scale_x_continuous(breaks = seq(2000, 2024, 4)) +
+  scale_y_continuous(labels = label_number(suffix = "%")) +
+  labs(
+    title    = "Empleo industrial como porcentaje del empleo total",
+    subtitle = "Argentina, Brasil, China, Estados Unidos, Alemania y Reino Unido, 2000-2024",
+    x        = "Año",
+    y        = "Porcentaje del empleo total",
+    caption  = "Fuente: Banco Mundial (SL.IND.EMPL.ZS)"
+  ) +
+  tema_personalizado
+
+print(g2)
+ggsave("graficos/empleo_ind.png", g2, width = 10, height = 6, units = "in", dpi = 300)
+
+``` 
+<br>
+
+#### **Exportaciones manufactureras sobre exportaciones totales**
+
+<br>
+El tercer y último gráfico muestra la evolución de las exportaciones manufactureras como porcentaje de las exportaciones de mercancías —no de las totales, pues excluye servicios—. Teniendo en cuenta la clasificación de la CUCI, las manufacturas comprenden sus secciones 5.ª a 8.ª, con exclusión de la división 68, correspondiente a metales no ferrosos (World Bank, 2026b). Aquí las trayectorias son nítidamente divergentes. Por un lado, Alemania y China compiten por el podio de países exportadores de manufacturas, en rangos de entre el 85% y el 95%, donde pareciera consolidarse un spread en favor de China cercano a los 5 puntos porcentuales. Por otra parte, la tendencia de los otros cuatro países es claramente decreciente a lo largo de los últimos veinticinco años. Las cifras son impactantes: partiendo de cerca del 60%, Brasil termina la serie en un 24% (perdió más de la mitad de sus exportaciones manufactureras sobre el total); Argentina se desplaza del 33% al 13% (casi 2/3 de su valor); EE. UU. pasa del 82% al 56% (cerca de 26 puntos porcentuales, es decir, casi 1/3 de su valor) y el Reino Unido desciende del 75% al 60% (1/5 de su valor) con fuerte volatilidad. 
+
+La caída observada en Argentina y Brasil resulta consistente con la reprimarización de sus canastas exportadoras. En términos relativos, la pérdida es prácticamente idéntica (58% en Argentina y 60% en Brasil), aun cuando Argentina parte de un nivel sensiblemente menor y cierra la serie con la participación más baja de la muestra. Hay que tener en cuenta, de todos modos, que las cronologías difieren. Brasil pierde cerca de 20 puntos entre 2005 y 2011 (al pasar del 52% al 32%), se logra estabilizar entre 2011 y 2016 en torno al 32-36% y vuelve a descender entre 2018 y 2020 (32% a 25%). Argentina, por su parte, sostiene una meseta en torno al 30% entre 2005 y 2014, para luego romper esa tendencia a partir de 2015, registrando un marcado descenso entre 2017 y 2018 (27,7% a 19,5%). 
+
+Esta dinámica se adecúa a la caracterización de Brasil como un caso de desindustrialización prematura con rasgos fallidos (Salama, 2012; Oreiro y Feijó, 2010). Por otro lado, el Reino Unido también exhibe una trayectoria descendente, aunque desde niveles elevados, pero dado que el indicador se restringe a mercancías, no capta su reespecialización en servicios, aspecto que requiere fundamentarse en la literatura específica, dada la reconversión de la economía de la isla en el sentido ya mencionado (Herrera Bartis, 2021). China consolida, finalmente, su posición como potencia exportadora manufacturera, confirmando su trayectoria de industrialización exitosa en el marco de la NDIT (Weksler, 2022) y Alemania pareciera pelear con políticas públicas por sostenerse en escena, a la espera de un cambio de viento internacional. Sintetizando. Si bien el VAB y el empleo no logran discriminar con nitidez la trayectoria argentina de la de las economías centrales, las exportaciones sí lo hacen de forma contundente. Es allí donde se concentra la evidencia principal de un retroceso en la posición industrial de Argentina y Brasil, aun con las salvedades de valoración e imputación metodológica señaladas.
+
+Un último aspecto a considerar brevemente. Dos precisiones metodológicas: al medirse el indicador a valores corrientes, caídas como la de Brasil (2005-2011) pueden responder a un efecto precio por el superciclo de las commodities en el denominador antes que a un menor volumen industrial; asimismo, al excluir las manufacturas de origen agropecuario (MOA), se subestima el nivel de procesamiento exportado por Argentina y Brasil, lo que exige complementar el análisis con las clasificaciones MOA/MOI o por contenido tecnológico, pese a que el indicador, clasifica a todos los paises con el mismo criterio. Por último, el declive atípico de EE. UU. sugiere como conjetura un aumento en el peso relativo de sus exportaciones primarias y de combustibles, es otra línea de trabajo a desarrollar. 
+
+
+
+<br>
+
+``` {r grafico_33_Xports, echo = FALSE}
+g3 <- datos_con_tasas %>%
+  filter(!is.na(exp_manuf_pct)) %>%
+  ggplot(aes(x = anio, y = exp_manuf_pct, color = pais)) +
+  geom_line(linewidth = 1.1) +
+  scale_color_manual(values = colores_pais) +
+  scale_x_continuous(breaks = seq(2000, 2024, 4)) +
+  scale_y_continuous(labels = label_number(suffix = "%")) +
+  labs(
+    title    = "Exportaciones manufactureras como porcentaje del total",
+    subtitle = "Argentina, Brasil, China, Estados Unidos, Alemania y Reino Unido, 2000-2024",
+    x        = "Año",
+    y        = "Porcentaje de las exportaciones totales",
+    caption  = "Fuente: Banco Mundial (TX.VAL.MANF.ZS.UN)"
+  ) +
+  tema_personalizado
+
+print(g3)
+ggsave("graficos/exp_manuf.png", g3, width = 10, height = 6, units = "in", dpi = 300)
+
+```
+
+<br>
+
+### **Conclusiones**
+
+#### **Esa estructura social llamada Argentina**
+
+Atentos a las unidades corrientes de precios del índice y sus salvedades, el análisis muestra claramente, que el VAB manufacturero sobre el PIB cae en los seis países (en China, desde 2004). Vemos tambien que el empleo industrial crece en China pero no cae en Argentina y que, las exportaciones de manufacturas caen en Argentina, Brasil (subdesarrollados) y E.E.U.U. y Reino Unido (capitalismos maduros). Se ve que la NDIT ha sido un marco propicio para la industrialización china, pero en términos de empleo y exportaciones, no del peso relativo del VAB. Los tipos de desindustrialización son distintos y se corresponden, con matices y algunas novedades, con la tipología de Rowthorn y Wells (1987), retomada por Herrera Bartis (2021).
+
+**Argentina** presenta un patrón de desindustrialización fallida y prematura cuya evidencia más nítida se encuentra en las exportaciones manufactureras. El VAB manufacturero sobre PBI describe un ciclo, con pico maximo en 2003 y mínimo en 2017, de recuperación parcial con una caida superflua entre extremos. El empleo industrial, que se expande entre 2002 y 2014 para retroceder desde 2015, vuelve, lo mismo que el VAB a su valor original al finalizar la serie.  Mientras que las exportaciones de manufacturas, se sostienen hasta 2014 en un rango 30-32% para desplomarse a una tercera parte de su valor en 2024 (13,5%). Entre la constancia agónica de los primeros dos índices y la drástica caida de las exportaciones, no resulta necesario consultar un índice de salarios manufactureros, para imaginar su peso en la economia total. El asunto relevante, es que, si consideramos por el momento válidas las tesis mecanicistas, argentina no llegó a construir un puente hacia una desindustrialización exitosa, porque efectivamente, la complejidad, escala e integración de su economia (expresada en PBI PC), como tales, nunca fueron una realidad regional. El deterioro de la manufactura existente, no fué solapado con uan re-estructuración exitosa en servicios transables de alta productividad. Una combinación de factores pueden explicar este doloroso modelo de desindustrialización. En primer lugar, el conflictivo empate hegemónico que privó durante décadas al pais, de un claro modelo de desarrollo de acumulación. Este empate, reflejado en los ciclos “liberales” y “nacionalistas” financiarizaron la politica, quitandola de la planificación a largo plazo (acuerdo de dominación entre las diversas fracciones burguesas) y dejandola siempre a merced de los avatares electorales y de coyuntura (O’Donnel, 1977). El deterioro de las cuentas públicas y desaprovechamiento crónico de los TTI en ciclos favorables. En segundo lugar, el modelo de valorización financiera y renta extraordinaria, permitió a cada una de esas fracciones ganar tiempo a una resolución de la crisis estructural del país: ingreso de capitales y productividad, rezagando relativamente la economia nacional de los valores internacionales de modo ficticio e incrementando, las contradicciones posteriores. En tercer lugar, las transformaciones de la NDIT, con la constitución de núcleos muy dinámicos atrayendo capitales con mano de obra barata (es decir, invitando a los capitales a refluir del pais e incrementar la crisis social). Sintetizando, entonces, en la línea de Graña y Terranova (2022), y como sostienen Basualdo (2006), Monteforte y Bonals (2014) y Piva (2024), no fue un proceso mecánico ni natural, sino el resultado de una reestructuración regresiva que interrumpió el proceso de industrialización sustitutiva y subordinó la economía a la lógica de la valorización financiera. A este proceso estructural se subordina nuestra ventana de estudio 2000-20240
+
+#### **El resto de los actores**
+
+En el centro del mapa productivo global, China opera como la gran anomalía del período: mientras absorbe el offshoring global respaldada en un costo laboral unitario extraordinariamente competitivo (0,27 frente a 0,64 en los países desarrollados) y consolida exportaciones manufactureras cercanas al 90%, desafía las dinámicas tradicionales al descender en su VAB manufacturero relativo (del 32% al 25%) sin perder volumen industrial ni complejidad en su canasta exportadora. Este ascenso chino condiciona de forma asimétrica al resto de las economías, estableciendo una clara jerarquía según la capacidad de respuesta de cada bloque:
+Las economías desarrolladas y sus diversas vías de repliegue: En el vértice superior, Alemania encarna lo que llamamos, una **desindustrialización contenida** donde el sostenimieto de su VAB (18-20%) y sus ventas al exterior (83-87%) mediante contención salarial y manufactura de alta gama, son parte de una apuesta política mucho más amplia de reacomodamiento internacional. Por el contrario, la **desindustrialización por reespecialización** encuentra sus casos emblemáticos en Estados Unidos y el Reino Unido: este último sufre un severo vaciamiento industrial (caídas del 40% en VAB y 9 puntos en empleo) desplazando su eje hacia los servicios financieros, mientras que EE. UU. refleja un vaciamiento por madurez cuya inédita contracción exportadora (del 82% al 56%) expone las secuelas de la crisis de 2008 y la presión de la reprimarización en su canasta comercial, parcialmente compensada con la venta de gas y petróleo a una Europa carente del Nord-Stream.  Mientras prosigan las escaladas internacionales y la puja de bloques por la atracción de capitales, podremos ver grandes novedades en el campo económico politico internacional.
+La periferia latinoamericana y el estrangulamiento externo: En el escalón inferior, Brasil y Argentina ejemplifican los riesgos de una **desindustrialización prematura**, concepto que consideramos, amén de las justas críticas, bastante explicativo. Brasil evidencia un proceso fallido donde la reprimarización y la competencia china desploman su peso industrial (el VAB cae un tercio y sus exportaciones manufactureras se reducen a la mitad). Argentina, por su parte, sintetiza el drama de la trampa de valor agregado: incapaz de igualar la escala de costos china o la frontera tecnológica central, su verdadero deterioro no reside en el VAB o el empleo —donde muestra una resistencia comparable a los países centrales— sino en el colapso de su capacidad exportadora manufacturera, marcando un proceso condicionado por la disputa política, el quiebre de 2001-2003 y la derrota histórica de sus capacidades productivas. Entre otras peculiaridades del caso argentino.
+
+
+### Referencias
+Basualdo, E. M. (2006). La reestructuración de la economía argentina durante las últimas décadas: de la sustitución de importaciones a la valorización financiera. CLACSO.
+
+Bonals, J. S., & Monteforte, E. (2014). La Nueva División Internacional del Trabajo y sus consecuencias en la producción y en el mercado de trabajo argentino. 1970-2013. UNM.
+
+Fröbel, F., Heinrichs, J., & Kreye, O. (1980). La nueva división internacional del trabajo. Siglo XXI.
+
+Graña, J. M., & Terranova, L. (2022). Neither mechanical nor premature: deindustrialization and the New International Division of Labour (1970-2019). Revista de Historia Industrial, 31(86), 11–46.
+
+Herrera Bartis, G. (2021). Tres caminos de desindustrialización. Un análisis estilizado de los casos del Reino Unido, los Estados Unidos y la Argentina. H-industri@, 15(28), 1–33.
+
+O'Donnell, G. (1977). Estado y alianzas en la Argentina, 1956-1976. Centro de Estudios de Estado y Sociedad (CEDES).
+
+Oreiro, J. L., & Feijó, C. A. (2010). Desindustrialização: conceito, causas, efeitos e o caso brasileiro. Revista de Economia Política, 30(4), 617–639.
+
+Palma, J. G. (2005). Cuatro fuentes de "desindustrialización" y un nuevo concepto del "síndrome holandés". En Más allá de las reformas. Alfaomega/CEPAL.
+
+Piva, A. (2024). Las transformaciones en el capitalismo contemporáneo y los desafíos para la acción colectiva de los trabajadores. El caso argentino (1989–2019). Trabajo y Sociedad, (42), 249–275.
+
+Rodrik, D. (2016). Premature deindustrialization. Journal of Economic Growth, 21(1), 1–33.
+
+Rowthorn, R., & Ramaswamy, R. (1997). Deindustrialization: Its causes and implications (Economic Issues No. 10). International Monetary Fund.
+
+Rowthorn, R., & Wells, J. (1987). De-Industrialization and Foreign Trade. Cambridge University Press.
+
+Salama, P. (2012). La desindustrialización prematura de los países emergentes. Problemas del Desarrollo, 43(171), 139–171.
+
+Tregenna, F. (2009). Characterising deindustrialisation. Cambridge Journal of Economics, 33(3), 433–466.
+
+Weksler, G. (2022). La trayectoria de China en la nueva división internacional del trabajo. Revista de Historia Industrial, 31(86).
+
+World Bank. (2026a). Employment in industry (% of total employment) (modeled ILO estimate) [SL.IND.EMPL.ZS]. World Development Indicators. https://data.worldbank.org/indicator/SL.IND.EMPL.ZS
+
+World Bank. (2026b). Manufactures exports (% of merchandise exports) [TX.VAL.MANF.ZS.UN]. World Development Indicators. https://data.worldbank.org/indicator/TX.VAL.MANF.ZS.UN
+
+World Bank. (2026a). Employment in industry (% of total employment) (modeled ILO estimate) [SL.IND.EMPL.ZS]. World Development Indicators. https://data.worldbank.org/indicator/SL.IND.EMPL.ZS
+
+World Bank. (2026b). Manufactures exports (% of merchandise exports) [TX.VAL.MANF.ZS.UN]. World Development Indicators. https://data.worldbank.org/indicator/TX.VAL.MANF.ZS.UN
+
+#### Bibliografia complementaria
+
+Balassa, B. (1965). Trade Liberalisation and "Revealed" Comparative Advantage. The Manchester School, 33(2), 99–123.
+
+Bresser-Pereira, L. C. (2010). Do old republic to Lula's "second developmentalism". Estudos Avançados, 24(68), 33–61.
+
+Buklemishev, O. V. (2024). Factores del keynesianismo militar en la política económica moderna de Rusia. Voprosy Ekonomiki.
+
+Carlin, W., & Soskice, D. (2009). German economic performance: Disentangling the role of supply-side reforms, macroeconomic policy and coordinated economy institutions. Socio-Economic Review, 7(1), 67–99.
+
+Dasgupta, S., & Singh, A. (2006). Manufacturing, services and premature deindustrialization in developing countries: A Kaldorian analysis. UNU-WIDER Research Paper, 2006/49.
+
+Dustmann, C., Fitzenberger, B., Schönberg, U., & Spitz-Oener, A. (2014). From sick man of Europe to economic superstar: Germany's resurgent economy. Journal of Economic Perspectives, 28(1), 167–188.
+
+Felipe, J., Mehta, A., & Rhee, C. (2019). Manufacturing matters… but it's the jobs that count. Cambridge Journal of Economics, 43(1), 139–168.
+
+Lall, S. (2000). The Technological Structure and Performance of Developing Country Manufactured Exports, 1985-98. Oxford Development Studies, 28(3), 337–369.
+
+Laruelle, M. (2025). El impacto socioeconómico del keynesianismo militar ruso. IFRI.
+
+Ledesma, A. (2026). Reconfiguración productiva de la Federación Rusa: del colapso soviético a la economía de guerra (1992-2025) [Preprint]. ResearchGate.
+
+Monteforte, E., & Bonals, J. S. (2014). La Nueva División Internacional del Trabajo y sus consecuencias en la producción y en el mercado de trabajo argentino. 1970-2013 [Ponencia]. I Congreso de Economía Política Internacional, Universidad Nacional de Moreno. https://www.aacademica.org/ezequiel.monteforte/16
+
+Rowthorn, R., & Wells, J. (1987). De-Industrialization and Foreign Trade. Cambridge University Press.
+
+
+
 
