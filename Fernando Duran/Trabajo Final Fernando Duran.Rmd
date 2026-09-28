@@ -83,7 +83,7 @@ Las principales limitaciones son tres. Las series de empleo industrial llegan a 
 
 ```{r empleo-industrial}
 #Cargamos la base de empleo industrial utilizada en el curso
-empleo_industrial <- read_csv("bases/empleo_industrial.csv")
+empleo_industrial <- read_csv("Bases/empleo_industrial.csv")
 
 #Renombramos variables y calculamos la participación del empleo industrial
 empleo_industrial <- empleo_industrial %>%
@@ -143,14 +143,14 @@ El Gráfico 2 aporta el contexto que enfatizan Graña y Terranova. El Este asiá
 
 ```{r va-industrial}
 #Cargamos la base de valor agregado y nos quedamos con Argentina
-valor_agregado <- read_csv("bases/valor_agregado.csv") %>%
+valor_agregado <- read_csv("Bases/valor_agregado.csv") %>%
   rename(País = `Country/Area`, Año = Year, VA_industria = `Manufacturing (ISIC D)`) %>%
   filter(País == "Argentina") %>%
   mutate(VA_industria = as.numeric(VA_industria)) %>%
   select(País, Año, VA_industria)
 
 #Cargamos la base de población y nos quedamos con Argentina
-poblacion <- read_csv("bases/poblacion.csv") %>%
+poblacion <- read_csv("Bases/poblacion.csv") %>%
   rename(País = `Country/Area`, Año = Year, Poblacion = Population) %>%
   filter(País == "Argentina") %>%
   select(País, Año, Poblacion)
@@ -196,7 +196,7 @@ La distancia entre ambas curvas se explica porque el producto industrial creció
 
 ```{r exportaciones-lall}
 #Cargamos la base de exportaciones de Fundar
-expo_mundiales <- read_csv("bases/expo_mundiales.csv")
+expo_mundiales <- read_csv("Bases/expo_mundiales.csv")
 
 #Filtramos los tres países y agrupamos las cinco categorías de Lall en tres bloques
 lall_3_grupos <- expo_mundiales %>%
