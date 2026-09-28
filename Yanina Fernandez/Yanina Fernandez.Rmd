@@ -1,0 +1,97 @@
+---
+title: "Precariedad laboral en Argentina: género, edad y nivele ducativo"
+subtitle: "Trabajo final - Diplomatura en R Aplicada a Datos Económicos"
+author: "Yanina Fernandez"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+
+# 4. Metodología
+
+## 4.1 Datos
+
+Se usan las bases individuales de la EPH del 4° trimestre de 2004, 2014 y 2024.
+
+```{r}
+library(eph)
+
+ind_2004 <- get_microdata(
+  year = 2004,
+  period = 4,
+  type = "individual",
+  destfile = "Bases/eph_ind_2004_t4.rds"
+)
+```
+
+
+```{r}
+
+ind_2014 <- get_microdata(
+  year = 2014,
+  period = 4,
+  type = "individual",
+  destfile = "Bases/eph_ind_2014_t4.rds"
+)
+```
+
+```{r}
+
+ind_2024 <- get_microdata(
+  year = 2024,
+  period = 4,
+  type = "individual",
+  destfile = "Bases/eph_ind_2024_t4.rds"
+)
+```
+
+
+## 4.2 Chequeo de variables y códigos
+
+Antes de construir los indicadores se controló que las variables necesarias
+existan en las tres bases y que sus códigos signifiquen lo mismo en cada año.
+
+Las ocho variables ( ESTADO, CAT_OCUP, PP07H, INTENSI, CH04, CH06, NIVEL_ED Y PONDERA) están presentes en 2004, 2014 y 2024. Los códigos de la condición
+de actividad y del nivel educativo son iguales en los tres años. En la
+categoría ocupacional, el código 9 (sin dato) aparece en 2004 y 2024 pero no
+en 2014, porque ese año no hubo casos de ese tipo.
+
+La única diferencia importante está en el descuento jubilatorio: los códigos
+1 y 2 son comparables, pero los casos sin dato figuran con el código 0 en 2004 y 2014 y como valor faltante en 2024. En los cálculos se dejan afuera esos casos.
+
+
+```{r}
+vars <- c("ESTADO", "CAT_OCUP", "PP07H", "INTENSI", "CH04", "CH06", "NIVEL_ED", "PONDERA")
+
+data.frame(
+  variable = vars,
+  y2004 = vars %in% names(ind_2004),
+  y2014 = vars %in% names(ind_2014),
+  y2024 = vars %in% names(ind_2024)
+)
+```
+
+```{r}
+table(ind_2004$ESTADO, useNA = "ifany")
+table(ind_2014$ESTADO, useNA = "ifany")
+table(ind_2024$ESTADO, useNA = "ifany")
+
+table(ind_2004$CAT_OCUP, useNA = "ifany")
+table(ind_2014$CAT_OCUP, useNA = "ifany")
+table(ind_2024$CAT_OCUP, useNA = "ifany")
+
+table(ind_2004$PP07H, useNA = "ifany")
+table(ind_2014$PP07H, useNA = "ifany")
+table(ind_2024$PP07H, useNA = "ifany")
+
+table(ind_2004$NIVEL_ED, useNA = "ifany")
+table(ind_2014$NIVEL_ED, useNA = "ifany")
+table(ind_2024$NIVEL_ED, useNA = "ifany")
+
+table(ind_2004$PP07H[ind_2004$CAT_OCUP == 3], useNA = "ifany")
+table(ind_2014$PP07H[ind_2014$CAT_OCUP == 3], useNA = "ifany")
+table(ind_2024$PP07H[ind_2024$CAT_OCUP == 3], useNA = "ifany")
+```
+
+## 4.3 Construcción de indicadores
