@@ -1804,7 +1804,7 @@ descriptivos y no permiten identificar relaciones causales.</p>
 <div id="el-alcance-de-la-desindustrialización-empleo-y-producto" class="section level2">
 <h2>4.1. El alcance de la desindustrialización: empleo y producto</h2>
 <pre class="r"><code>#Cargamos la base de empleo industrial utilizada en el curso
-empleo_industrial &lt;- read_csv(&quot;bases/empleo_industrial.csv&quot;)
+empleo_industrial &lt;- read_csv(&quot;Bases/empleo_industrial.csv&quot;)
 
 #Renombramos variables y calculamos la participación del empleo industrial
 empleo_industrial &lt;- empleo_industrial %&gt;%
@@ -1879,14 +1879,14 @@ centrales. Desde esta perspectiva, la desindustrialización argentina no
 es un fenómeno aislado, sino parte de una reorganización global de la
 producción manufacturera.</p>
 <pre class="r"><code>#Cargamos la base de valor agregado y nos quedamos con Argentina
-valor_agregado &lt;- read_csv(&quot;bases/valor_agregado.csv&quot;) %&gt;%
+valor_agregado &lt;- read_csv(&quot;Bases/valor_agregado.csv&quot;) %&gt;%
   rename(País = `Country/Area`, Año = Year, VA_industria = `Manufacturing (ISIC D)`) %&gt;%
   filter(País == &quot;Argentina&quot;) %&gt;%
   mutate(VA_industria = as.numeric(VA_industria)) %&gt;%
   select(País, Año, VA_industria)
 
 #Cargamos la base de población y nos quedamos con Argentina
-poblacion &lt;- read_csv(&quot;bases/poblacion.csv&quot;) %&gt;%
+poblacion &lt;- read_csv(&quot;Bases/poblacion.csv&quot;) %&gt;%
   rename(País = `Country/Area`, Año = Year, Poblacion = Population) %&gt;%
   filter(País == &quot;Argentina&quot;) %&gt;%
   select(País, Año, Poblacion)
@@ -1944,7 +1944,7 @@ mida.</p>
 <div id="la-composición-exportaciones-según-intensidad-tecnológica" class="section level2">
 <h2>4.2. La composición: exportaciones según intensidad tecnológica</h2>
 <pre class="r"><code>#Cargamos la base de exportaciones de Fundar
-expo_mundiales &lt;- read_csv(&quot;bases/expo_mundiales.csv&quot;)
+expo_mundiales &lt;- read_csv(&quot;Bases/expo_mundiales.csv&quot;)
 
 #Filtramos los tres países y agrupamos las cinco categorías de Lall en tres bloques
 lall_3_grupos &lt;- expo_mundiales %&gt;%
