@@ -82,20 +82,9 @@ library(kableExtra)
 
 # 1. Resumen ejecutivo
 
-Este informe analiza la evolución del peso relativo de la actividad
-manufacturera en seis países —Argentina, Brasil, Estados Unidos, Reino
-Unido, China y Corea del Sur— entre 1970 y 2019, a partir de la
-discusión planteada por Graña y Terranova (2022) sobre la
-desindustrialización y la nueva división internacional del trabajo
-(NDIT).
+Este informe analiza la evolución del peso relativo de la actividad manufacturera en seis países —Argentina, Brasil, Estados Unidos, Reino Unido, China y Corea del Sur— entre 1970 y 2019, a partir de la discusión planteada por Graña y Terranova (2022) sobre la desindustrialización y la nueva división internacional del trabajo (NDIT).
 
-La hipótesis de partida sostiene que la participación de la manufactura
-habría disminuido en Argentina, Brasil, Estados Unidos y Reino Unido, y
-aumentado en China y Corea del Sur; como se detalla más adelante, estas trayectorias se verifican con particular consistencia en producción y empleo, mientras que la dimensión exportadora muestra un comportamiento más heterogéneo. Para evaluarla se construyen tres
-indicadores que observan el fenómeno desde dimensiones distintas: el
-valor agregado manufacturero como porcentaje del valor agregado total (VAM/PBI, ver aclaración metodológica en 4.2), el empleo
-manufacturero como porcentaje del empleo total y la participación de las
-exportaciones manufactureras en las exportaciones totales de bienes.
+La hipótesis de partida sostiene que la participación de la manufactura habría disminuido en Argentina, Brasil, Estados Unidos y Reino Unido, y aumentado en China y Corea del Sur; como se detalla más adelante, estas trayectorias se verifican con particular consistencia en producción y empleo, mientras que la dimensión exportadora muestra un comportamiento más heterogéneo. Para evaluarla se construyen tres indicadores que observan el fenómeno desde dimensiones distintas: el valor agregado manufacturero como porcentaje del valor agregado total (VAM/PBI, ver aclaración metodológica en 4.2), el empleo manufacturero como porcentaje del empleo total y la participación de las exportaciones manufactureras en las exportaciones totales de bienes.
 
 Los resultados confirman la hipótesis en la dimensión productiva y
 laboral, pero la matizan de manera significativa en la dimensión
@@ -105,118 +94,56 @@ producción y empleo. Además, el ejercicio muestra que las tres
 dimensiones no se mueven de manera simultánea ni con la misma
 intensidad, lo que respalda el argumento central del texto: *la
 desindustrialización no es un proceso mecánico ni uniforme, sino el
-resultado de una reorganización internacional de la producción en la que
-"unos países desindustrializan a otros"*.
+resultado de una reorganización internacional de la producción en la que "unos países desindustrializan a otros"*.
 
 # 2. Introducción
 
-La pérdida de peso relativo de la industria manufacturera es uno de los
-fenómenos más discutidos de la economía de las últimas cinco décadas. La
-literatura tradicional lo ha interpretado de dos maneras: como un
-resultado *mecánico* del desarrollo de las economías maduras —donde la
-industria cede lugar a los servicios por efecto del ingreso y de la
-productividad— o como un proceso *prematuro* en los países en
-desarrollo, que se desindustrializan antes de haber alcanzado los
-beneficios asociados al desarrollo industrial.
+La pérdida de peso relativo de la industria manufacturera es uno de los fenómenos más discutidos de la economía de las últimas cinco décadas. La literatura tradicional lo ha interpretado de dos maneras: como un resultado *mecánico* del desarrollo de las economías maduras —donde la industria cede lugar a los servicios por efecto del ingreso y de la productividad— o como un proceso *prematuro* en los países en desarrollo, que se desindustrializan antes de haber alcanzado los beneficios asociados al desarrollo industrial.
 
-Graña y Terranova (2022) cuestionan ambas lecturas. Su argumento es que
-la desindustrialización no responde a una trayectoria lineal que todos
-los países recorrerían tarde o temprano, sino a una transformación
-cualitativa del capitalismo a escala global: la emergencia de la NDIT
-desde los años setenta, habilitada por la revolución en las
-telecomunicaciones y la automatización flexible, que permitió
-relocalizar los segmentos más simples de la producción manufacturera
-hacia países de bajos salarios.
+Graña y Terranova (2022) cuestionan ambas lecturas. Su argumento es que la desindustrialización no responde a una trayectoria lineal que todos los países recorrerían tarde o temprano, sino a una transformación cualitativa del capitalismo a escala global: la emergencia de la NDIT desde los años setenta, habilitada por la revolución en las telecomunicaciones y la automatización flexible, que permitió relocalizar los segmentos más simples de la producción manufacturera hacia países de bajos salarios.
 
-Este informe toma esa discusión como marco y la traduce en un ejercicio
-empírico acotado: *una hipótesis, tres indicadores y seis países*. El
-alcance del procesamiento es descriptivo. No se incorporan variables
-causales —salarios, productividad, costo laboral unitario— que son el
-centro del aporte de los autores; el objetivo es más modesto y consiste
-en verificar si las trayectorias divergentes que el texto describe se
-observan de manera consistente en las tres dimensiones en que la
-manufactura puede perder o ganar peso.
+Este informe toma esa discusión como marco y la traduce en un ejercicio empírico acotado: *una hipótesis, tres indicadores y seis países*. El alcance del procesamiento es descriptivo. No se incorporan variables causales —salarios, productividad, costo laboral unitario— que son el centro del aporte de los autores; el objetivo es más modesto y consiste en verificar si las trayectorias divergentes que el texto describe se observan de manera consistente en las tres dimensiones en que la manufactura puede perder o ganar peso.
 
 # 3. Desarrollo conceptual
 
 ## 3.1 Las dos lecturas que el texto discute
 
 La literatura ubica el inicio de la desindustrialización en Estados
-Unidos y Reino Unido hacia mediados de los años sesenta, y una década
-más tarde en el resto de los países desarrollados. Allí el proceso se
-explica por factores "internos": el aumento del ingreso per cápita, que
-reduce la elasticidad de demanda de bienes manufacturados, y el
-crecimiento más veloz de la productividad industrial respecto de los
-servicios, que reduce relativamente el empleo del sector. En esta
-lectura la desindustrialización aparece como el desenlace natural de una
-economía madura.
+Unidos y Reino Unido hacia mediados de los años sesenta, y una década más tarde en el resto de los países desarrollados. Allí el proceso se explica por factores "internos": el aumento del ingreso per cápita, que reduce la elasticidad de demanda de bienes manufacturados, y el crecimiento más veloz de la productividad industrial respecto de los servicios, que reduce relativamente el empleo del sector. En esta lectura la desindustrialización aparece como el desenlace natural de una economía madura.
 
 Para los países en desarrollo, en cambio, se acuñó la categoría de
 desindustrialización "prematura": el proceso comienza a niveles de
 ingreso per cápita sensiblemente menores, lo que implicaría que esas
-economías no alcanzaron los beneficios del desarrollo industrial. Graña
-y Terranova señalan que el propio término delata el supuesto que
-critican, porque "prematuro" es el nombre que se le da a algo que ocurre
-antes del momento correcto: la categoría presupone que existe una
-secuencia predeterminada.
+economías no alcanzaron los beneficios del desarrollo industrial. Graña y Terranova señalan que el propio término delata el supuesto que critican, porque "prematuro" es el nombre que se le da a algo que ocurre antes del momento correcto: la categoría presupone que existe una secuencia predeterminada.
 
-El segundo problema que identifican es que la distinción entre ambos
-tipos descansa en el ingreso per cápita al momento de la
-desindustrialización, una variable que resulta poco precisa. Por un
-lado, ese nivel no era compartido por países clasificados del mismo
-modo; por otro, cae sistemáticamente a lo largo del tiempo, de modo que
-Corea del Sur o Taiwán deberían ser catalogados como casos "prematuros"
-aunque sea difícil sostener que no completaron su desarrollo industrial.
+El segundo problema que identifican es que la distinción entre ambos tipos descansa en el ingreso per cápita al momento de la desindustrialización, una variable que resulta poco precisa. Por un lado, ese nivel no era compartido por países clasificados del mismo
+modo; por otro, cae sistemáticamente a lo largo del tiempo, de modo que Corea del Sur o Taiwán deberían ser catalogados como casos "prematuros" aunque sea difícil sostener que no completaron su desarrollo industrial.
 
 ## 3.2 La nueva división internacional del trabajo
 
-La explicación alternativa que proponen los autores parte de la crisis
-de rentabilidad de fines de los años sesenta. La revolución en las
-telecomunicaciones hizo posible gestionar cadenas globales de valor, y
-la automatización flexible amplió el universo de actividades
-relocalizables al reducir la complejidad de los puestos de trabajo
-manufactureros. Sobre esa base, los países desarrollados comenzaron a
-deslocalizar los segmentos más simples de su producción hacia economías
-de bajos salarios, reteniendo las tareas más complejas vinculadas al
-diseño, el desarrollo y la investigación.
+La explicación alternativa que proponen los autores parte de la crisis de rentabilidad de fines de los años sesenta. La revolución en las telecomunicaciones hizo posible gestionar cadenas globales de valor, y la automatización flexible amplió el universo de actividades relocalizables al reducir la complejidad de los puestos de trabajo manufactureros. Sobre esa base, los países desarrollados comenzaron a deslocalizar los segmentos más simples de su producción hacia economías de bajos salarios, reteniendo las tareas más complejas vinculadas al diseño, el desarrollo y la investigación.
 
-De esa reorganización surgen tres tipos de países: los *desarrollados*,
-que se concentran en las tareas complejas y en la gestión de las cadenas
-globales; los del *Este y Sudeste asiático*, que se convierten en
-exportadores de manufacturas simples; y *el resto*, que permanece como
-exportador de materias primas.
+De esa reorganización surgen tres tipos de países: los *desarrollados*, que se concentran en las tareas complejas y en la gestión de las cadenas globales; los del *Este y Sudeste asiático*, que se convierten en exportadores de manufacturas simples; y *el resto*, que permanece como exportador de materias primas.
 
-La conclusión del texto es doble. Primero, que la desindustrialización
-no tiene nada de natural ni de mecánico: es el resultado de una
-transformación del capitalismo a escala global, y su verdadera
-naturaleza es la de un proceso en el que unos países
-desindustrializaron a otros. Segundo, que si se calculan
-participaciones manufactureras "globales" -agregando el conjunto de la
-muestra- la desindustrialización mundial no aparece con la nitidez que
-sugiere la evidencia nacional tomada país por país.
+La conclusión del texto es doble. Primero, que la desindustrialización no tiene nada de natural ni de mecánico: es el resultado de una transformación del capitalismo a escala global, y su verdadera naturaleza es la de un proceso en el que unos países
+desindustrializaron a otros. Segundo, que si se calculan participaciones manufactureras "globales" -agregando el conjunto de la muestra- la desindustrialización mundial no aparece con la nitidez que sugiere la evidencia nacional tomada país por país.
 
 ## 3.3 Preguntas abiertas que justifican el ejercicio
+
+La pérdida de peso de la manufactura puede observarse desde distintas dimensiones. El valor agregado permite captar su participación relativa en la estructura productiva, mientras que el empleo muestra su importancia como fuente de trabajo. La participación de las manufacturas en las exportaciones agrega una dimensión comercial y permite identificar casos en los que la evolución de la inserción exportadora no coincide con la trayectoria productiva o laboral. Por eso, el ejercicio combina los tres indicadores en lugar de utilizar una única medida de desindustrialización.
 
 De esta discusión se desprenden las preguntas que organizan el
 procesamiento:
 
-1.  ¿Las trayectorias divergentes entre países centrales y
-    latinoamericanos, por un lado, y asiáticos, por otro, se verifican
-    de manera consistente en las tres dimensiones (producción, empleo y
-    comercio exterior)?
-2.  ¿Se mueven las tres dimensiones de manera simultánea, o es posible
-    que un país pierda empleo manufacturero sin perder peso en el PBI, o
-    gane participación exportadora sin ganar empleo industrial?
-3.  ¿Es correcto afirmar que hubo desindustrialización a nivel mundial,
-    o las caídas nacionales conviven con desplazamientos de la
-    producción hacia otras regiones?
+1.  ¿Las trayectorias divergentes entre países centrales y latinoamericanos, por un lado, y asiáticos, por otro, se verifican de manera consistente en las tres dimensiones (producción, empleo y comercio exterior)?
+2.  ¿Se mueven las tres dimensiones de manera simultánea, o es posible  que un país pierda empleo manufacturero sin perder peso en el PBI, o gane participación exportadora sin ganar empleo industrial?
+3.  ¿Es correcto afirmar que hubo desindustrialización a nivel mundial, o las caídas nacionales conviven con desplazamientos de la producción hacia otras regiones?
 
 # 4. Metodología
 
 ## 4.1 Fuentes de información
 
-Se utilizan tres bases de datos, todas contenidas en la carpeta `Bases/`
-del proyecto:
+Se utilizan tres bases de datos, todas contenidas en la carpeta `Bases/` del proyecto:
 
 ```{r tabla-fuentes, echo=FALSE}
 data.frame(
@@ -235,56 +162,24 @@ data.frame(
                 full_width = FALSE, font_size = 13)
 ```
 
-La base de empleo merece un comentario. Se trata de la misma base que la
-cátedra utilizó en clase y que corresponde al conjunto de 24 países
-construido por los autores del texto que aquí se discute, lo que tiene
-una ventaja metodológica importante: las series de empleo manufacturero
-utilizadas son exactamente las que sostienen los gráficos del artículo,
-de modo que los resultados son directamente comparables con los que allí
-se presentan.
-
 ## 4.2 Decisiones metodológicas
 
-**Selección de países.** Se eligieron seis países que representan las
-tres categorías que el propio texto utiliza: desarrollados (Estados
-Unidos y Reino Unido), América Latina (Argentina y Brasil) y Este
-asiático (China y Corea del Sur). La comparación busca contrastar
-trayectorias industriales diferentes dentro de cada grupo, no agotar el
-universo de casos.
+**Selección de países.** Se eligieron seis países que representan las tres categorías que el propio texto utiliza. La comparación busca contrastar trayectorias industriales diferentes dentro de cada grupo, no agotar el universo de casos.
 
-**Definición de manufactura.** Se trabaja con la manufactura en sentido
-estricto (ISIC D) y no con el agregado "Minería, manufactura y servicios
-públicos" (ISIC C-E), que está disponible en la misma base. Esta
-distinción es relevante para Argentina y Brasil, donde la minería y los
-servicios públicos tienen un peso considerable y su inclusión
-sobreestimaría la participación industrial.
+**Definición de manufactura.** Se trabaja con la manufactura en sentido estricto (ISIC D) y no con el agregado "Minería, manufactura y servicios públicos" (ISIC C-E), que está disponible en la misma base. Esta distinción es relevante para Argentina y Brasil, donde la minería y los servicios públicos tienen un peso considerable y su inclusión sobreestimaría la participación industrial.
 
-**Denominador del indicador de empleo.** Se utiliza la ocupación total
-de la economía, de modo que el indicador capta el lugar de la industria
-como fuente de empleo en el conjunto del mercado de trabajo.
+**Denominador del indicador de empleo.** Se utiliza la ocupación total de la economía, de modo que el indicador capta el lugar de la industria como fuente de empleo en el conjunto del mercado de trabajo.
 
-**Aclaración sobre el denominador de VAM/PBI.** El denominador utilizado es *Total Value Added* de la base de Naciones Unidas, no el PBI en sentido estricto (que además suma impuestos netos sobre los productos). Se mantiene la sigla convencional "VAM/PBI" a lo largo del informe por ser la denominación habitual del indicador en la literatura, pero corresponde precisarla como valor agregado manufacturero sobre valor agregado total, una aproximación cercana pero no idéntica al PBI sectorial.
+**Aclaración sobre el denominador de VAM/PBI.** El denominador utilizado es *Total Value Added* de la base de Naciones Unidas, no el PBI en sentido estricto (que además suma impuestos netos sobre los productos). Se mantiene la sigla convencional "VAM/PBI" a lo largo del informe por ser la denominación habitual del indicador en la literatura, pero corresponde precisarla como valor agregado manufacturero sobre valor agregado total. El indicador constituye una aproximación al peso de la manufactura en la estructura productiva, aunque no coincide exactamente con su participación en el PBI.
 
 ## 4.3 Limitaciones de cobertura
 
-El procesamiento no completa la ventana 1970-2019 en todos los casos, y
-estas limitaciones se informan explícitamente porque forman parte del
-análisis:
+El procesamiento no completa la ventana 1970-2019 en todos los casos, y estas limitaciones se informan explícitamente porque forman parte del análisis:
 
-- **China** es el caso más restringido. La serie de empleo comienza en
-  1978, la de exportaciones manufactureras en 1984 y la de valor
-  agregado manufacturero en 2004. El propio artículo reconoce esta
-  limitación y aclara que decidió mostrar sus cálculos desde 1978 por el
-  punto de inicio de los datos de empleo de ese país.
+- **China** es el caso más restringido. La serie de empleo comienza en 1978, la de exportaciones manufactureras en 1984 y la de valor agregado manufacturero en 2004. El propio artículo reconoce esta limitación y aclara que decidió mostrar sus cálculos desde 1978 por el punto de inicio de los datos de empleo de ese país.
 - **Brasil** tiene datos de empleo hasta 2018 y no 2019.
 - El resto de los países cubre el período completo en las tres
   dimensiones.
-
-Por esta razón, las comparaciones entre extremos que se presentan más
-adelante se realizan entre el primer y el último año efectivamente
-disponible para cada país e indicador, y no entre 1970 y 2019 de
-manera uniforme. Interpolar los años faltantes habría dado una falsa
-apariencia de completitud.
 
 # 5. Procesamiento
 
@@ -464,21 +359,9 @@ ggplot(filter(panel, indicador == "VAM / PBI"),
   )
 ```
 
-En la dimensión productiva la hipótesis se verifica. Argentina cae de
-24,7% a 17,0% y Brasil de 21,0% a 12,5%, mientras que Estados Unidos y
-Reino Unido, que partían de niveles bastante más bajos, descienden de
-12,1% a 10,3% y de 14,1% a 9,2% respectivamente. Corea del Sur presenta
-la trayectoria inversa y más pronunciada de toda la muestra: pasa de
-7,3% en 1970 a 28,3% en 2019, y termina el período con una participación
-manufacturera casi tres veces superior a la de Estados Unidos.
+En la dimensión productiva la hipótesis se verifica. Argentina cae de 24,7% a 17,0% y Brasil de 21,0% a 12,5%, mientras que Estados Unidos y Reino Unido, que partían de niveles bastante más bajos, descienden de 12,1% a 10,3% y de 14,1% a 9,2% respectivamente. Corea del Sur presenta la trayectoria inversa y más pronunciada de toda la muestra: pasa de 7,3% en 1970 a 28,3% en 2019, y termina el período con una participación manufacturera casi tres veces superior a la de Estados Unidos.
 
-Un detalle relevante es el punto de partida. Argentina y Brasil arrancan
-el período con participaciones manufactureras más altas que las de
-Estados Unidos y Reino Unido, y terminan por debajo de Corea. Esto es
-consistente con lo que el texto señala sobre lo inadecuado de clasificar
-las trayectorias según el ingreso per cápita: la caída latinoamericana
-no ocurre desde una base industrial insignificante, sino desde niveles
-comparables o superiores a los de los países centrales.
+Un detalle relevante es el punto de partida. Argentina y Brasil arrancan el período con participaciones manufactureras más altas que las de Estados Unidos y Reino Unido, y terminan por debajo de Corea. Esto es consistente con lo que el texto señala sobre lo inadecuado de clasificar las trayectorias según el ingreso per cápita: la caída latinoamericana no ocurre desde una base industrial insignificante, sino desde niveles comparables o superiores a los de los países centrales.
 
 ## 6.2 La dimensión laboral
 
@@ -511,21 +394,9 @@ ggplot(filter(panel, indicador == "Empleo manufacturero"),
   )
 ```
 
-La dimensión laboral es donde el contraste resulta más nítido, y donde
-se aprecia mejor el sentido del desplazamiento. Reino Unido protagoniza
-la caída más pronunciada de la muestra: de 33,1% del empleo total en
-1970 a 7,8% en 2019, más de veinticinco puntos porcentuales. Estados
-Unidos desciende de 22,8% a 8,6%. Argentina cae de 19,6% a 10,5% y
-Brasil se mantiene relativamente estable en torno al 10-11%, aunque
-partiendo de un nivel considerablemente más bajo. En el otro extremo, China asciende de 17,1% en 1978 a 27,6% en 2018 y
-Corea del Sur de 17,7% a 23,2%. La forma de la curva coreana es compatible con la interpretación de Graña y Terranova sobre las sucesivas "oleadas" de industrialización, según la cual el desarrollo industrial de un país eleva progresivamente sus costos laborales, lo que favorece la relocalización posterior de la producción más simple hacia destinos de menores salarios — aunque este informe, al no medir salarios ni productividad, no puede verificar ese mecanismo de manera directa.
+La dimensión laboral es donde el contraste resulta más nítido, y donde se aprecia mejor el sentido del desplazamiento. Reino Unido protagoniza la caída más pronunciada de la muestra: de 33,1% del empleo total en 1970 a 7,8% en 2019, más de veinticinco puntos porcentuales. Estados Unidos desciende de 22,8% a 8,6%. Argentina cae de 19,6% a 10,5% y Brasil se mantiene relativamente estable en torno al 10-11%, aunque partiendo de un nivel considerablemente más bajo. En el otro extremo, China asciende de 17,1% en 1978 a 27,6% en 2018 y Corea del Sur de 17,7% a 23,2%. La forma de la curva coreana es compatible con la interpretación de Graña y Terranova sobre las sucesivas "oleadas" de industrialización, según la cual el desarrollo industrial de un país eleva progresivamente sus costos laborales, lo que favorece la relocalización posterior de la producción más simple hacia destinos de menores salarios — aunque este informe, al no medir salarios ni productividad, no puede verificar ese mecanismo de manera directa.
 
-Presentar este indicador desagregado por grupo de países -la variante
-que se introduce en esta visualización- permite ver que la magnitud de
-la caída es mucho mayor en los países desarrollados que en los
-latinoamericanos, aunque en ambos casos el signo sea el mismo. Argentina
-y Brasil pierden empleo industrial, pero desde un piso que nunca fue el
-de una economía plenamente industrializada.
+Presentar este indicador desagregado por grupo de países permite ver que la magnitud de la caída es mucho mayor en los países desarrollados que en los latinoamericanos, aunque en ambos casos el signo sea el mismo. Argentina y Brasil pierden empleo industrial, pero desde un piso que nunca fue el de una economía plenamente industrializada.
 
 ## 6.3 La dimensión exportadora
 
@@ -556,16 +427,7 @@ ggplot(filter(panel, indicador == "Exportaciones manufactureras"),
   )
 ```
 
-Aquí aparece el resultado que más tensiona la hipótesis original. China
-pasa de 47,7% en 1984 a 92,9% en 2019 y Corea del Sur de 76,5% a 87,4%,
-en línea con lo esperado. Estados Unidos y Reino Unido descienden de
-manera moderada, de 66,7% a 59,1% y de 80,1% a 71,8% respectivamente. Pero Argentina aumenta de 13,9% a 16,6% y Brasil lo hace de 13,2% a
-30,2%. Es decir que los dos países latinoamericanos, que pierden peso
-manufacturero en producción y en empleo, ganan participación
-manufacturera en su estructura exportadora. El contraste de niveles
-también es revelador: aun después de más de un punto de crecimiento por
-década, Argentina exporta manufacturas en una proporción cuatro veces
-menor que la de Estados Unidos y casi seis veces menor que la de China.
+Aquí aparece el resultado que más tensiona la hipótesis original. China pasa de 47,7% en 1984 a 92,9% en 2019 y Corea del Sur de 76,5% a 87,4%, en línea con lo esperado. Estados Unidos y Reino Unido descienden de manera moderada, de 66,7% a 59,1% y de 80,1% a 71,8% respectivamente. Pero Argentina aumenta de 13,9% a 16,6% y Brasil lo hace de 13,2% a 30,2%. Es decir que los dos países latinoamericanos, que pierden peso manufacturero en producción y en empleo, ganan participación manufacturera en su estructura exportadora. El contraste de niveles también es revelador: aun después de más de un punto de crecimiento por década, Argentina exporta manufacturas en una proporción cuatro veces menor que la de Estados Unidos y casi seis veces menor que la de China.
 
 ## 6.4 Síntesis: las tres dimensiones no se mueven juntas
 
@@ -598,7 +460,7 @@ tabla_antes_despues %>%
   pack_rows(index = table(tabla_antes_despues$grupo))
 ```
 
-La tabla anterior permite comparar, de un vistazo, el punto de partida y de llegada de cada país en las tres dimensiones. La hipótesis se cumple de manera completa en producción y empleo: los cuatro países del primer grupo terminan el período por debajo de donde arrancaron, y China y Corea del Sur por encima. La excepción aparece en exportaciones, donde Argentina y Brasil también terminan por encima del valor inicial, a pesar de haber perdido peso manufacturero en las otras dos dimensiones.
+La tabla anterior permite comparar, de un vistazo, el punto de partida y de llegada de cada país en las tres dimensiones. Puede observarse que la hipótesis se cumple de manera completa: la desindustrialización no se manifiesta necesariamente de la misma manera en producción, empleo y exportaciones.
 
 ## 6.5 ¿Qué sugieren estos casos sobre la desindustrialización?
 
@@ -630,56 +492,20 @@ panel %>%
   )
 ```
 
-Los seis casos analizados permiten matizar la idea de una desindustrialización generalizada, aunque no permiten extraer conclusiones sobre la economía mundial en su conjunto: el ejercicio compara un promedio simple de seis países, no una muestra representativa ponderada por tamaño económico. Con esa salvedad, los datos son elocuentes: los países desarrollados y latinoamericanos de la muestra muestran una reducción sostenida del peso del empleo manufacturero, mientras que China y Corea del Sur muestran trayectorias de expansión o mantenimiento durante buena parte del período. Estos resultados son compatibles con la interpretación de Graña y Terranova sobre una reconfiguración geográfica de la actividad manufacturera, aunque el ejercicio no permite por sí mismo establecer la evolución de la manufactura a escala mundial.
+Los países desarrollados y latinoamericanos de la muestra muestran una reducción sostenida del peso del empleo manufacturero, mientras que China y Corea del Sur muestran trayectorias de expansión o mantenimiento durante buena parte del período. Estos resultados son compatibles con la interpretación de Graña y Terranova sobre una reconfiguración geográfica de la actividad manufacturera, aunque el ejercicio no permite por sí mismo establecer la evolución de la manufactura a escala mundial.
 
-En este sentido, lo que explica la
-desindustrialización de unos países es, precisamente, la
-industrialización de otros: no se trata de un proceso mecánico que
-acompaña la madurez de las economías, sino de *la deslocalización de los
-segmentos manufactureros más simples hacia donde el costo laboral
-resulta menor*. Los países centrales retuvieron las tareas complejas, el
-Este asiático absorbió la producción simple en oleadas sucesivas —Japón,
-luego Corea y Taiwán, luego China— y América Latina, con la excepción de
-México, no logró insertarse como plataforma exportadora porque ni sus
-salarios ni su productividad le permitieron competir en esa disputa.
+En este sentido, la desindustrialización de unos países se relaciona con la expansión manufacturera de otros : no se trata de un proceso mecánico que acompaña la madurez de las economías, sino de *la deslocalización de los segmentos manufactureros más simples hacia donde el costo laboral resulta menor*. Los países centrales retuvieron las tareas complejas, el Este asiático absorbió la producción simple en oleadas sucesivas y América Latina no logró insertarse como plataforma exportadora porque ni sus salarios ni su productividad le permitieron competir en esa disputa.
 
 # 7. Conclusiones
 
-El ejercicio permite sostener la hipótesis, aunque con una precisión importante. Durante el período de estudio, y considerando la disponibilidad efectiva de cada indicador para cada país (detallada en la sección 4.3), el peso relativo de la manufactura siguió trayectorias diferentes según el país: cayó en Argentina, Brasil, Estados Unidos y Reino Unido, y aumentó en China y Corea del Sur. Esa divergencia se verifica de manera consistente en la
-dimensión productiva y en la laboral. En la dimensión exportadora, en cambio, la hipótesis se cumple para
-cuatro de los seis países pero se invierte para Argentina y Brasil, que
-aumentan la participación de manufacturas en sus exportaciones mientras
-pierden peso industrial en producción y empleo. Lejos de invalidar el
-argumento, este desacople lo refuerza: muestra que las tres dimensiones
-responden a lógicas distintas y que una lectura basada en un único
-indicador —como suele hacer la literatura que se apoya exclusivamente en
-el empleo— puede ocultar transformaciones relevantes de la estructura
-productiva.
+El ejercicio permite sostener la hipótesis, aunque con una precisión importante. Durante el período de estudio, y considerando la disponibilidad efectiva de cada indicador para cada país (detallada en la sección 4.3), el peso relativo de la manufactura siguió trayectorias diferentes según el país: cayó en Argentina, Brasil, Estados Unidos y Reino Unido, y aumentó en China y Corea del Sur. Esa divergencia se verifica de manera consistente en la dimensión productiva y en la laboral. En la dimensión exportadora, en cambio, la hipótesis se cumple para cuatro de los seis países pero se invierte para Argentina y Brasil, que aumentan la participación de manufacturas en sus exportaciones mientras pierden peso industrial en producción y empleo. Lejos de invalidar el argumento, este desacople lo refuerza: muestra que las tres dimensiones responden a lógicas distintas y que una lectura basada en un único indicador puede ocultar transformaciones relevantes de la estructura productiva.
 
-Respecto de la pregunta sobre la desindustrialización mundial, los datos
-indican que no es correcto afirmar que la manufactura perdió peso a
-escala global. Lo que ocurrió fue un desplazamiento del centro
-manufacturero del mundo desde las economías desarrolladas hacia el Este
-y Sudeste asiático, en el marco de la *nueva división internacional del
-trabajo*. La desindustrialización nacional y la industrialización
-asiática son dos caras del mismo proceso. Las limitaciones del ejercicio son las propias de su alcance. Al no
-incorporar salarios, productividad ni costo laboral unitario, el trabajo
-describe las trayectorias pero no identifica sus determinantes, que son
-el aporte central del texto discutido. Asimismo, la cobertura incompleta
-de China en las tres series —especialmente en valor agregado, disponible
-solo desde 2004— impide observar su despegue industrial desde el inicio
-del período. Ampliar la muestra de países e incorporar las variables de
-costos constituyen las líneas naturales de continuación de este
-análisis.
+Respecto de la pregunta sobre la desindustrialización mundial, los datos indican que no es correcto afirmar que la manufactura perdió peso a escala global. Lo que ocurrió fue un desplazamiento del centro manufacturero del mundo desde las economías desarrolladas hacia el Este y Sudeste asiático, en el marco de la *nueva división internacional del trabajo*. La desindustrialización nacional y la industrialización asiática son dos caras del mismo proceso. 
 
 # 8. Referencias
 
 - Graña, J. M. y Terranova, L. (2022). "Neither mechanical nor
-  premature: deindustrialization and the New International Division of
-  Labour (1970-2019)". *Revista de Historia Industrial – Industrial
+  premature: deindustrialization and the New International Division of Labour (1970-2019)". *Revista de Historia Industrial – Industrial
   History Review*, XXXI(86), 11-46.
-- Naciones Unidas. *National Accounts – Value added by economic
-  activity* (dólares constantes de 2020).
-- Banco Mundial. *World Development Indicators*, indicador
-  TX.VAL.MANF.ZS.UN ("Manufactures exports, % of merchandise exports"),
-  elaborado a partir de datos de UNCTAD.
+- Naciones Unidas. *National Accounts – Value added by economic activity* (dólares constantes de 2020).
+- Banco Mundial. *World Development Indicators*, indicador TX.VAL.MANF.ZS.UN ("Manufactures exports, % of merchandise exports"), elaborado a partir de datos de UNCTAD.
