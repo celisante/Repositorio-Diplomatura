@@ -5,26 +5,35 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+library(eph)
+
+ind_2004 <- get_microdata(
+  year = 2004,
+  period = 4,
+  type = "individual",
+  destfile = "Bases/eph_ind_2004_t4.rds"
+)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+ind_2014 <- get_microdata(
+  year = 2014,
+  period = 4,
+  type = "individual",
+  destfile = "Bases/eph_ind_2014_t4.rds"
+)
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+ind_2024 <- get_microdata(
+  year = 2024,
+  period = 4,
+  type = "individual",
+  destfile = "Bases/eph_ind_2024_t4.rds"
+)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
