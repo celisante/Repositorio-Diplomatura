@@ -1,30 +1,332 @@
 ---
-title: "Trabajo final"
+title: "Trabajo Final"
 author: "Guillermo Barhoum"
-date: "2026-09-15"
+date: "2026-09-27"
 output: html_document
+theme: readable
+    fontsize: 20
+    css: "estilos.css"
+    code_folding: hide
+    self_contained: true
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    fig-width: 14
+    fig-height: 12
+    fig-format: retina
+    warning: false
+    message: false
+execute:
+  freeze: auto
+
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+#La Informalidad laboral en Argentina y su problematica regional
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+rm(list = ls())
+
+options(scipen = 999)
+
+#########################################################
+### Cargamos las librerias
+########################################################
+
+library(tidyverse)
+library(eph)
+library(dplyr)
+library(ggplot2)
+library(paletteer)
+library(plotly)
+library(scales)
+library(kableExtra)
 ```
+
+
+```{r,message=FALSE, warning=FALSE, include=FALSE}
+
+#########################################################
+### Variables a descargar
+########################################################
+
+mis_variables <- c("CODUSU","ANO4","TRIMESTRE", "NRO_HOGAR", "COMPONENTE",                          "SECTOR", "CH03", 
+                   "CH04", "CH06", "CH07", "CH10", "CH12", "CH13", "CH14",
+                   "PP3E_TOT", "PP03G", "PP03H", "NIVEL_ED", "REGION", 
+                   "AGLOMERADO", "PONDERA", "PONDIH", "ESTADO", "CAT_OCUP", 
+                   "PP04B_COD", "PP04A", "PP04B1", "PP04C", "PP04C99", "PP07H", 
+                   "P21", "PONDIIO", "ITF", "EMPLEO", "PP03J", "INTENSI")
+
+#########################################################
+### Descarga manual de (T4 2024+Todo 2025)
+########################################################
+
+base_24_4 <- get_microdata(year = 2024, trimester = 4, vars = mis_variables)
+base_25_1 <- get_microdata(year = 2025, trimester = 1, vars = mis_variables)
+base_25_2 <- get_microdata(year = 2025, trimester = 2, vars = mis_variables)
+base_25_3 <- get_microdata(year = 2025, trimester = 3, vars = mis_variables)
+base_25_4 <- get_microdata(year = 2025, trimester = 4, vars = mis_variables)
+
+
+```
+
+
+```{r, message=FALSE, warning=FALSE, include=FALSE }
+
+#########################################################
+### Identificamos los Informales
+########################################################
+
+base_24_4 <- base_24_4 %>%
+  mutate(
+    informal = case_when(
+      EMPLEO == 2 ~ 1,          # Informal
+      EMPLEO == 1 ~ 0,          # Formal
+      TRUE ~ NA_real_           # Casos ignorados (EMPLEO == 9)
+      ))
+
+base_25_1 <- base_25_1 %>%
+  mutate(
+    informal = case_when(
+      EMPLEO == 2 ~ 1,          # Informal
+      EMPLEO == 1 ~ 0,          # Formal
+      TRUE ~ NA_real_           # Casos ignorados (EMPLEO == 9)
+      ))
+
+base_25_2 <- base_25_2 %>%
+  mutate(
+    informal = case_when(
+      EMPLEO == 2 ~ 1,          # Informal
+      EMPLEO == 1 ~ 0,          # Formal
+      TRUE ~ NA_real_           # Casos ignorados (EMPLEO == 9)
+      ))
+
+base_25_3 <- base_25_3 %>%
+  mutate(
+    informal = case_when(
+      EMPLEO == 2 ~ 1,          # Informal
+      EMPLEO == 1 ~ 0,          # Formal
+      TRUE ~ NA_real_           # Casos ignorados (EMPLEO == 9)
+      ))
+
+base_25_4 <- base_25_4 %>%
+  mutate(
+    informal = case_when(
+      EMPLEO == 2 ~ 1,          # Informal
+      EMPLEO == 1 ~ 0,          # Formal
+      TRUE ~ NA_real_           # Casos ignorados (EMPLEO == 9)
+      ))
+
+
+```
+
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+
+#########################################################
+### Situacion Ultimo Trimestre 2025
+########################################################
+
+base_25_4_actualidad <- base_25_4 %>%
+  mutate(Sexo = as.character(CH04),
+         Sexo = case_when(Sexo=="1" ~ "Varones",
+                          Sexo=="2" ~ "Mujeres"),
+         Region = as.character(REGION),
+         Region = case_when(REGION=="1" ~ "Gran Buenos Aires",
+                            REGION=="40" ~ "NOA",
+                            REGION=="41" ~ "NEA",
+                            REGION=="42" ~ "Cuyo",
+                            REGION=="43" ~ "Pampeana",
+                            REGION=="44" ~ "Patagonia"),
+         Educacion = case_when(
+      NIVEL_ED %in% c(1, 2, 3) ~ "Bajo",  # Hasta Secundaria Incompleta
+      NIVEL_ED %in% c(4, 5)    ~ "Medio", # Secundaria Comp. / Superior Inc.
+      NIVEL_ED %in% c(6, 7)    ~ "Alto",  # Superior / Universitario Comp.
+      TRUE ~ NA_character_           
+      ))
+
+
+
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+tabla1.1 <- base_25_4_actualidad %>% 
+  filter(CH06 >= 18 & CH06 < 65) %>% 
+  group_by(Sexo, REGION, Educacion) %>% 
+  summarise(
+    Poblacion                        = sum(PONDERA),
+    Ocupados                         = sum(PONDERA[ESTADO == 1]),
+    Desocupados                      = sum(PONDERA[ESTADO == 2]),
+    PEA                              = Ocupados + Desocupados,
+    Ocupados_demand                  = sum(PONDERA[ESTADO == 1 & PP03J == 1], na.rm = TRUE),
+    Suboc_demandante                 = sum(PONDERA[ESTADO == 1 & INTENSI == 1 & PP03J == 1], na.rm = TRUE),
+    Suboc_no_demand                  = sum(PONDERA[ESTADO == 1 & INTENSI == 1 & PP03J %in% c(2, 9)], na.rm = TRUE),
+    Subocupados                      = Suboc_demandante + Suboc_no_demand,
+    Informales                       = sum(PONDERA[ESTADO == 1 & informal == 1], na.rm = TRUE),
+    'Tasa Actividad'                 = round(PEA / Poblacion, 3),
+    'Tasa Empleo'                    = round(Ocupados / Poblacion, 3),
+    'Tasa Desocupación'              = round(Desocupados / PEA, 3),
+    'Tasa Ocupados Demandantes'      = round(Ocupados_demand / PEA, 3),
+    'Tasa Subocupación'              = round(Subocupados / PEA, 3),
+    'Tasa Subocupación demandante'   = round(Suboc_demandante / PEA, 3),
+    'Tasa Subocupación no demandante'= round(Suboc_no_demand / PEA, 3),
+    'Tasa de Informalidad'           = round(Informales / Ocupados, 3)
+  )
+```
+
+
+
+
+
+
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+#########################################################
+### Armamos pares (transicion de t a t+1)
+########################################################
+
+# Transición 1(Final 2024 -> Inicio 2025)
+panel_1 <- inner_join(base_24_4_inf, base_25_1_inf, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+# Transición 2(Primer semestre 2025)
+panel_2 <- inner_join(base_25_1_inf, base_25_2_inf, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+# Transición 3 (Mitad de año 2025)
+panel_3 <- inner_join(base_25_2_inf, base_25_3_inf, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+# Transición 4 (Cierre de año 2025)
+panel_4 <- inner_join(base_25_3_inf, base_25_4_inf, 
+                      by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), suffix = c("_i", "_f"))
+
+#########################################################
+### Pool de datos de panel
+########################################################
+
+# Unimos los paneles
+pool_final <- bind_rows(panel_1, panel_2, panel_3, panel_4)
+
+
+```
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+
+#########################################################
+### Base de final 
+########################################################
+
+##Poblacion en edad de trabajar
+
+pool_final_proc <- pool_final %>%
+  filter(
+    CH06_i>= 18 & CH06_i < 65,
+    abs(CH06_i - CH06_f) <= 1# Control
+    ) %>%
+  mutate(
+## Identificar Periodo de Inicio
+    
+    Periodo_Inicio = paste0(ANO4_i, "-T", TRIMESTRE_i),
+    
+##Variables Explicativas (en t inicial)
+
+clas_estado_t= case_when(
+  CAT_OCUP_i == 1 & informal_i == 1 ~ "PATINF",
+  CAT_OCUP_i == 1 & informal_i == 0 ~ "PATFOR",
+  CAT_OCUP_i ==2 & informal_i == 1 ~ "CPINF",
+  CAT_OCUP_i ==2 & informal_i == 0 ~ "CPFOR",
+  CAT_OCUP_i ==3 & informal_i== 1~"ASAINF",
+  CAT_OCUP_i ==3 & informal_i== 0~"ASAFOR",
+  CAT_OCUP_i ==4 & informal_i== 1~"TFINF",
+  CAT_OCUP_i ==4 & informal_i== 0~"TFFOR"
+),
+
+## Variable Resultado
+
+    # Definimos una variable de DESTINO más detallada
+
+clas_estado_t1 = case_when(
+  CAT_OCUP_f == 1 & informal_f == 1 ~ "PATINF",
+  CAT_OCUP_f == 1 & informal_f == 0 ~ "PATFOR",
+  CAT_OCUP_f ==2 & informal_f== 1 ~ "CPINF",
+  CAT_OCUP_f ==2 & informal_f == 0 ~ "CPFOR",
+  CAT_OCUP_f ==3 & informal_f== 1~"ASAINF",
+  CAT_OCUP_f ==3 & informal_f== 0~"ASAFOR",
+  CAT_OCUP_f ==4 & informal_f== 1~"TFINF",
+  CAT_OCUP_f ==4 & informal_f== 0~"TFFOR",
+      
+    
+      TRUE ~ NA_character_
+    )
+  )
+
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#########################################################
+### Armamos Matriz
+########################################################
+
+matriz_inf_cat_ocup <- pool_final_proc %>%
+  filter(!is.na(clas_estado_t), !is.na(clas_estado_t1)) %>% 
+  count(clas_estado_t, clas_estado_t1, wt = PONDERA_i) %>%
+  group_by(clas_estado_t) %>%
+  mutate(Probabilidad = n / sum(n)) %>%
+  ungroup()
+
+# Gráfico de Heatmap
+
+ggplot(matriz_inf_cat_ocup, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilidad)) +
+  geom_tile(color = "white") +
+  # Etiquetas de texto con un decimal
+  geom_text(aes(label = scales::percent(Probabilidad, accuracy = 0.1)), 
+            size = 5, fontface = "bold", color = "black") + # Color negro para contraste en colores claros
+  
+  
+  scale_fill_gradient(low = "#ebf5fb", high = "#2980b9", labels = scales::percent) +
+  
+  labs(
+    title = "Matriz de Transición Informalidad-Ocupacion",
+    subtitle = "Probabilidad de destino en el trimestre siguiente (Pool: IV.2024 - IV.2025)",
+    x = "Situación en t+1",
+    y = "Situación en t0",
+    fill = "Probabilidad",
+    caption = "Fuente: Elaboración propia en base a EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    plot.subtitle = element_text(size = 12, color = "gray30", hjust = 0.5),
+    axis.text.x = element_text(size = 11, face = "bold"),
+    axis.text.y = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 11),
+    legend.position = "bottom",
+    legend.title = element_text(vjust = 0.8)
+  )
+
+
+
+
+```
+
 
 ## Including Plots
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r matriz_inf_cat_ocup, echo=FALSE}
+plot(matriz_inf_cat_ocup)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
