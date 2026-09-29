@@ -1,0 +1,35 @@
+# Archivos temporales de R
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Cachés
+*_cache/
+*_cache
+cache/
+_cache/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos generados por R Markdown / Quarto
+*_files/
+*_cache/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración locales
+.Renviron
+
+# Archivos grandes de datos
+*.csv
+*.xlsx
+*.xls
+*.sav
+*.dta
+*.rds
+*.RData
