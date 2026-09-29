@@ -1,30 +1,232 @@
 ---
-title: "Trabajo Final - Yanina Fernandez"
+title: "Precariedad laboral en Argentina: género, edad y nivele ducativo"
+subtitle: "Trabajo final - Diplomatura en R Aplicada a Datos Económicos"
 author: "Yanina Fernandez"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+## Resumen ejecutivo
+
+El presente trabajo presenta un análisis socio-laboral empírico sobre la evolución del mercado de trabajo en Argentina a través del procesamiento de los microdatos de la Encuesta Permanente de Hogares (EPH) para el cuarto trimestre de los años 2004, 2014 y 2024. El objetivo central es examinar las transformaciones y persistencias en las condiciones de inserción laboral, focalizando en dos dimensiones críticas: la desocupación según perfiles demográficos (edad y género) y la incidencia de la informalidad laboral (asalariados sin registro previsional) estructurada según el nivel educativo. Los hallazgos evidencian una marcada heterogeneidad estructural: mientras que la desocupación castiga de forma asimétrica a los jóvenes (con especial crudeza en las mujeres), la precariedad laboral exhibe una rigidez persistente donde las brechas de informalidad según el nivel educativo se mantienen prácticamente inalteradas a lo largo de las dos décadas analizadas.
+
+
+## Introducción
+
+El mercado de trabajo argentino se ha caracterizado históricamente por dinámicas de heterogeneidad estructural y recurrentes vaivenes macroeconómicos. En este contexto, las oportunidades de inserción distan de ser homogéneas. Las problemáticas de la desocupación juvenil y la informalidad laboral no constituyen desvíos coyunturales transitorios, sino que operan como rasgos estructurales consolidados que reproducen la desigualdad social y limitan el desarrollo económico con equidad.
+
+El trabajo se inserta en las discusiones clásicas de la economía laboral en torno a la segmentación del mercado de trabajo y la teoría del capital humano. Se debate, por un lado, el rol de las credenciales educativas como mecanismos de protección frente a la precariedad y, por el otro, la superposición de vulnerabilidades vinculadas al ciclo vital (juventud) y al género, las cuales configuran barreras severas para el acceso al empleo formal y protegido.
+
+Para dar cuenta de estas problemáticas, el estudio adopta un enfoque cuantitativo comparativo basado en el procesamiento de microdatos individuales de la EPH (INDEC) correspondientes al cuarto trimestre de los años 2004, 2014 y 2024. El universo de análisis comprende a la población de 18 años y más. A través de la estandarización de variables clave —como la condición de actividad (ESTADO), la categoría ocupacional (CAT_OCUP), el descuento jubilatorio (PP07H), el nivel educativo (NIVEL_ED) y los factores de ponderación poblacional (PONDERA)—, se construyó una base panel homologada que permite evaluar la trayectoria temporal de los indicadores seleccionados.
+
+
+## Desarrollo conceptual
+
+La literatura económica sobre mercados laborales segmentados (en la línea de los aportes estructuralistas latinoamericanos y la economía laboral institucionalista) postula que el mercado de trabajo no opera como un espacio unificado de competencia perfecta, sino que se encuentra fragmentado en sectores con dinámicas diferenciadas.
+
+El factor educativo como credencial de protección: Los marcos teóricos basados en el capital humano sugieren que mayores niveles de calificación formal reducen la probabilidad de inserción en puestos precarios. Sin embargo, los enfoques críticos advierten sobre los procesos de devaluación de credenciales y la persistencia de bolsones de informalidad estructural que escapan a las mejoras educativas individuales.
+
+La vulnerabilidad juvenil y de género: la inserción de los jóvenes suele estar condicionada por la falta de experiencia laboral previa y la rotación laboral, configurando un segmento de alta elasticidad ante los ciclos recesivos. Al intersectarse con la división de género del trabajo, las mujeres enfrentan mayores tasas de inactividad forzada y desocupación abierta, además de una mayor propensión a insertarse en ramas de menor productividad y menor registración.
+
+
+El presente ejercicio analítico se guía por los siguientes interrogantes:
+
+Hasta qué punto los distintos ciclos macroeconómicos experimentados entre 2004, 2014 y 2024 lograron modificar las brechas relativas de informalidad entre los diferentes niveles educativos, o se trata de una rigidez estructural impermeable al crecimiento?
+
+De qué manera la penalización por experiencia inicial (desocupación juvenil) interactúa con las asimetrías de género a lo largo del tiempo, profundizando o atenuando las desigualdades en el acceso al mercado formal?
+
+
+## Metodologia
+
+Para el análisis de la evolución de las problemáticas socio-laborales en Argentina, se emplearon los microdatos de la Encuesta Permanente de Hogares (EPH - INDEC) correspondientes al cuarto trimestre de los años 2004, 2014 y 2024.
+
+Con el objetivo de garantizar la comparabilidad temporal a lo largo de estas dos décadas, se llevó a cabo un proceso de armonización de las bases individuales. El procedimiento metodológico consistió en:
+
+Delimitación poblacional: Se restringió el universo de estudio a la población en edad de trabajar mayor o igual a 18 años.
+
+Estandarización de dimensiones sociodemográficas: Se construyeron y unificaron tres cortes analíticos clave:
+
+Grupos etarios: Clasificados en jóvenes (18 a 24 años), adultos jóvenes (25 a 49 años) y adultos de 50 y más años.
+
+Género: Agrupado en varones y mujeres sobre la base del registro de sexo de la encuesta.
+
+Nivel educativo: Recodificado en tres tramos: Bajo (hasta secundario incompleto, incluyendo los casos sin instrucción), Medio (secundario completo o superior incompleto) y Alto (superior completo).
+
+Construcción de variables laborales críticas: Se operativizaron las condiciones de inserción ocupacional y registro formal (identificando a los asalariados carentes de descuento jubilatorio) junto con la condición de actividad, utilizando los ponderadores poblacionales (PONDERA) en todas las estimaciones para asegurar la representatividad estadística.
+
+
+
+
+```{r}
+
+# Cargamos las librerias 
+
+library(tidyverse)
+library(eph)
+
+# 1. Carga de bases individuales (4to trimestre de cada año de referencia)
+
+base_04 <- get_microdata(year = 2004, trimester = 4, type = 'individual', verbose = FALSE)
+base_14 <- get_microdata(year = 2014, trimester = 4, type = 'individual', verbose = FALSE)
+base_24 <- get_microdata(year = 2024, trimester = 4, type = 'individual', verbose = FALSE)
+
+# 2. Función de procesamiento, selección y estandarización
+
+procesar_eph <- function(df, anio) {
+  df %>%
+    # Seleccionamos explícitamente solo lo que usaremos para evitar conflictos de tipos entre años
+    select(any_of(c("CH04", "CH06", "NIVEL_ED", "CAT_OCUP", "PP07H", "PONDERA", "ESTADO"))) %>%
+    mutate(
+      ANIO = anio,
+      # Aseguramos que las variables clave sean numéricas para evitar cruces extraños
+      CH06 = as.numeric(CH06),
+      CH04 = as.numeric(CH04),
+      NIVEL_ED = as.numeric(NIVEL_ED),
+      CAT_OCUP = as.numeric(CAT_OCUP),
+      PP07H = as.numeric(PP07H),
+      PONDERA = as.numeric(PONDERA),
+      
+      # Creación de grupos etarios
+      grupo_etario = case_when(
+        CH06 >= 18 & CH06 <= 24 ~ "18-24 años",
+        CH06 >= 25 & CH06 <= 49 ~ "25-49 años",
+        CH06 >= 50 ~ "50 y más años",
+        TRUE ~ "Menores de 18"
+      ),
+      
+      # Estandarización de género (CH04: 1 = Varón, 2 = Mujer)
+      genero = if_else(CH04 == 1, "Varones", "Mujeres"),
+      
+      # Estandarización de nivel educativo (incluyendo el 7 de sin instrucción)
+      nivel_educativo_rec = case_when(
+        NIVEL_ED %in% c(1, 2, 3, 7) ~ "Bajo (Hasta secundario incompleto)",
+        NIVEL_ED %in% c(4, 5) ~ "Medio (Secundario completo / Superior incompleto)",
+        NIVEL_ED == 6 ~ "Alto (Superior completo)",
+        TRUE ~ "Ns./Nr."
+      ),
+      
+      # Indicadores base para precariedad (asalariados sin descuento jubilatorio)
+      es_asalariado = if_else(CAT_OCUP == 3, 1, 0),
+      no_registrado = if_else(CAT_OCUP == 3 & PP07H == 2, 1, 0)
+    ) %>%
+    filter(CH06 >= 18) # Filtramos población mayor de 18 años para el análisis
+}
+
+# Aplicar procesamiento a los tres años
+eph_2004_proc <- procesar_eph(base_04, 2004)
+eph_2014_proc <- procesar_eph(base_14, 2014)
+eph_2024_proc <- procesar_eph(base_24, 2024)
+
+# Unir en una sola gran base panel sin conflictos
+eph_panel <- bind_rows(eph_2004_proc, eph_2014_proc, eph_2024_proc)
 ```
 
-## R Markdown
+## Resultados y analisis
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+A fin de examinar la evolución de las asimetrías socio-laborales en el mercado de trabajo argentino, se analiza a continuación la trayectoria de la desocupación según perfiles demográficos y la incidencia de la precariedad laboral (medida a través de la falta de registro previsional o trabajo "en negro") en perspectiva comparada para los años 2004, 2014 y 2024.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
 
-```{r cars}
-summary(cars)
+# Indicador 1: Tasa de Desocupación por Grupo Etario y Género a lo largo del tiempo
+
+# (ESTADO == 1: Ocupados, ESTADO == 2: Desocupados -> PEA = Ocupados + Desocupados)
+tasa_desocupacion_demo <- eph_panel %>%
+  filter(ESTADO %in% c(1, 2)) %>%
+  group_by(ANIO, grupo_etario, genero) %>%
+  summarise(
+    total_pea = sum(PONDERA, na.rm = TRUE),
+    total_desocupados = sum(PONDERA[ESTADO == 2], na.rm = TRUE),
+    tasa_desocupacion = (total_desocupados / total_pea) * 100,
+    .groups = "drop"
+  )
+
+
+# Indicador 2: Tasa de Asalariados No Registrados por Nivel Educativo y Año
+
+tasa_informalidad_edu <- eph_panel %>%
+  filter(es_asalariado == 1) %>% # Solo asalariados
+  group_by(ANIO, nivel_educativo_rec) %>%
+  summarise(
+    total_asalariados = sum(PONDERA, na.rm = TRUE),
+    total_no_registrados = sum(PONDERA[no_registrado == 1], na.rm = TRUE),
+    tasa_no_registro = (total_no_registrados / total_asalariados) * 100,
+    .groups = "drop"
+  )
+
+
+# Indicador 3: Tasa de Asalariados No Registrados por Grupo Etario y Género
+
+tasa_informalidad_demo <- eph_panel %>%
+  filter(es_asalariado == 1) %>% 
+  group_by(ANIO, grupo_etario, genero) %>%
+  summarise(
+    total_asalariados = sum(PONDERA, na.rm = TRUE),
+    total_no_registrados = sum(PONDERA[no_registrado == 1], na.rm = TRUE),
+    tasa_no_registro = (total_no_registrados / total_asalariados) * 100,
+    .groups = "drop"
+  )
+
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
+# Gráfico 1: Bracha de desocupación juvenil y género
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+ggplot(tasa_desocupacion_demo, aes(x = factor(ANIO), y = tasa_desocupacion, fill = genero)) +
+  geom_col(position = "dodge", width = 0.7) +
+  facet_wrap(~ grupo_etario) +
+  scale_fill_manual(values = c("Varones" = "#2b5c8f", "Mujeres" = "#d95f02")) +
+  labs(
+    title = "Evolución de la Tasa de Desocupación por Grupo Etario y Género",
+    subtitle = "Comparativa IV Trimestre (2004 - 2014 - 2024)",
+    x = "Año",
+    y = "Tasa de Desocupación (%)",
+    fill = "Género",
+    caption = "Fuente: Elaboración propia en base a microdatos EPH (INDEC)."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13, color = "#222222"),
+    plot.subtitle = element_text(size = 10, color = "#555555"),
+    strip.text = element_text(face = "bold", size = 10),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Los datos evidencian una marcada heterogeneidad estructurada fuertemente en torno a la edad. Al observar la distribución etaria, se advierte una clara pendiente descendente: la tasa de desocupación alcanza sus valores más elevados de forma sistemática en el tramo de jóvenes (18 a 24 años), reflejando las severas barreras de inserción inicial al mercado formal. A medida que avanza el ciclo vital (grupos de 25 a 49 años y mayores de 50), la desocupación se reduce de manera pronunciada. Asimismo, al desagregar por género dentro de cada cohorte, se constata que esta vulnerabilidad juvenil inicial se cruza con asimetrías de género, donde las jóvenes mujeres suelen soportar las mayores tasas de desocupación relativa.
+
+
+```{r}
+# Gráfico 2: Incidencia de la informalidad laboral según nivel educativo
+
+ggplot(tasa_informalidad_edu, aes(x = factor(ANIO), y = tasa_no_registro, color = nivel_educativo_rec, group = nivel_educativo_rec)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3.5) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Evolución de los Asalariados No Registrados ('En Negro')",
+    subtitle = "Según Nivel Educativo (2004 - 2014 - 2024)",
+    x = "Año",
+    y = "Porcentaje de No Registro (%)",
+    color = "Nivel Educativo",
+    caption = "Fuente: Elaboración propia en base a microdatos EPH (INDEC)."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13, color = "#222222"),
+    plot.subtitle = element_text(size = 10, color = "#555555"),
+    legend.position = "bottom",
+    legend.direction = "vertical",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+
+```
+Al analizar la incidencia de la informalidad laboral según el nivel educativo, los datos revelan una profunda segmentación estructural que se mantiene invariable a lo largo de las dos décadas estudiadas.
+Como se observa en la trayectoria de las líneas, los niveles educativos operan como un factor de protección diferenciado: el tramo con nivel educativo bajo sufre sistemáticamente las tasas de precarización más elevadas, duplicando o triplicando en magnitud a los sectores con educación superior. Asimismo, la disposición casi paralela de las trayectorias temporales evidencia que la brecha de informalidad entre los distintos niveles educativos muestra una alta rigidez estructural, ya que las fluctuaciones macroeconómicas a lo largo de los años impactan de manera transversal sobre los distintos grupos sin alterar las distancias relativas entre ellos.
+
