@@ -421,6 +421,8 @@ En cada una de las seis regiones analizadas, la tasa de informalidad femenina su
 
 - **NOA y NEA:** Mantienen las tasas más elevadas tanto para mujeres como para varones, superando en ambos sexos el umbral del 50%. En el NOA, la informalidad femenina alcanza el 55,8% frente al 53,1% masculino, mientras que en el NEA las mujeres registraron un 52,3% frente al 50,0% de los varones.
 
+Este escenario expone que la mayor carga del trabajo no remunerado en el hogar limita la disponibilidad horaria de las mujeres, forzándolas a aceptar empleos informales con mayor flexibilidad pero desprovistos de seguridad social y derechos laborales básicos.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 #########################################################
