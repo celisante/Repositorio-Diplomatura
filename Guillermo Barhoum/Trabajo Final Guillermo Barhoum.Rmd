@@ -309,7 +309,7 @@ tasas_laborales <- base_25_4_actualidad %>%
 
 tasa_informalidad <- base_25_4_actualidad %>% 
   summarise(
-    total_activo=
+    total_poblacion=
       sum(PONDERA, na.rm = TRUE),
     
     total_ocupado =
@@ -321,6 +321,40 @@ tasa_informalidad <- base_25_4_actualidad %>%
     porcentaje_informal =
       sum(PONDERA * informal, na.rm = TRUE) /
       sum(PONDERA*ocupado, na.rm = TRUE) * 100)
+
+tasa_informalidad_2 <- base_25_4_actualidad %>% 
+  group_by(Sexo) %>% 
+  summarise(
+    total_poblacion=
+      sum(PONDERA, na.rm = TRUE),
+    
+    total_ocupado =
+      sum(PONDERA*ocupado, na.rm = TRUE),
+    
+    informales_genero =
+      sum(PONDERA * informal, na.rm = TRUE),
+    
+    porcentaje_informal =
+      sum(PONDERA * informal, na.rm = TRUE) /
+      sum(PONDERA*ocupado, na.rm = TRUE) * 100) %>% 
+  ungroup()
+
+tasa_informalidad_3 <- base_25_4_actualidad %>% 
+  mutate(CAT_OCUP = case_match(
+    CAT_OCUP,
+    1 ~ "Patrón",
+    2 ~ "Cuenta propia",
+    3 ~ "Obrero o empleado",
+    4 ~ "Trabajador sin pago",
+    .default = as.character(CAT_OCUP)
+  )) %>% 
+  group_by(CAT_OCUP) %>% 
+  summarise(
+    informales_genero = sum(PONDERA * informal, na.rm = TRUE),
+    porcentaje_informal = sum(PONDERA * informal, na.rm = TRUE) / 
+                          sum(PONDERA * ocupado, na.rm = TRUE) * 100
+  ) %>% 
+  ungroup()
 
 ```
 
@@ -334,8 +368,12 @@ inline_3 <- tasas_laborales %>%
   select('Tasa de Desocupacion')
 inline_4 <- tasa_informalidad %>%
   select(porcentaje_informal)
-
-
+inline_5 <- tasa_informalidad_2 %>% 
+  filter(Sexo == "Mujeres") %>% 
+  pull(porcentaje_informal)
+inline_6 <- tasa_informalidad_2 %>% 
+  filter(Sexo == "Varones") %>% 
+  pull(porcentaje_informal)
 
 ```
 
@@ -343,7 +381,39 @@ inline_4 <- tasa_informalidad %>%
 
 ###Situacion en el 4°T de 2025
 
-En primer lugar, se presentan los indicadores básicos que caracterizan la composición del mercado de trabajo en la Argentina para el cuarto trimestre de 2025. Durante este período, la Tasa de Actividad se ubicó en el `r inline_1`%, mientras que la Tasa de Empleo alcanzó el `r inline_2`% y la Tasa de Desocupación se fijó en el `r inline_3`%. Por su parte, la Tasa de Informalidad registrada para el mismo trimestre ascendió al `r inline_4`%.
+En primer lugar, se presentan los indicadores básicos que caracterizan la composición del mercado de trabajo en la Argentina para el cuarto trimestre de 2025. Durante este período, la Tasa de Actividad se ubicó en el `r inline_1`%, mientras que la Tasa de Empleo alcanzó el `r inline_2`% y la Tasa de Desocupación se fijó en el `r inline_3`%. Por su parte, la Tasa de Informalidad registrada para el mismo trimestre ascendió al r inline_4%. Al desagregar este indicador por género, se evidencia una brecha entre ambos grupos, situándose en `'r inline_6'`% para los varones y `'r inline_5'`% para las mujeres.
+
+Por otro lado, los datos reflejan una marcada heterogeneidad estructural en el mercado laboral. La tasa de informalidad varía drásticamente según la relación de trabajo, mostrando una alta vulnerabilidad en las categorías independientes y no asalariadas frente a los puestos de trabajo en relación de dependencia o directivos.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#########################################################
+### Armamos tabla
+########################################################
+
+tabla_informalidad <- tasa_informalidad_3 %>%
+  filter(!CAT_OCUP %in% c(0, 9), !is.na(CAT_OCUP)) %>%
+  mutate(
+    informales_genero = number(informales_genero, big.mark = ".", decimal.mark = ",", accuracy = 1),
+    porcentaje_informal = percent(porcentaje_informal / 100, accuracy = 0.1, decimal.mark = ",")
+  ) %>%
+  kable(
+    caption = "Tabla: Informalidad Laboral por Categoría Ocupacional",
+    col.names = c("Categoría Ocupacional", "Informales (Total)", "Tasa de Informalidad"),
+    align = c("l", "r", "r")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#1B365D")
+
+# Mostrar la tabla
+tabla_informalidad
+
+
+```
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 #########################################################
@@ -491,15 +561,14 @@ pool_final <- bind_rows(panel_1, panel_2, panel_3, panel_4)
 
 ```
 
-```{r, message=FALSE, warning=FALSE, include=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 
 #########################################################
-### Armamos pool final
+### Armamos pool final y nos centramos en un grupo especifio(18-65)
 ########################################################
-
 ##Poblacion en edad de trabajar
 
-pool_final_proc <- pool_final %>%
+pool_final_2 <- pool_final %>%
   filter(
     CH06_i>= 18 & CH06_i < 66,
     abs(CH06_i - CH06_f) <= 1# Control
@@ -512,10 +581,8 @@ pool_final_proc <- pool_final %>%
 ##Variables Explicativas (en t inicial)
 
 clas_estado_t= case_when(
-  CAT_OCUP_i %in% c(3, 4) & informal_i == 0 ~ "DEPFOR",
-  CAT_OCUP_i %in% c(1, 2) & informal_i == 0 ~ "INDFOR",
-  CAT_OCUP_i %in% c(1, 2) & informal_i == 1 ~ "INDINF",
-  CAT_OCUP_i %in% c(3, 4) & informal_i == 1 ~ "DEPINF"
+  CAT_OCUP_i %in% c(1,2,3, 4) & informal_i == 0 ~ "FOR",
+  CAT_OCUP_i %in% c(1,2,3,4) & informal_i == 1 ~ "INF",
 ),
 
 ## Variable Resultado
@@ -523,23 +590,21 @@ clas_estado_t= case_when(
     # Definimos una variable de DESTINO más detallada
 
 clas_estado_t1 = case_when(
-  CAT_OCUP_f %in% c(3, 4) & informal_f == 0 ~ "DEPFOR",
-   CAT_OCUP_f %in% c(1, 2) & informal_f == 0 ~ "INDFOR",
-  CAT_OCUP_f %in% c(1, 2) & informal_f == 1 ~ "INDINF",
-  CAT_OCUP_f %in% c(3, 4) & informal_f == 1 ~ "DEPINF",
-    
+  CAT_OCUP_f %in% c(1,2,3, 4) & informal_f == 0 ~ "FOR",
+   CAT_OCUP_f %in% c(1, 2,3,4) & informal_f == 1 ~ "INF",
       TRUE ~ NA_character_
     )
   )
 
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
 #########################################################
-### Armamos Matriz
+### Graficamos
 ########################################################
 
-matriz_inf_cat_ocup <- pool_final_proc %>%
+matriz_inf <- pool_final_2 %>%
   filter(!is.na(clas_estado_t), !is.na(clas_estado_t1)) %>% 
   count(clas_estado_t, clas_estado_t1, wt = PONDERA_i) %>%
   group_by(clas_estado_t) %>%
@@ -548,7 +613,7 @@ matriz_inf_cat_ocup <- pool_final_proc %>%
 
 # Gráfico de Heatmap
 
-ggplot(matriz_inf_cat_ocup, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilidad)) +
+ggplot(matriz_inf, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilidad)) +
   geom_tile(color = "white") +
   # Etiquetas de texto con un decimal
   geom_text(aes(label = scales::percent(Probabilidad, accuracy = 0.1)), 
@@ -558,7 +623,7 @@ ggplot(matriz_inf_cat_ocup, aes(x = clas_estado_t1, y = clas_estado_t, fill = Pr
   scale_fill_gradient(low = "#ebf5fb", high = "#2980b9", labels = scales::percent) +
   
   labs(
-    title = "Matriz de Transición Informalidad-Ocupacion",
+    title = "Matriz de Transición Informalidad-Formalidad",
     subtitle = "Probabilidad de destino en el trimestre siguiente (Pool: IV.2024 - IV.2025)",
     x = "Situación en t+1",
     y = "Situación en t0",
@@ -575,23 +640,23 @@ ggplot(matriz_inf_cat_ocup, aes(x = clas_estado_t1, y = clas_estado_t, fill = Pr
     legend.position = "bottom",
     legend.title = element_text(vjust = 0.8)
   )
-
-
-
-
 ```
 
-## Including Plots
+La imagen presenta una matriz de transición entre informalidad y formalidad laboral, elaborada a partir de datos de la Encuesta Permanente de Hogares (EPH-INDEC) para el período acumulado entre el cuarto trimestre de 2024 y el cuarto trimestre de 2025. Muestra la probabilidad de que un trabajador cambie o mantenga su condición de empleo (Formal/Informal) de un trimestre al siguiente.
+
+Los valores diagonales ($86.0\%$ para la informalida y $90.5\%$ para la formalidad) muestran que la condición laboral actual tiende a mantenerse con mucha fuerza en el corto plazo (de un trimestre a otro). A su vez, solo el \$14.0\\%\$ de las personas que comienzan en una situación informal logran formalizarse al trimestre siguiente.
+
+La matriz evidencia un mercado de trabajo segmentado y rígido, donde el estatus de formalidad/informalidad presenta un "efecto trampa" o de persistencia temporal. Quienes están en el sector informal tienen escasas probabilidades de transicionar rápidamente hacia un empleo registrado en el transcurso de un año, mientras que la estabilidad del sector formal actúa como un escudo protector primario para la mayoría de sus integrantes.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 #########################################################
-### Armamos pool final_2 Solo Informal/ Formal por Genero
+### Armamos pool final_2 Solo Informal por Genero y Nivel Educativo(18-65)
 ########################################################
 
 ##Poblacion en edad de trabajar
 
-pool_final_proc_2 <- pool_final %>%
+pool_final_3 <- pool_final %>%
   filter(
     CH06_i>= 18 & CH06_i < 66,
     abs(CH06_i - CH06_f) <= 1# Control
@@ -627,12 +692,15 @@ clas_estado_t1 = case_when(
 
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+En términos de la dinámica trimestral, el género no genera brechas significativas en la velocidad de transición entre empleo formal e informal. La trampa de la informalidad (dificultad para formalizarse y alta persistencia en el sector informal) afecta por igual a hombres y mujeres una vez que ya se encuentran dentro de uno de esos estados.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
 #########################################################
-### Armamos Matriz 2
+### Graficamos matriz por Genero
 ########################################################
 
-matriz_Inf_genero <- pool_final_proc_2 %>%
+matriz_Inf_genero <- pool_final_3 %>%
   filter(
     !is.na(Sexo),
     !is.na(clas_estado_t),
@@ -676,16 +744,72 @@ ggplot(matriz_Inf_genero, aes(x = clas_estado_t1, y = clas_estado_t, fill = Prob
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
+```
 
+Finalmente, el análisis de las matrices de transición muestra que el nivel educativo constituye un factor determinante en la dinámica de movilidad e inercia laboral entre el empleo formal e informal en Argentina (Pool IV.2023 - IV.2024). En primer lugar, se observa una elevada persistencia del estado ocupacional de origen en todos los estratos: quienes se encuentran en la informalidad enfrentan una fuerte inercia a permanecer en ella, mientras que la formalidad opera como un estado de alta retención.
 
+Sin embargo, el capital educativo altera de forma sustancial estas probabilidades. Los trabajadores con nivel educativo bajo experimentan una verdadera "trampa de informalidad", registrando una probabilidad del 90,8% de continuar en empleos no registrados y solo un 9,2% de acceder a la formalización en el trimestre posterior. Asimismo, este grupo presenta el mayor riesgo de precarización laboral, con una tasa de tránsito del sector formal al informal del 16,2%.
 
+En contraste, la formación de nivel alto actúa tanto como un escudo protector como un canal de movilidad ascendente. Los ocupados con estudios superiores presentan una probabilidad de salida de la informalidad hacia la formalidad del 28,4% —más de tres veces superior a la de aquellos con nivel bajo— y logran retener su condición formal en un 94,2% de los casos, reduciendo el riesgo de informalización a un marginal 5,8%. De este modo, la evidencia confirma que la acumulación de capital humano reduce la vulnerabilidad laboral y resulta indispensable para mitigar la rigidez de la informalidad estructural.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#########################################################
+### Graficamos matriz por Nivel Educativo
+########################################################
+
+matriz_inf_ed <- pool_final_3 %>%
+  filter(
+    !is.na(Educacion),
+    !is.na(clas_estado_t),
+    !is.na(clas_estado_t1)
+  ) %>% 
+  # Reordenamos el nivel educativo especificando el orden de los niveles
+  mutate(
+    Educacion = factor(Educacion, levels = c("Bajo", "Medio", "Alto"))
+  ) %>% 
+  count(Educacion, clas_estado_t, clas_estado_t1, wt = PONDERA_i) %>%
+  group_by(Educacion, clas_estado_t) %>%
+  mutate(Probabilidad = n / sum(n)) %>%
+  ungroup()
+
+### Graficamos
+
+ggplot(matriz_inf_ed, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilidad)) +
+  geom_tile(color = "white", linewidth = 0.6) +
+  geom_text(
+    aes(
+      label = percent(Probabilidad, accuracy = 0.1),
+      color = Probabilidad > 0.5 
+    ), 
+    size = 3.5,
+    fontface = "bold"
+  ) +
+  scale_fill_gradient(
+    low = "#E5E9F0",  
+    high = "#1B365D",  
+    labels = percent
+  ) +
+  scale_color_manual(values = c("black", "white"), guide = "none") +
+  facet_wrap(~ Educacion) +
+  labs(
+    title = "Matriz de Transición Informalidad por Nivel Educativo",
+    subtitle = "Probabilidad de destino en el trimestre siguiente (Pool: IV.2023 - IV.2024)",
+    x = "Estado en t+1 (Destino)",
+    y = "Estado en t (Origen)",
+    fill = "Probabilidad",
+    caption = "Fuente: Elaboración propia en base a EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 
 ```
 
-You can also embed plots, for example:
+##Conclusion
 
-```{r matriz_inf_cat_ocup, echo=FALSE}
+Como se
 
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## 
