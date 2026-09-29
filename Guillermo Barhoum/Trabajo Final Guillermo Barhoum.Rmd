@@ -2,45 +2,42 @@
 title: "Trabajo Final"
 author: "Guillermo Barhoum"
 date: "2026-09-27"
-output: html_document
-theme: readable
-    fontsize: 20
+output: 
+  html_document:
+    theme: readable
     css: "estilos.css"
     code_folding: hide
     self_contained: true
     toc: true
     toc_depth: 5
     toc_float: true
-    fig-width: 14
-    fig-height: 12
-    fig-format: retina
-    warning: false
-    message: false
-execute:
-  freeze: auto
+    fig_width: 6
+    fig_height: 4
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# **La Informalidad Laboral y las Dinámicas de Transición en Argentina: Un Análisis Regional, de Género y Longitudinal con la EPH (4T 2025)**
+# **La Informalidad Laboral y las Dinámicas de Transición en Argentina: Un Análisis Regional y de Género con la EPH (4T 2025)**
 
-## **Resumen Ejecutivo**
+### **Resumen Ejecutivo**
 
-## **Introducción**
+El empleo informal en la Argentina representa una problemática estructural persistente que impacta negativamente sobre la recaudación previsional, la productividad del sistema productivo y los derechos laborales básicos de la población.
 
-El trabajo constituye una categoría central en la organización de la vida social y económica. En su sentido sociológico y económico más amplio, el trabajo es la actividad humana orientada a la producción de bienes y servicios para la satisfacción de necesidades individuales y colectivas, articulando al individuo con la estructura productiva y el sistema de derechos de una sociedad. Más allá de su dimensión estrictamente generadora de ingresos, el trabajo formalmente reconocido actúa como el principal vector de integración social, asignación de estatus, estructuración del tiempo cotidiano y acceso a la protección social frente a las contingencias del ciclo de vida (como el desempleo, la enfermedad o la vejez).
+A partir del procesamiento de los microdatos de los 31 aglomerados urbanos de la Encuesta Permanente de Hogares (EPH-INDEC) del cuarto trimestre de 2025, este estudio analiza la informalidad desde el enfoque legalista o de protección social, articulando una mirada de corte transversal (regional y de género) con un abordaje longitudinal de datos de panel para medir la movilidad ocupacional.
 
-Sin embargo, cuando la relación laboral se entabla al margen de las regulaciones institucionales y normativas vigentes, se configura el fenómeno de la informalidad laboral. En la Argentina, la informalidad no representa un desajuste marginal o transitorio, sino una de las problemáticas estructurales más complejas e hirientes del mercado de trabajo. Un nivel elevado y persistente de empleo no registrado impacta negativamente en múltiples dimensiones: debilita la recaudación de la seguridad social e invalida la sostenibilidad del sistema previsional, restringe los incentivos para la acumulación de capital humano y el incremento de la productividad laboral en las firmas, e inflige una marcada vulnerabilidad sobre la población trabajadora, que queda desprovista de seguro de desempleo, indemnización por despido, licencias pagadas y coberturas de salud.
+### **Introducción**
 
-Para abordar estas discusiones, este trabajo procesa la base de microdatos de los 31 aglomerados urbanos de la EPH correspondientes al cuarto trimestre de 2025. La metodología combina una aproximación transversal para capturar la foto estática regional y de género, con un abordaje longitudinal de datos de panel para analizar la movilidad ocupacional entre trimestres consecutivos.
+El trabajo constituye una dimensión fundamental en la organización socioeconómica moderna. Más allá de su función primaria en la generación de ingresos y en la producción de bienes y servicios, el empleo formal opera como el principal eje de articulación e integración social, asignación de estatus e inserción en el sistema de protección social frente a las contingencias del ciclo de vida. Sin embargo, cuando las relaciones laborales se gestan e interactúan al margen del marco normativo e institucional vigente, se configura el fenómeno de la informalidad laboral. En Argentina, la informalidad no constituye una anomalía transitoria o marginal, sino un rasgo estructural persistente del mercado de trabajo. Niveles elevados de empleo no registrado menoscaban la sostenibilidad del sistema previsional, restringen la productividad y la acumulación de capital humano en las firmas, y exponen a la población trabajadora a una situación de severa vulnerabilidad, desprovista de derechos laborales básicos y seguros de salud.
 
-## **Desarrollo**
+Para analizar la naturaleza de este fenómeno, el presente trabajo procesa los microdatos de los 31 aglomerados urbanos de la Encuesta Permanente de Hogares (EPH-INDEC) correspondientes al cuarto trimestre de 2025. Mediante una estrategia metodológica dual —que combina el análisis transversal con una aproximación longitudinal de datos de panel—, se examinan las asimetrías territoriales, las penalizaciones de género y las dinámicas de movilidad u ocupación que caracterizan la rigidez del empleo en la Argentina actual.
+
+### **Desarrollo**
 
 El marco teórico de este estudio se nutre de los planteamientos de Alaimo et al. (BID, 2015) en *Empleos para Crecer*, donde la informalidad se comprende no como un fenómeno aislado o meramente normativo, sino como el resultado de un círculo vicioso estructural que entrelaza la baja productividad, la inestabilidad laboral y el diseño institucional de la protección social. Esta perspectiva se complementa con el trabajo de la CEPAL (Pineda et al., 2024), el cual examina la dinámica macroeconómica reciente de la región y determina los factores individuales que elevan la probabilidad de inserción informal. De este modo, mientras el enfoque del BID prioriza los mecanismos de rotación y productividad a nivel de firma, la CEPAL desplaza el énfasis hacia la "trampa de bajo crecimiento" macroeconómica, la heterogeneidad territorial y las brechas ligadas a la economía del cuidado y el género.
 
-### **Tensión Teórica en la Definición**
+#### **Tensión Teórica en la Definición**
 
 El debate técnico sobre la informalidad se divide en dos enfoques complementarios:
 
@@ -50,21 +47,21 @@ El debate técnico sobre la informalidad se divide en dos enfoques complementari
 
 Para el presente trabajo se utilizara el enfoque LEGALISTA. Siguiendo la conceptualización utilizada por el INDEC se puede definir al mismo de la siguiente manera:
 
-*La informalidad laboral refiere al conjunto de personas ocupadas, ya sean independientes o en relación de dependencia, que desarrolla sus actividades al margen de las normas que las regulan.*
+- ***La informalidad laboral refiere al conjunto de personas ocupadas, ya sean independientes o en relación de dependencia, que desarrolla sus actividades al margen de las normas que las regulan.***
 
-### Preguntas de Investigación y Justificación del Ejercicio
+#### Preguntas de Investigación y Justificación del Ejercicio
 
 En este marco , la articulación de la perspectiva regional y de género resulta imprescindible para evitar lecturas homogéneas o agregadas del mercado de trabajo argentino. La persistencia de la informalidad plantea interrogantes empíricos centrales que justifican el presente abordaje:
 
-- Asimetrías territoriales: ¿Se presenta algun grado de heterogeneidad en las tasas de informalidad de las distintas entre las distintas regiones del país?.
+- Asimetrías territoriales: ¿Se presenta algun grado de heterogeneidad en las tasas de informalidad entre las distintas regiones del país?.
 
-- Sesgo de género: ¿ Se Observa una penalizacion de genero transversal a todas las regiones del pais?
+- Sesgo de género: ¿ Se observa una penalizacion de genero transversal a todas las regiones del pais?
 
 - Movilidad: ¿Cual es la persistencia de los individuos que desarrollan sus actividades en la informalidad de continuar en la misma?
 
 Responder a estos interrogantes permite trascender la foto estática de la informalidad y aportar evidencia empírica para evitar perpetúar la vulnerabilidad laboral en la Argentina.
 
-##Metodología
+### Metodología
 
 Para el análisis cuantitativo se utilizaron los microdatos de la EPH (INDEC) del cuarto trimestre de 2025. Siguiendo la Metodología INDEC N° 43, se operacionaliza la INFORMALIDAD mediante la naturaleza del  Empleo  (Formal/Informal) . Cabe precisar que la muestra se limita a los 31 aglomerados urbanos, dejando fuera a las zonas rurales donde la informalidad suele presentar niveles superiores.
 
@@ -377,13 +374,13 @@ inline_6 <- tasa_informalidad_2 %>%
 
 ```
 
-##Desarrollo: Analisis
+### Desarrollo: Analisis
 
-###Situacion en el 4°T de 2025
+#### Situacion en el 4°T de 2025
 
-En primer lugar, se presentan los indicadores básicos que caracterizan la composición del mercado de trabajo en la Argentina para el cuarto trimestre de 2025. Durante este período, la Tasa de Actividad se ubicó en el `r inline_1`%, mientras que la Tasa de Empleo alcanzó el `r inline_2`% y la Tasa de Desocupación se fijó en el `r inline_3`%. Por su parte, la Tasa de Informalidad registrada para el mismo trimestre ascendió al r inline_4%. Al desagregar este indicador por género, se evidencia una brecha entre ambos grupos, situándose en `'r inline_6'`% para los varones y `'r inline_5'`% para las mujeres.
+En primer lugar, se presentan los indicadores básicos que caracterizan la composición del mercado de trabajo en la Argentina para el cuarto trimestre de 2025. Durante este período, la Tasa de Actividad se ubicó en el `r inline_1`%, mientras que la Tasa de Empleo alcanzó el `r inline_2`% y la Tasa de Desocupación se fijó en el `r inline_3`%. Por su parte, la Tasa de Informalidad registrada para el mismo trimestre ascendió al `'r inline_4'`%. Al desagregar este indicador por género, se evidencia una brecha entre ambos grupos, situándose en `'r inline_6'`% para los varones y `'r inline_5'`% para las mujeres.
 
-Por otro lado, los datos reflejan una marcada heterogeneidad estructural en el mercado laboral. La tasa de informalidad varía drásticamente según la relación de trabajo, mostrando una alta vulnerabilidad en las categorías independientes y no asalariadas frente a los puestos de trabajo en relación de dependencia o directivos.
+Por otro lado, los datos reflejan una marcada heterogeneidad estructural en el mercado laboral. La tasa de informalidad varía drásticamente según la relación de trabajo, mostrando una alta vulnerabilidad en las categorías CUENTA PROPIA frente a los puestos de trabajo en relación de dependencia o INDEPENDIENTE categorizado como PATRON.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -432,7 +429,7 @@ tasa_informalidad_region <- base_25_4_actualidad %>%
   )
 ```
 
-###Analisis de la Informalidad por región en Argentina
+#### Analisis de la Informalidad por región en Argentina
 
 El análisis territorial de la informalidad laboral revela profundas asimetrías en la estructura productiva argentina al cuarto trimestre de 2025. Los datos evidencian que el fenómeno de la informalidad no se distribuye de manera homogénea en el país, sino que se agrupa en tres bloques claramente diferenciados según el grado de vulnerabilidad de sus mercados de trabajo regionales:
 
@@ -481,7 +478,7 @@ tasa_informalidad_genero_region <- base_25_4_actualidad %>%
   )
 ```
 
-###Análisis de la Brecha de Género e Informalidad por Región
+#### Análisis de la Brecha de Género e Informalidad por Región
 
 El análisis cruzado entre el territorio y la dimensión de género revela una penalización sistemática hacia las mujeres en todas las regiones del país.
 
@@ -507,7 +504,7 @@ ggplot(tasa_informalidad_genero_region,
   geom_text(aes(label = paste0(round(porcentaje_informal, 1), "%")),
             position = position_dodge(width = 0.8),
             vjust = -0.5, size = 3.2, fontface = "bold") +
-  scale_fill_manual(values = c("Mujer" = "#d35400", "Varón" = "#1f4e78")) +
+  scale_fill_manual(values = c("Mujeres" = "#2c3e50", "Varones" = "#7f8c8d")) +
   scale_y_continuous(limits = c(0, max(tasa_informalidad_genero_region$porcentaje_informal) * 1.15),
                      labels = function(x) paste0(x, "%")) +
   labs(
@@ -528,7 +525,7 @@ ggplot(tasa_informalidad_genero_region,
   )
 ```
 
-###Analisis de la persistencia en la Informalidad
+#### Analisis de la persistencia en la Informalidad
 
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 #########################################################
@@ -644,7 +641,7 @@ ggplot(matriz_inf, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilida
 
 La imagen presenta una matriz de transición entre informalidad y formalidad laboral, elaborada a partir de datos de la Encuesta Permanente de Hogares (EPH-INDEC) para el período acumulado entre el cuarto trimestre de 2024 y el cuarto trimestre de 2025. Muestra la probabilidad de que un trabajador cambie o mantenga su condición de empleo (Formal/Informal) de un trimestre al siguiente.
 
-Los valores diagonales ($86.0\%$ para la informalida y $90.5\%$ para la formalidad) muestran que la condición laboral actual tiende a mantenerse con mucha fuerza en el corto plazo (de un trimestre a otro). A su vez, solo el \$14.0\\%\$ de las personas que comienzan en una situación informal logran formalizarse al trimestre siguiente.
+Los valores diagonales ($86.0\%$ para la informalidad y $90.5\%$ para la formalidad) muestran que la condición laboral actual tiende a mantenerse con mucha fuerza en el corto plazo (de un trimestre a otro). A su vez, solo el $14.0\%$ de las personas que comienzan en una situación informal logran formalizarse al trimestre siguiente.
 
 La matriz evidencia un mercado de trabajo segmentado y rígido, donde el estatus de formalidad/informalidad presenta un "efecto trampa" o de persistencia temporal. Quienes están en el sector informal tienen escasas probabilidades de transicionar rápidamente hacia un empleo registrado en el transcurso de un año, mientras que la estabilidad del sector formal actúa como un escudo protector primario para la mayoría de sus integrantes.
 
@@ -748,9 +745,9 @@ ggplot(matriz_Inf_genero, aes(x = clas_estado_t1, y = clas_estado_t, fill = Prob
 
 Finalmente, el análisis de las matrices de transición muestra que el nivel educativo constituye un factor determinante en la dinámica de movilidad e inercia laboral entre el empleo formal e informal en Argentina (Pool IV.2023 - IV.2024). En primer lugar, se observa una elevada persistencia del estado ocupacional de origen en todos los estratos: quienes se encuentran en la informalidad enfrentan una fuerte inercia a permanecer en ella, mientras que la formalidad opera como un estado de alta retención.
 
-Sin embargo, el capital educativo altera de forma sustancial estas probabilidades. Los trabajadores con nivel educativo bajo experimentan una verdadera "trampa de informalidad", registrando una probabilidad del 90,8% de continuar en empleos no registrados y solo un 9,2% de acceder a la formalización en el trimestre posterior. Asimismo, este grupo presenta el mayor riesgo de precarización laboral, con una tasa de tránsito del sector formal al informal del 16,2%.
+Sin embargo, el capital educativo altera de forma sustancial estas probabilidades. Los trabajadores con nivel educativo BAJO experimentan una verdadera "trampa de informalidad", registrando una probabilidad del 90,8% de continuar en empleos no registrados y solo un 9,2% de acceder a la formalización en el trimestre posterior. Asimismo, este grupo presenta el mayor riesgo de precarización laboral, con una tasa de tránsito del sector formal al informal del 16,2%.
 
-En contraste, la formación de nivel alto actúa tanto como un escudo protector como un canal de movilidad ascendente. Los ocupados con estudios superiores presentan una probabilidad de salida de la informalidad hacia la formalidad del 28,4% —más de tres veces superior a la de aquellos con nivel bajo— y logran retener su condición formal en un 94,2% de los casos, reduciendo el riesgo de informalización a un marginal 5,8%. De este modo, la evidencia confirma que la acumulación de capital humano reduce la vulnerabilidad laboral y resulta indispensable para mitigar la rigidez de la informalidad estructural.
+En contraste, la formación de NIVEL ALTO actúa tanto como un escudo protector como un canal de movilidad ascendente. Los ocupados con estudios superiores presentan una probabilidad de salida de la informalidad hacia la formalidad del 28,4% —más de tres veces superior a la de aquellos con nivel bajo— y logran retener su condición formal en un 94,2% de los casos, reduciendo el riesgo de informalización a un marginal 5,8%. De este modo, la evidencia confirma que la acumulación de capital humano reduce la vulnerabilidad laboral y resulta indispensable para mitigar la rigidez de la informalidad estructural.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -794,7 +791,7 @@ ggplot(matriz_inf_ed, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabil
   facet_wrap(~ Educacion) +
   labs(
     title = "Matriz de Transición Informalidad por Nivel Educativo",
-    subtitle = "Probabilidad de destino en el trimestre siguiente (Pool: IV.2023 - IV.2024)",
+    subtitle = "Probabilidad de destino en el trimestre siguiente (Pool: IV.2024 - IV.2025)",
     x = "Estado en t+1 (Destino)",
     y = "Estado en t (Origen)",
     fill = "Probabilidad",
@@ -808,8 +805,18 @@ ggplot(matriz_inf_ed, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabil
 
 ```
 
-##Conclusion
+### Conclusion
 
-Como se
+El análisis de los microdatos de la Encuesta Permanente de Hogares (EPH) para el cuarto trimestre de 2025 pone de manifiesto que la informalidad laboral en la Argentina dista de ser una problemática homogénea o un fenómeno coyuntural; constituye un rasgo estructural, fuertemente condicionado por el territorio, el género, el capital humano y la inercia del propio mercado de trabajo.
+
+- **Heterogeneidad Regional:** El mercado de trabajo argentino se encuentra tripartito. Mientras la Patagonia actúa como la región de menor informalidad relativa (28.1%), bloques como el Noroeste (54.3%), Cuyo (51.8%) y el Noreste (51.0%) exhiben a más de la mitad de su población ocupada en empleos no registrados o precarizados, reflejando marcadas asimetrías en la estructura productiva del país.
+
+- **Penalización de Género Transversal:** Si bien el "efecto trampa" o inercia del mercado afecta a hombres y mujeres por igual una vez dentro de un estado ocupacional determinado, la probabilidad de inserción inicial desfavorece de forma sistemática a las mujeres en todas las regiones analizadas.
+
+- **Persistencia e Inercia Laboral (Efecto Trampa):** Las dinámicas de transición muestran una elevada rigidez: el 86.0% de los trabajadores informales permanece en esa condición al trimestre siguiente, y solo un 14.0% logra formalizarse en el lapso de un año. La categoría ocupacional resulta determinante, siendo los trabajadores independientes, de cuenta propia (63.3%) y sin pago los que sufren mayor vulnerabilidad frente a los asalariados.
+
+- **El Rol Clave del Capital Humano:** El nivel educativo emerge como la principal herramienta de movilidad ascendente y protección. Quienes poseen estudios superiores triplican la probabilidad de transicionar de la informalidad a la formalidad (28.4% frente al 9.2% con nivel educativo bajo) y reducen sensiblemente el riesgo de precarización laboral (5.8% frente a 16.2%).
+
+En síntesis, abordar la informalidad en Argentina requiere superar las recetas agregadas y diseñar políticas públicas focalizadas. Es indispensable articular estrategias de desarrollo productivo regional, esquemas de inclusión en la economía del cuidado que reduzcan la brecha de género y programas integrales de formación continua que eleven el capital humano, rompiendo así el círculo vicioso entre baja productividad, inestabilidad laboral y falta de cobertura social.
 
 ## 
