@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### **Resumen Ejecutivo**
 
-El empleo informal en la Argentina representa una problemática estructural persistente que impacta negativamente sobre la recaudación previsional, la productividad del sistema productivo y los derechos laborales básicos de la población.
+El empleo informal en la Argentina representa una problemática estructural persistente que impacta negativamente sobre la recaudación previsional, la productividad del sistema economico y los derechos laborales básicos de la población.
 
 A partir del procesamiento de los microdatos de los 31 aglomerados urbanos de la Encuesta Permanente de Hogares (EPH-INDEC) del cuarto trimestre de 2025, este estudio analiza la informalidad desde el enfoque legalista o de protección social, articulando una mirada de corte transversal (regional y de género) con un abordaje longitudinal de datos de panel para medir la movilidad ocupacional.
 
