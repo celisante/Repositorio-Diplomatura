@@ -1,0 +1,53 @@
+---
+title: "Informalidad laboral en el sector público de Argentina 2023 - 2026"
+author: "Cortez Jaramillo Mateo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.align = "center"
+)
+
+library(tidyverse)
+library(eph)
+library(ggplot2)
+
+options(scipen = 999)
+```
+
+## Resumen ejecutivo
+texto
+
+## Introducción: problemática, discusiones a abordar y alcance del procesamiento
+El presente informe pretende echar luces sobre la situación de informalidad laboral que enfrentan los asalariados en Argentina, haciendo foco especialmente en el sector público. Para perseguir nuestro objetivo, en principio, abordaremos algunos de los principales debates sobre los mercados laborales en la región latinoamericana con la intención de comprender conceptualmente el fenómeno de la informalidad.  
+
+Luego, al momento de analizar la situación en nuestro país, haremos uso de las bases de microdatos de la EPH-INDEC para los períodos que van desde el cuarto trimestre de 2023 hasta el primer trimestre de 2026, esto es, los últimos 10 trimestres de los que hay datos disponibles. La intención del análisis es desagregar los datos para cada nivel de gobierno en el sector público (nacional, provincial o municipal) y también considerar la desagregación en ramas de actividad clasificadas según CAES, para el período considerado. 
+
+
+## Desarrollo conceptual
+### Los aportes del estructuralismo
+De las investigaciones sobre el mercado de trabajo en América Latina, las más influyentes son las del estructuralismo, especialmente las ideas de Raúl Prebisch. Este marco teórico considera que en las economías latinoamericanas existe una insuficiencia dinámica: debido a la falta de capitalización, la economía no puede emplear a toda la mano de obra disponible. Ante esta situación una porción de la población se emplea en activdades de baja productividad y bajos ingresos, dando lugar a la "heterogeneidad estructural" de los países latinoamericanos. Esta característica puede esquematizarse como una dualidad entre un sector que sigue la trayectoria del avance tecnológico moderno y otro de subsistencia con atraso productivo.
+
+En este sentido, la informalidad está relacionado con el sector tradicional de la economía donde operan empresas pequeñas con escaso capital y que generan puestos de trabajo de baja calificación y con peores condiciones laborales. Por otro lado, en el sector moderno de la economía la relación asalariada es la más difundida, existe protección social y los establecimientos son de mayor escala y capitalización. Entonces cuando hablamos de formalidad o informalidad nos referimos a las diferencias de calidad en los puestos de trabajo que son producto de la heterogeneidad de la estructura productiva en los países latinoamericanos.
+
+### Una economía dual: sector público y sector privado
+Ahora bien, para avanzar con nuestro análisis nos interesa rescatar la noción de la economía dual pero cambiando un poco sus términos. Las ideas presentadas hasta ahora utilizan una definición de informalidad donde las unidades económicas operan con bajos niveles de productividad y limitadas capacidades de expansión. No obstante a nosotros nos interesa la definición legalista de informalidad, según la cual los trabajadores no cuentan con la protección frente a los riesgos sociales como accidentes laborales, el desempleo y la pobreza en la vejez. Entonces, en lugar de tener una economía dual sector tradicional/sector moderno, tenemos una economía dual sector privado/sector público dentro de los cuales existen segmentos de informalidad en donde los puestos de trabajo son de peor calidad, en tanto no se ajustan a los marcos normativos formales.
+
+En general, en los estudios de economía laboral se deja de lado el sector público porque tiene pautas de determinación salarial específicas y los mecanismos de mercado tienen una importancia reducida. No obstante, nosotros proponemos la idea de la dualidad entre sector público y privado porque entendemos que entre ellos se relacionan, se determinan y las decisiones que se toman en un sector afectan al otro. Podría pensarse, siguiente el planteo estructuralista que, dado que un sector privado con baja diversificación no genera puestos de trabajo suficientes para toda la población, el sector público genera puestos de trabajo adicionales de baja calidad para contener los aumentos en la tasa de desempleo. Es cierto que detrás de esta decisión no existe una racionalicidad económica sino que pueden haber motivos políticos o electorales que guíen a los hacedores de política, pero hace al fenómeno de la informalidad y vale la pena estudiarlo.
+
+La informalidad es un fenómeno heterogéneo y multidimensional, presente en la economía y en la sociedad en su conjunto. En términos generales, la informalidad laboral afecta a la equidad, la eficiencia y el crecimiento y, desde la definición legalista, dificulta el reconomiento de derechos laborales. 
+
+### La informalidad laboral en Argentina
+La forma de contratación de los asalariados presenta en Argentina una gran heterogeneidad, a tal punto que no en todos los casos se reconoce formalmente la relación laboral de dependencia. En nuestro país, el empleo público tiene históricamente un régimen laboral específico, el cual le otorga a la planta permanente la conservación del empleo ante cambios de gobierno, la situación escalafonaria y la retribución asignada. Este es el parámetro de formalidad en el sector público.
+
+Otras formas de contratación en el sector público son el contrato de tiempo determinado o el de planta transitoria. Los contratos por tiempo determinado refieren a las prácticas laborales o los período de prueba, que son de corto plazo o por temporada. La planta transitoria es una forma de contratación flexible en donde, si bien los contratos son por tiempo determinado, lo más usual es que se renueven periódicamente bajo las mismas condiciones. El personal contratado bajo alguna de estas modalidades carece de estabilidad.
+
+## Metodología: descripción de la base, limitaciones de cobertura, decisiones metodológicas
+
+## Resultados y análisis
+
