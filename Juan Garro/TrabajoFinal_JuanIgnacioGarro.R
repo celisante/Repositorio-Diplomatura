@@ -1,38 +1,13 @@
-
-system2("C:/Program Files/Git/bin/git.exe",
-        c("config", "--global", "user.name", shQuote("Juan Ignacio Garro")))
-
-system2("C:/Program Files/Git/bin/git.exe",
-        c("config", "--global", "user.email", shQuote("juanii.garro@gmail.com")))
-
-
-system2("C:/Program Files/Git/bin/git.exe", c("config", "--global", "user.name"))
-system2("C:/Program Files/Git/bin/git.exe", c("config", "--global", "user.email"))
-
-# TRABAJO FINAL - EJECUTAR DESPUES DE IMPORT DATASET
-# Este codigo usa los tres objetos que ya aparecen en tu Environment.
-# Abri este archivo en la misma sesion de RStudio y presiona Source.
-# Conserva las bases originales y trabaja sobre copias.
-#
-# Si falta algun paquete, ejecutar una sola vez en la consola:
-# install.packages(c("dplyr", "ggplot2"), repos = "https://cloud.r-project.org")
-
 library(dplyr)
 library(ggplot2)
 options(scipen = 999)
 
-# ============================================================
-# 1. BASES YA IMPORTADAS Y CORRECCION DE ENCABEZADOS
-# ============================================================
+
 
 base_2019 <- usu_individual_T219
 base_2023 <- usu_individual_T223
 base_2025 <- usu_individual_T225
 
-# Si Import Dataset no reconocio los encabezados, las columnas se llaman
-# V1, V2... o similares y la primera fila contiene CODUSU, ANO4, etc.
-# En ese caso usamos esa fila como nombres y luego quitamos esa fila.
-# Si la importacion ya tiene encabezados correctos, no se modifica.
 
 if (!("ANO4" %in% names(base_2019))) {
   names(base_2019) <- as.character(unlist(base_2019[1, ]))
@@ -49,13 +24,7 @@ if (!("ANO4" %in% names(base_2025))) {
   base_2025 <- base_2025[-1, ]
 }
 
-# Las columnas numericas se convierten a numeros en el bloque siguiente.
-# Esto es necesario porque una importacion sin encabezados puede haber
-# guardado todas las columnas como texto.
 
-# ============================================================
-# 2. SELECCIÓN Y UNIÓN DE LAS BASES
-# ============================================================
 
 base_2019 <- base_2019 %>%
   select(CODUSU, NRO_HOGAR, COMPONENTE, ANO4, TRIMESTRE,
@@ -94,11 +63,7 @@ base_proc <- base %>%
     pondera = PONDERA
   )
 
-# ============================================================
-# 3. LIMPIEZA Y CONSTRUCCIÓN DE VARIABLES
-# ============================================================
 
-# Control previo: cantidad de filas y observaciones fuera del universo.
 control_limpieza <- base_proc %>%
   group_by(anio) %>%
   summarise(
@@ -109,7 +74,6 @@ control_limpieza <- base_proc %>%
     .groups = "drop"
   )
 
-# Los controles anteriores pueden superponerse: no deben sumarse.
 base_proc <- base_proc %>%
   filter(
     trimestre == 2,
@@ -130,9 +94,7 @@ base_proc <- base_proc %>%
     activo = if_else(estado %in% c(1, 2), 1, 0),
     asalariado = if_else(estado == 1 & cat_ocup == 3, 1, 0),
 
-    # INTENSI ya clasifica la subocupación por insuficiencia horaria.
-    # 1 = subocupado; 2, 3 y 4 = otras situaciones de ocupación.
-    # Un desocupado pertenece a la PEA, pero no es subocupado.
+   
     subocupado = case_when(
       estado == 2 ~ 0,
       estado == 1 & INTENSI == 1 ~ 1,
@@ -140,8 +102,6 @@ base_proc <- base_proc %>%
       TRUE ~ NA_real_
     ),
 
-    # PP07H: 1 = tiene descuento jubilatorio; 2 = no tiene.
-    # Se define únicamente para asalariados ocupados.
     no_registrado = case_when(
       asalariado == 1 & PP07H == 2 ~ 1,
       asalariado == 1 & PP07H == 1 ~ 0,
@@ -149,7 +109,7 @@ base_proc <- base_proc %>%
     )
   )
 
-# Revisar la respuesta válida antes de calcular las tasas.
+
 control_datos <- base_proc %>%
   group_by(anio, grupo_edad) %>%
   summarise(
@@ -165,9 +125,6 @@ control_datos <- base_proc %>%
 print(control_limpieza, width = Inf)
 print(control_datos, width = Inf)
 
-# ============================================================
-# 4. TABLAS DE INDICADORES POR EDAD
-# ============================================================
 
 tabla_desocupacion <- base_proc %>%
   filter(activo == 1) %>%
@@ -191,8 +148,6 @@ tabla_subocupacion <- base_proc %>%
     .groups = "drop"
   )
 
-# Si hay datos faltantes, la tasa anterior utiliza la PEA con información.
-# En las bases entregadas se controla que no haya faltantes entre los activos.
 
 tabla_no_registro <- base_proc %>%
   filter(asalariado == 1, !is.na(no_registrado)) %>%
@@ -205,7 +160,7 @@ tabla_no_registro <- base_proc %>%
     .groups = "drop"
   )
 
-# Tabla resumida para leer y presentar. Tasas expresadas en porcentajes.
+
 tabla_resumen <- tabla_desocupacion %>%
   select(anio, grupo_edad, tasa_desocupacion) %>%
   left_join(
@@ -224,9 +179,7 @@ tabla_resumen <- tabla_desocupacion %>%
 
 print(tabla_resumen, width = Inf)
 
-# ============================================================
-# 5. FALTA DE REGISTRO ENTRE JÓVENES, POR SEXO
-# ============================================================
+
 
 tabla_jovenes_sexo <- base_proc %>%
   filter(grupo_edad == "16-24", asalariado == 1,
@@ -242,9 +195,7 @@ tabla_jovenes_sexo <- base_proc %>%
 
 print(tabla_jovenes_sexo, width = Inf)
 
-# ============================================================
-# 6. GRÁFICO 1: DESOCUPACIÓN SEGÚN GRUPO DE EDAD
-# ============================================================
+
 
 grafico_1 <- ggplot(tabla_desocupacion,
   aes(x = factor(anio), y = tasa_desocupacion, fill = grupo_edad)) +
@@ -272,10 +223,6 @@ grafico_1 <- ggplot(tabla_desocupacion,
 
 print(grafico_1)
 
-# ============================================================
-# 7. GRÁFICO 2: SUBOCUPACIÓN HORARIA SEGÚN GRUPO DE EDAD
-# ============================================================
-
 grafico_2 <- ggplot(tabla_subocupacion,
   aes(x = factor(anio), y = tasa_subocupacion, fill = grupo_edad)) +
   geom_col(position = "dodge", width = 0.75) +
@@ -302,9 +249,7 @@ grafico_2 <- ggplot(tabla_subocupacion,
 
 print(grafico_2)
 
-# ============================================================
-# 8. GRÁFICO 3: EMPLEO ASALARIADO NO REGISTRADO SEGÚN EDAD
-# ============================================================
+
 
 grafico_3 <- ggplot(tabla_no_registro,
   aes(x = factor(anio), y = porcentaje_no_registro, fill = grupo_edad)) +
@@ -332,9 +277,6 @@ grafico_3 <- ggplot(tabla_no_registro,
 
 print(grafico_3)
 
-# ============================================================
-# 9. GRÁFICO 4: JÓVENES: EMPLEO ASALARIADO NO REGISTRADO POR SEXO
-# ============================================================
 
 grafico_4 <- ggplot(tabla_jovenes_sexo,
   aes(x = factor(anio), y = porcentaje_no_registro, fill = sexo)) +
@@ -363,15 +305,11 @@ grafico_4 <- ggplot(tabla_jovenes_sexo,
 print(grafico_4)
 
 
-# ============================================================
-# 10. MOSTRAR LOS RESULTADOS AL TERMINAR
-# ============================================================
 
 message("PROCESAMIENTO COMPLETO. Esta es la tabla resumen:")
 print(tabla_resumen, width = Inf)
 
-# En RStudio se abre una pestana con la tabla, como al abrir una base.
-# Los cuatro graficos estan en Plots; se recorren con las flechas.
+
 if (interactive()) {
   View(tabla_resumen, title = "RESULTADOS - Tasas por edad")
 }
