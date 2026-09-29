@@ -357,20 +357,13 @@ tasa_informalidad_3 <- base_25_4_actualidad %>%
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 
-inline_1 <- tasas_laborales %>% 
-  select('Tasa de Actividad')
-inline_2 <- tasas_laborales %>% 
-  select('Tasa de Empleo')
-inline_3 <- tasas_laborales %>% 
-  select('Tasa de Desocupacion')
-inline_4 <- tasa_informalidad %>%
-  select(porcentaje_informal)
-inline_5 <- tasa_informalidad_2 %>% 
-  filter(Sexo == "Mujeres") %>% 
-  pull(porcentaje_informal)
-inline_6 <- tasa_informalidad_2 %>% 
-  filter(Sexo == "Varones") %>% 
-  pull(porcentaje_informal)
+inline_1 <- scales::number(tasas_laborales %>% pull(`Tasa de Actividad`), accuracy = 0.1, decimal.mark = ",")
+inline_2 <- scales::number(tasas_laborales %>% pull(`Tasa de Empleo`), accuracy = 0.1, decimal.mark = ",")
+inline_3 <- scales::number(tasas_laborales %>% pull(`Tasa de Desocupacion`), accuracy = 0.1, decimal.mark = ",")
+
+inline_4 <- scales::number(tasa_informalidad %>% pull(porcentaje_informal), accuracy = 0.1, decimal.mark = ",")
+inline_5 <- scales::number(tasa_informalidad_2 %>% filter(Sexo == "Mujeres") %>% pull(porcentaje_informal), accuracy = 0.1, decimal.mark = ",")
+inline_6 <- scales::number(tasa_informalidad_2 %>% filter(Sexo == "Varones") %>% pull(porcentaje_informal), accuracy = 0.1, decimal.mark = ",")
 
 ```
 
@@ -378,7 +371,7 @@ inline_6 <- tasa_informalidad_2 %>%
 
 #### Situacion en el 4°T de 2025
 
-En primer lugar, se presentan los indicadores básicos que caracterizan la composición del mercado de trabajo en la Argentina para el cuarto trimestre de 2025. Durante este período, la Tasa de Actividad se ubicó en el `r inline_1`%, mientras que la Tasa de Empleo alcanzó el `r inline_2`% y la Tasa de Desocupación se fijó en el `r inline_3`%. Por su parte, la Tasa de Informalidad registrada para el mismo trimestre ascendió al `'r inline_4'`%. Al desagregar este indicador por género, se evidencia una brecha entre ambos grupos, situándose en `'r inline_6'`% para los varones y `'r inline_5'`% para las mujeres.
+En primer lugar, se presentan los indicadores básicos que caracterizan la composición del mercado de trabajo en la Argentina para el cuarto trimestre de 2025. Durante este período, la Tasa de Actividad se ubicó en el `r inline_1`%, mientras que la Tasa de Empleo alcanzó el `r inline_2`% y la Tasa de Desocupación se fijó en el `r inline_3`%. Por su parte, la Tasa de Informalidad registrada para el mismo trimestre ascendió al `r inline_4`%. Al desagregar este indicador por género, se evidencia una brecha entre ambos grupos, situándose en `r inline_6`% para los varones y `r inline_5`% para las mujeres.
 
 Por otro lado, los datos reflejan una marcada heterogeneidad estructural en el mercado laboral. La tasa de informalidad varía drásticamente según la relación de trabajo, mostrando una alta vulnerabilidad en las categorías CUENTA PROPIA frente a los puestos de trabajo en relación de dependencia o INDEPENDIENTE categorizado como PATRON.
 
@@ -433,22 +426,27 @@ tasa_informalidad_region <- base_25_4_actualidad %>%
 
 El análisis territorial de la informalidad laboral revela profundas asimetrías en la estructura productiva argentina al cuarto trimestre de 2025. Los datos evidencian que el fenómeno de la informalidad no se distribuye de manera homogénea en el país, sino que se agrupa en tres bloques claramente diferenciados según el grado de vulnerabilidad de sus mercados de trabajo regionales:
 
-- **Bloque de alta informalidad (Superiores al 50%):** Las regiones del Noroeste (NOA) con un 54.3%, Cuyo con un 51.8% y el Noreste (NEA) con un 51.0% registran las tasas más severas de empleo no registrado.
+- **Bloque de alta informalidad (Superiores al 50%):** Las regiones del Noroeste (NOA) con un 54,3%, Cuyo con un 51,8% y el Noreste (NEA) con un 51,0% registran las tasas más severas de empleo no registrado.
 
-- **Bloque intermedio (Entorno al 40%):** El Gran Buenos Aires (GBA) con un 41.4% y la Región Pampeana con un 40.3% exhiben niveles de informalidad cercanos al promedio nacional.
+- **Bloque intermedio (Entorno al 40%):** El Gran Buenos Aires (GBA) con un 41,4% y la Región Pampeana con un 40,3% exhiben niveles de informalidad cercanos al promedio nacional.
 
-- **Bloque de menor informalidad relativa (Sub-30%)**: La Patagonia presenta la tasa más baja de informalidad en el país, ubicándose en un 28.1%.
+- **Bloque de menor informalidad relativa (Sub-30%)**: La Patagonia presenta la tasa más baja de informalidad en el país, ubicándose en un 28,1%.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 #########################################################
 ### Graficamos Informalidad por Region
 ########################################################
+
 ggplot(tasa_informalidad_region, aes(x = reorder(Region, -porcentaje_informal), y = porcentaje_informal)) +
   geom_col(fill = "#2c3e50", width = 0.6) +
-  geom_text(aes(label = paste0(round(porcentaje_informal, 1), "%")), 
-            vjust = -0.5, size = 3.8, fontface = "bold") +
-  scale_y_continuous(limits = c(0, max(tasa_informalidad_region$porcentaje_informal) * 1.15),
-                     labels = function(x) paste0(x, "%")) +
+  geom_text(
+    aes(label = paste0(scales::number(porcentaje_informal, accuracy = 0.1, decimal.mark = ","), "%")), 
+    vjust = -0.5, size = 3.8, fontface = "bold"
+  ) +
+  scale_y_continuous(
+    limits = c(0, max(tasa_informalidad_region$porcentaje_informal) * 1.15),
+    labels = function(x) paste0(scales::number(x, accuracy = 1, decimal.mark = ","), "%")
+  ) +
   labs(
     title = "Tasa de Informalidad Laboral por Región",
     subtitle = "Argentina - 4° Trimestre de 2025 (EPH-INDEC)",
@@ -459,9 +457,11 @@ ggplot(tasa_informalidad_region, aes(x = reorder(Region, -porcentaje_informal), 
   theme_minimal(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
-    panel.grid.major.x = element_blank(), # Elimina líneas verticales sobrantes
+    panel.grid.major.x = element_blank(), 
     axis.text.x = element_text(angle = 0, hjust = 0.5)
   )
+
+
 ```
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
@@ -488,7 +488,6 @@ En cada una de las seis regiones analizadas, la tasa de informalidad femenina su
 
 - **NOA y NEA:** Mantienen las tasas más elevadas tanto para mujeres como para varones, superando en ambos sexos el umbral del 50%. En el NOA, la informalidad femenina alcanza el 55,8% frente al 53,1% masculino, mientras que en el NEA las mujeres registraron un 52,3% frente al 50,0% de los varones.
 
-Este escenario expone que la mayor carga del trabajo no remunerado en el hogar limita la disponibilidad horaria de las mujeres, forzándolas a aceptar empleos informales con mayor flexibilidad pero desprovistos de seguridad social y derechos laborales básicos.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -501,12 +500,16 @@ ggplot(tasa_informalidad_genero_region,
            y = porcentaje_informal, 
            fill = Sexo)) +
   geom_col(position = position_dodge(width = 0.8), width = 0.7, color = "black", linewidth = 0.3) +
-  geom_text(aes(label = paste0(round(porcentaje_informal, 1), "%")),
-            position = position_dodge(width = 0.8),
-            vjust = -0.5, size = 3.2, fontface = "bold") +
+  geom_text(
+    aes(label = paste0(scales::number(porcentaje_informal, accuracy = 0.1, decimal.mark = ","), "%")),
+    position = position_dodge(width = 0.8),
+    vjust = -0.5, size = 3.2, fontface = "bold"
+  ) +
   scale_fill_manual(values = c("Mujeres" = "#2c3e50", "Varones" = "#7f8c8d")) +
-  scale_y_continuous(limits = c(0, max(tasa_informalidad_genero_region$porcentaje_informal) * 1.15),
-                     labels = function(x) paste0(x, "%")) +
+  scale_y_continuous(
+    limits = c(0, max(tasa_informalidad_genero_region$porcentaje_informal) * 1.15),
+    labels = function(x) paste0(scales::number(x, accuracy = 1, decimal.mark = ","), "%")
+  ) +
   labs(
     title = "Tasa de Informalidad Laboral por Región y Sexo",
     subtitle = "Argentina - 4° Trimestre de 2025 (EPH-INDEC)",
@@ -523,7 +526,13 @@ ggplot(tasa_informalidad_genero_region,
     legend.title = element_text(face = "bold"),
     axis.text.x = element_text(angle = 0, hjust = 0.5)
   )
+
+
 ```
+
+
+Este escenario expone que la mayor carga del trabajo no remunerado en el hogar limita la disponibilidad horaria de las mujeres, forzándolas a aceptar empleos informales con mayor flexibilidad pero desprovistos de seguridad social y derechos laborales básicos.
+
 
 #### Analisis de la persistencia en la Informalidad
 
@@ -612,12 +621,17 @@ matriz_inf <- pool_final_2 %>%
 
 ggplot(matriz_inf, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilidad)) +
   geom_tile(color = "white") +
-  # Etiquetas de texto con un decimal
-  geom_text(aes(label = scales::percent(Probabilidad, accuracy = 0.1)), 
-            size = 5, fontface = "bold", color = "black") + # Color negro para contraste en colores claros
+  # Etiquetas de texto con dos decimales y coma decimal
+  geom_text(
+    aes(label = scales::percent(Probabilidad, accuracy = 0.1, decimal.mark = ",")), 
+    size = 5, fontface = "bold", color = "black"
+  ) + 
   
-  
-  scale_fill_gradient(low = "#ebf5fb", high = "#2980b9", labels = scales::percent) +
+  scale_fill_gradient(
+    low = "#ebf5fb", 
+    high = "#2980b9", 
+    labels = scales::percent_format(accuracy = 0.1, decimal.mark = ",")
+  ) +
   
   labs(
     title = "Matriz de Transición Informalidad-Formalidad",
@@ -637,11 +651,12 @@ ggplot(matriz_inf, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilida
     legend.position = "bottom",
     legend.title = element_text(vjust = 0.8)
   )
+
 ```
 
 La imagen presenta una matriz de transición entre informalidad y formalidad laboral, elaborada a partir de datos de la Encuesta Permanente de Hogares (EPH-INDEC) para el período acumulado entre el cuarto trimestre de 2024 y el cuarto trimestre de 2025. Muestra la probabilidad de que un trabajador cambie o mantenga su condición de empleo (Formal/Informal) de un trimestre al siguiente.
 
-Los valores diagonales ($86.0\%$ para la informalidad y $90.5\%$ para la formalidad) muestran que la condición laboral actual tiende a mantenerse con mucha fuerza en el corto plazo (de un trimestre a otro). A su vez, solo el $14.0\%$ de las personas que comienzan en una situación informal logran formalizarse al trimestre siguiente.
+Los valores diagonales ($86,0\%$ para la informalidad y $90,5\%$ para la formalidad) muestran que la condición laboral actual tiende a mantenerse con mucha fuerza en el corto plazo (de un trimestre a otro). A su vez, solo el $14,0\%$ de las personas que comienzan en una situación informal logran formalizarse al trimestre siguiente.
 
 La matriz evidencia un mercado de trabajo segmentado y rígido, donde el estatus de formalidad/informalidad presenta un "efecto trampa" o de persistencia temporal. Quienes están en el sector informal tienen escasas probabilidades de transicionar rápidamente hacia un empleo registrado en el transcurso de un año, mientras que la estabilidad del sector formal actúa como un escudo protector primario para la mayoría de sus integrantes.
 
@@ -714,7 +729,7 @@ ggplot(matriz_Inf_genero, aes(x = clas_estado_t1, y = clas_estado_t, fill = Prob
   geom_tile(color = "white", linewidth = 0.6) +
   geom_text(
     aes(
-      label = percent(Probabilidad, accuracy = 0.1),
+      label = percent(Probabilidad, accuracy = 0.1, decimal.mark = ","),
       color = Probabilidad > 0.5 
     ), 
     size = 3.5,
@@ -723,7 +738,7 @@ ggplot(matriz_Inf_genero, aes(x = clas_estado_t1, y = clas_estado_t, fill = Prob
   scale_fill_gradient(
     low = "#E5E9F0",   
     high = "#1B365D",  
-    labels = percent
+    labels = scales::percent_format(accuracy = 0.1, decimal.mark = ",")
   ) +
   scale_color_manual(values = c("black", "white"), guide = "none") +
   facet_wrap(~ Sexo) +
@@ -740,6 +755,7 @@ ggplot(matriz_Inf_genero, aes(x = clas_estado_t1, y = clas_estado_t, fill = Prob
     panel.grid = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
+
 
 ```
 
@@ -772,11 +788,12 @@ matriz_inf_ed <- pool_final_3 %>%
 
 ### Graficamos
 
+
 ggplot(matriz_inf_ed, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabilidad)) +
   geom_tile(color = "white", linewidth = 0.6) +
   geom_text(
     aes(
-      label = percent(Probabilidad, accuracy = 0.1),
+      label = percent(Probabilidad, accuracy = 0.1, decimal.mark = ","),
       color = Probabilidad > 0.5 
     ), 
     size = 3.5,
@@ -785,7 +802,7 @@ ggplot(matriz_inf_ed, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabil
   scale_fill_gradient(
     low = "#E5E9F0",  
     high = "#1B365D",  
-    labels = percent
+    labels = scales::percent_format(accuracy = 0.1, decimal.mark = ",")
   ) +
   scale_color_manual(values = c("black", "white"), guide = "none") +
   facet_wrap(~ Educacion) +
@@ -803,19 +820,20 @@ ggplot(matriz_inf_ed, aes(x = clas_estado_t1, y = clas_estado_t, fill = Probabil
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
+
 ```
 
 ### Conclusion
 
 El análisis de los microdatos de la Encuesta Permanente de Hogares (EPH) para el cuarto trimestre de 2025 pone de manifiesto que la informalidad laboral en la Argentina dista de ser una problemática homogénea o un fenómeno coyuntural; constituye un rasgo estructural, fuertemente condicionado por el territorio, el género, el capital humano y la inercia del propio mercado de trabajo.
 
-- **Heterogeneidad Regional:** El mercado de trabajo argentino se encuentra tripartito. Mientras la Patagonia actúa como la región de menor informalidad relativa (28.1%), bloques como el Noroeste (54.3%), Cuyo (51.8%) y el Noreste (51.0%) exhiben a más de la mitad de su población ocupada en empleos no registrados o precarizados, reflejando marcadas asimetrías en la estructura productiva del país.
+- **Heterogeneidad Regional:** El mercado de trabajo argentino se encuentra tripartito. Mientras la Patagonia actúa como la región de menor informalidad relativa (28,1%), bloques como el Noroeste (54,3%), Cuyo (51,8%) y el Noreste (51,0%) exhiben a más de la mitad de su población ocupada en empleos no registrados o precarizados, reflejando marcadas asimetrías en la estructura productiva del país.
 
 - **Penalización de Género Transversal:** Si bien el "efecto trampa" o inercia del mercado afecta a hombres y mujeres por igual una vez dentro de un estado ocupacional determinado, la probabilidad de inserción inicial desfavorece de forma sistemática a las mujeres en todas las regiones analizadas.
 
-- **Persistencia e Inercia Laboral (Efecto Trampa):** Las dinámicas de transición muestran una elevada rigidez: el 86.0% de los trabajadores informales permanece en esa condición al trimestre siguiente, y solo un 14.0% logra formalizarse en el lapso de un año. La categoría ocupacional resulta determinante, siendo los trabajadores independientes, de cuenta propia (63.3%) y sin pago los que sufren mayor vulnerabilidad frente a los asalariados.
+- **Persistencia e Inercia Laboral (Efecto Trampa):** Las dinámicas de transición muestran una elevada rigidez: el 86,0% de los trabajadores informales permanece en esa condición al trimestre siguiente, y solo un 14,0% logra formalizarse en el lapso de un año. La categoría ocupacional resulta determinante, siendo los trabajadores independientes, de cuenta propia (63,3%) y sin pago los que sufren mayor vulnerabilidad frente a los asalariados.
 
-- **El Rol Clave del Capital Humano:** El nivel educativo emerge como la principal herramienta de movilidad ascendente y protección. Quienes poseen estudios superiores triplican la probabilidad de transicionar de la informalidad a la formalidad (28.4% frente al 9.2% con nivel educativo bajo) y reducen sensiblemente el riesgo de precarización laboral (5.8% frente a 16.2%).
+- **El Rol Clave del Capital Humano:** El nivel educativo emerge como la principal herramienta de movilidad ascendente y protección. Quienes poseen estudios superiores triplican la probabilidad de transicionar de la informalidad a la formalidad (28.4% frente al 9,2% con nivel educativo bajo) y reducen sensiblemente el riesgo de precarización laboral (5,8% frente a 16,2%).
 
 En síntesis, abordar la informalidad en Argentina requiere superar las recetas agregadas y diseñar políticas públicas focalizadas. Es indispensable articular estrategias de desarrollo productivo regional, esquemas de inclusión en la economía del cuidado que reduzcan la brecha de género y programas integrales de formación continua que eleven el capital humano, rompiendo así el círculo vicioso entre baja productividad, inestabilidad laboral y falta de cobertura social.
 
