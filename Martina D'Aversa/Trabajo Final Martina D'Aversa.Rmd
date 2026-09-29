@@ -1,30 +1,513 @@
 ---
-title: "Trabajo Final Martina D'Aversa"
+title: "La desindustrialización y la reconfiguración productiva: seis trayectorias manufactureras comparadas (1970–2019)"
+subtitle: "Producción, empleo y comercio exterior a la luz de Graña y Terranova"
 author: "Martina D'Aversa"
-date: "`r Sys.Date()`"
-output: html_document
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+    theme: cosmo
+    highlight: tango
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 9, fig.height = 5.5, fig.align = "center")
 ```
 
-## R Markdown
+```{css estilos, echo=FALSE}
+body {
+  text-align: justify;
+  color: #2B2B2B;
+  font-size: 16px;
+  line-height: 1.65;
+}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+h1 {
+  color: #0B4F6C;
+  border-bottom: 3px solid #0B4F6C;
+  padding-bottom: 6px;
+  margin-top: 45px;
+}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+h2 {
+  color: #1B7A8C;
+  margin-top: 32px;
+}
 
-```{r cars}
-summary(cars)
+h3 {
+  color: #3E8E9C;
+  font-size: 19px;
+}
+
+h1.title {
+  color: #0B4F6C;
+  border-bottom: none;
+  font-weight: 700;
+}
+
+h3.subtitle, h4.author, h4.date {
+  color: #5A7A85;
+  text-align: left;
+  border-bottom: none;
+}
+
+.tocify-item.active {
+  background-color: #0B4F6C !important;
+}
+
+pre {
+  background-color: #F7F9FA;
+  border-left: 4px solid #1B7A8C;
+  border-radius: 0 4px 4px 0;
+}
+
+caption, .caption, .gt_table {
+  text-align: left;
+}
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r librerias}
+library(tidyverse)
+library(readxl)
+library(kableExtra)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# 1. Resumen ejecutivo
+
+Este informe analiza la evolución del peso relativo de la actividad manufacturera en seis países —Argentina, Brasil, Estados Unidos, Reino Unido, China y Corea del Sur— entre 1970 y 2019, a partir de la discusión planteada por Graña y Terranova (2022) sobre la desindustrialización y la nueva división internacional del trabajo (NDIT).
+
+La hipótesis de partida sostiene que la participación de la manufactura habría disminuido en Argentina, Brasil, Estados Unidos y Reino Unido, y aumentado en China y Corea del Sur; como se detalla más adelante, estas trayectorias se verifican con particular consistencia en producción y empleo, mientras que la dimensión exportadora muestra un comportamiento más heterogéneo. Para evaluarla se construyen tres indicadores que observan el fenómeno desde dimensiones distintas: el valor agregado manufacturero como porcentaje del valor agregado total (VAM/PBI, ver aclaración metodológica en 4.2), el empleo manufacturero como porcentaje del empleo total y la participación de las exportaciones manufactureras en las exportaciones totales de bienes.
+
+Los resultados confirman la hipótesis en la dimensión productiva y
+laboral, pero la matizan de manera significativa en la dimensión
+exportadora: Argentina y Brasil aumentan su participación de
+exportaciones manufactureras mientras pierden peso manufacturero en
+producción y empleo. Además, el ejercicio muestra que las tres
+dimensiones no se mueven de manera simultánea ni con la misma
+intensidad, lo que respalda el argumento central del texto: *la
+desindustrialización no es un proceso mecánico ni uniforme, sino el
+resultado de una reorganización internacional de la producción en la que "unos países desindustrializan a otros"*.
+
+# 2. Introducción
+
+La pérdida de peso relativo de la industria manufacturera es uno de los fenómenos más discutidos de la economía de las últimas cinco décadas. La literatura tradicional lo ha interpretado de dos maneras: como un resultado *mecánico* del desarrollo de las economías maduras —donde la industria cede lugar a los servicios por efecto del ingreso y de la productividad— o como un proceso *prematuro* en los países en desarrollo, que se desindustrializan antes de haber alcanzado los beneficios asociados al desarrollo industrial.
+
+Graña y Terranova (2022) cuestionan ambas lecturas. Su argumento es que la desindustrialización no responde a una trayectoria lineal que todos los países recorrerían tarde o temprano, sino a una transformación cualitativa del capitalismo a escala global: la emergencia de la NDIT desde los años setenta, habilitada por la revolución en las telecomunicaciones y la automatización flexible, que permitió relocalizar los segmentos más simples de la producción manufacturera hacia países de bajos salarios.
+
+Este informe toma esa discusión como marco y la traduce en un ejercicio empírico acotado: *una hipótesis, tres indicadores y seis países*. El alcance del procesamiento es descriptivo. No se incorporan variables causales —salarios, productividad, costo laboral unitario— que son el centro del aporte de los autores; el objetivo es más modesto y consiste en verificar si las trayectorias divergentes que el texto describe se observan de manera consistente en las tres dimensiones en que la manufactura puede perder o ganar peso.
+
+# 3. Desarrollo conceptual
+
+## 3.1 Las dos lecturas que el texto discute
+
+La literatura ubica el inicio de la desindustrialización en Estados
+Unidos y Reino Unido hacia mediados de los años sesenta, y una década más tarde en el resto de los países desarrollados. Allí el proceso se explica por factores "internos": el aumento del ingreso per cápita, que reduce la elasticidad de demanda de bienes manufacturados, y el crecimiento más veloz de la productividad industrial respecto de los servicios, que reduce relativamente el empleo del sector. En esta lectura la desindustrialización aparece como el desenlace natural de una economía madura.
+
+Para los países en desarrollo, en cambio, se acuñó la categoría de
+desindustrialización "prematura": el proceso comienza a niveles de
+ingreso per cápita sensiblemente menores, lo que implicaría que esas
+economías no alcanzaron los beneficios del desarrollo industrial. Graña y Terranova señalan que el propio término delata el supuesto que critican, porque "prematuro" es el nombre que se le da a algo que ocurre antes del momento correcto: la categoría presupone que existe una secuencia predeterminada.
+
+El segundo problema que identifican es que la distinción entre ambos tipos descansa en el ingreso per cápita al momento de la desindustrialización, una variable que resulta poco precisa. Por un lado, ese nivel no era compartido por países clasificados del mismo
+modo; por otro, cae sistemáticamente a lo largo del tiempo, de modo que Corea del Sur o Taiwán deberían ser catalogados como casos "prematuros" aunque sea difícil sostener que no completaron su desarrollo industrial.
+
+## 3.2 La nueva división internacional del trabajo
+
+La explicación alternativa que proponen los autores parte de la crisis de rentabilidad de fines de los años sesenta. La revolución en las telecomunicaciones hizo posible gestionar cadenas globales de valor, y la automatización flexible amplió el universo de actividades relocalizables al reducir la complejidad de los puestos de trabajo manufactureros. Sobre esa base, los países desarrollados comenzaron a deslocalizar los segmentos más simples de su producción hacia economías de bajos salarios, reteniendo las tareas más complejas vinculadas al diseño, el desarrollo y la investigación.
+
+De esa reorganización surgen tres tipos de países: los *desarrollados*, que se concentran en las tareas complejas y en la gestión de las cadenas globales; los del *Este y Sudeste asiático*, que se convierten en exportadores de manufacturas simples; y *el resto*, que permanece como exportador de materias primas.
+
+La conclusión del texto es doble. Primero, que la desindustrialización no tiene nada de natural ni de mecánico: es el resultado de una transformación del capitalismo a escala global, y su verdadera naturaleza es la de un proceso en el que unos países
+desindustrializaron a otros. Segundo, que si se calculan participaciones manufactureras "globales" -agregando el conjunto de la muestra- la desindustrialización mundial no aparece con la nitidez que sugiere la evidencia nacional tomada país por país.
+
+## 3.3 Preguntas abiertas que justifican el ejercicio
+
+La pérdida de peso de la manufactura puede observarse desde distintas dimensiones. El valor agregado permite captar su participación relativa en la estructura productiva, mientras que el empleo muestra su importancia como fuente de trabajo. La participación de las manufacturas en las exportaciones agrega una dimensión comercial y permite identificar casos en los que la evolución de la inserción exportadora no coincide con la trayectoria productiva o laboral. Por eso, el ejercicio combina los tres indicadores en lugar de utilizar una única medida de desindustrialización.
+
+De esta discusión se desprenden las preguntas que organizan el
+procesamiento:
+
+1.  ¿Las trayectorias divergentes entre países centrales y latinoamericanos, por un lado, y asiáticos, por otro, se verifican de manera consistente en las tres dimensiones (producción, empleo y comercio exterior)?
+2.  ¿Se mueven las tres dimensiones de manera simultánea, o es posible  que un país pierda empleo manufacturero sin perder peso en el PBI, o gane participación exportadora sin ganar empleo industrial?
+3.  ¿Es correcto afirmar que hubo desindustrialización a nivel mundial, o las caídas nacionales conviven con desplazamientos de la producción hacia otras regiones?
+
+# 4. Metodología
+
+## 4.1 Fuentes de información
+
+Se utilizan tres bases de datos, todas contenidas en la carpeta `Bases/` del proyecto:
+
+```{r tabla-fuentes, echo=FALSE}
+data.frame(
+  Indicador = c("VAM / PBI (%)",
+                "Empleo manufacturero / empleo total (%)",
+                "Exportaciones manufactureras / exportaciones de bienes (%)"),
+  Archivo = c("VA_por_sector_2020USD.xlsx",
+              "empleo_industrial.csv",
+              "exportaciones_manufactureras_WB.csv"),
+  Fuente = c("Naciones Unidas - Valor agregado por sector (ISIC), dólares constantes de 2020",
+             "Base del paper de Graña y Terranova (ILO-Stats, OECD-Stats, LA-KLEMS, UNIDO, Groningen y cuentas nacionales)",
+             "Banco Mundial - WDI, indicador TX.VAL.MANF.ZS.UN (elaborado a partir de UNCTAD)")
+) %>%
+  kbl(caption = "Fuentes utilizadas para cada indicador") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13)
+```
+
+## 4.2 Decisiones metodológicas
+
+**Selección de países.** Se eligieron seis países que representan las tres categorías que el propio texto utiliza. La comparación busca contrastar trayectorias industriales diferentes dentro de cada grupo, no agotar el universo de casos.
+
+**Definición de manufactura.** Se trabaja con la manufactura en sentido estricto (ISIC D) y no con el agregado "Minería, manufactura y servicios públicos" (ISIC C-E), que está disponible en la misma base. Esta distinción es relevante para Argentina y Brasil, donde la minería y los servicios públicos tienen un peso considerable y su inclusión sobreestimaría la participación industrial.
+
+**Denominador del indicador de empleo.** Se utiliza la ocupación total de la economía, de modo que el indicador capta el lugar de la industria como fuente de empleo en el conjunto del mercado de trabajo.
+
+**Aclaración sobre el denominador de VAM/PBI.** El denominador utilizado es *Total Value Added* de la base de Naciones Unidas, no el PBI en sentido estricto (que además suma impuestos netos sobre los productos). Se mantiene la sigla convencional "VAM/PBI" a lo largo del informe por ser la denominación habitual del indicador en la literatura, pero corresponde precisarla como valor agregado manufacturero sobre valor agregado total. El indicador constituye una aproximación al peso de la manufactura en la estructura productiva, aunque no coincide exactamente con su participación en el PBI.
+
+## 4.3 Limitaciones de cobertura
+
+El procesamiento no completa la ventana 1970-2019 en todos los casos, y estas limitaciones se informan explícitamente porque forman parte del análisis:
+
+- **China** es el caso más restringido. La serie de empleo comienza en 1978, la de exportaciones manufactureras en 1984 y la de valor agregado manufacturero en 2004. El propio artículo reconoce esta limitación y aclara que decidió mostrar sus cálculos desde 1978 por el punto de inicio de los datos de empleo de ese país.
+- **Brasil** tiene datos de empleo hasta 2018 y no 2019.
+- El resto de los países cubre el período completo en las tres
+  dimensiones.
+
+# 5. Procesamiento
+
+## 5.1 Carga y construcción de los indicadores
+
+```{r parametros}
+# Países seleccionados y grupos de análisis
+paises <- c("ARG", "BRA", "USA", "GBR", "CHN", "KOR")
+
+etiquetas <- c(ARG = "Argentina", BRA = "Brasil", USA = "Estados Unidos",
+               GBR = "Reino Unido", CHN = "China", KOR = "Corea del Sur")
+
+grupos <- c(ARG = "América Latina", BRA = "América Latina",
+            USA = "Desarrollados",  GBR = "Desarrollados",
+            CHN = "Este asiático",  KOR = "Este asiático")
+```
+
+### Indicador 1: valor agregado manufacturero sobre PBI
+
+```{r vam}
+va_crudo <- read_excel("Bases/VA_por_sector_2020USD.xlsx",
+                       sheet = "Results", na = "...")
+
+vam <- va_crudo %>%
+  mutate(
+    pais = case_when(
+      `Country/Area` == "Argentina"                                            ~ "ARG",
+      `Country/Area` == "Brazil"                                               ~ "BRA",
+      `Country/Area` == "United States"                                        ~ "USA",
+      `Country/Area` == "United Kingdom of Great Britain and Northern Ireland"  ~ "GBR",
+      `Country/Area` == "China (mainland)"                                     ~ "CHN",
+      `Country/Area` == "Republic of Korea"                                    ~ "KOR"
+    ),
+    anio  = as.numeric(Year),
+    manuf = as.numeric(`Manufacturing (ISIC D)`),
+    total = as.numeric(`Total Value Added`),
+    valor = 100 * manuf / total
+  ) %>%
+  filter(pais %in% paises, anio >= 1970, anio <= 2019, !is.na(valor)) %>%
+  select(pais, anio, valor) %>%
+  mutate(indicador = "VAM / PBI")
+```
+
+El indicador queda construido en `r nrow(vam)` observaciones (país-año), como se ve en las primeras filas de la tabla siguiente.
+
+```{r vam-tabla}
+head(vam, 5) %>%
+  kbl(caption = "Primeras filas del indicador VAM / PBI") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13)
+```
+
+### Indicador 2: empleo manufacturero sobre empleo total
+
+```{r empleo}
+empleo_crudo <- read_csv("Bases/empleo_industrial.csv",
+                         locale = locale(encoding = "UTF-8"))
+
+# La segunda columna trae el código de país; se renombra por posición
+# para evitar problemas con el acento en el nombre original.
+names(empleo_crudo)[2] <- "pais"
+
+empleo <- empleo_crudo %>%
+  rename(anio = Anio) %>%
+  mutate(valor = 100 * Ocup_INDUSTRIA / Ocup_TOTAL_ECONOMIA) %>%
+  filter(pais %in% paises, anio >= 1970, anio <= 2019, !is.na(valor)) %>%
+  select(pais, anio, valor) %>%
+  mutate(indicador = "Empleo manufacturero")
+```
+
+El indicador queda construido en `r nrow(empleo)` observaciones (país-año), como se ve en las primeras filas de la tabla siguiente.
+
+```{r empleo-tabla}
+head(empleo, 5) %>%
+  kbl(caption = "Primeras filas del indicador de empleo manufacturero") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13)
+```
+
+### Indicador 3: exportaciones manufactureras sobre exportaciones de bienes
+
+```{r exportaciones}
+# El archivo del Banco Mundial trae 4 filas de metadatos antes del encabezado
+exp_crudo <- read_csv("Bases/exportaciones_manufactureras_WB.csv", skip = 4)
+
+exportaciones <- exp_crudo %>%
+  rename(pais = `Country Code`) %>%
+  filter(pais %in% paises) %>%
+  select(pais, matches("^[0-9]{4}$")) %>%
+  pivot_longer(cols = -pais, names_to = "anio", values_to = "valor") %>%
+  mutate(anio = as.numeric(anio)) %>%
+  filter(anio >= 1970, anio <= 2019, !is.na(valor)) %>%
+  mutate(indicador = "Exportaciones manufactureras")
+```
+
+El indicador queda construido en `r nrow(exportaciones)` observaciones (país-año), como se ve en las primeras filas de la tabla siguiente.
+
+```{r exportaciones-tabla}
+head(exportaciones, 5) %>%
+  kbl(caption = "Primeras filas del indicador de exportaciones manufactureras") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13)
+```
+
+### Panel integrado
+
+```{r panel}
+panel <- bind_rows(vam, empleo, exportaciones) %>%
+  mutate(
+    nombre = etiquetas[pais],
+    grupo  = grupos[pais],
+    nombre = factor(nombre, levels = etiquetas),
+    grupo  = factor(grupo, levels = c("Desarrollados", "América Latina", "Este asiático"))
+  ) %>%
+  arrange(indicador, pais, anio)
+
+# Se guarda el panel procesado para poder reutilizarlo
+write_csv(panel, "Bases/panel_manufactura.csv")
+```
+
+El panel integrado queda compuesto por `r nrow(panel)` observaciones en total, resultado de apilar los tres indicadores construidos en la sección anterior.
+
+```{r panel-tabla}
+head(panel, 5) %>%
+  kbl(caption = "Primeras filas del panel integrado") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13)
+```
+
+## 5.2 Cobertura efectiva
+
+```{r cobertura}
+panel %>%
+  group_by(indicador, nombre) %>%
+  summarise(desde = min(anio), hasta = max(anio), obs = n(), .groups = "drop") %>%
+  mutate(periodo = paste0(desde, " - ", hasta)) %>%
+  select(indicador, nombre, periodo, obs) %>%
+  arrange(indicador, nombre) %>%
+  rename(Indicador = indicador, País = nombre,
+         `Período disponible` = periodo, Observaciones = obs) %>%
+  kbl(caption = "Cobertura efectiva de cada serie") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+La tabla anterior confirma, con datos concretos, las limitaciones de cobertura adelantadas en la sección 4.3. Argentina, Brasil (con la excepción de 2019 en empleo), Estados Unidos, Reino Unido y Corea del Sur cuentan con series prácticamente completas para 1970-2019 en los tres indicadores. China es el caso más restringido: su serie de empleo manufacturero comienza en 1978, la de exportaciones manufactureras en 1984, y la de valor agregado manufacturero recién en 2004, por disponibilidad de las fuentes originales. Esto significa que, para China, las comparaciones de la sección 6 no se realizan contra 1970 sino contra el primer año efectivamente disponible en cada indicador, y que el gráfico de VAM/PBI (sección 6.1) no permite observar el comienzo del despegue industrial chino, que según el propio texto de Graña y Terranova ya estaba en marcha desde los años ochenta.
+
+# 6. Resultados y análisis
+
+## 6.1 La dimensión productiva
+
+```{r fig-vam}
+ggplot(filter(panel, indicador == "VAM / PBI"),
+       aes(x = anio, y = valor, colour = nombre)) +
+  geom_line(linewidth = 1) +
+  scale_colour_manual(
+    values = c("Argentina" = "#0B7285", "Brasil" = "#2B8A3E",
+               "Estados Unidos" = "#C92A2A", "Reino Unido" = "#5F3DC4",
+               "China" = "#E8590C", "Corea del Sur" = "#1864AB")
+  ) +
+  scale_x_continuous(breaks = seq(1970, 2015, 10), limits = c(1970, 2019)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) +
+  labs(
+    title = "La industria pierde peso en la producción, salvo en Asia",
+    subtitle = "Valor agregado manufacturero como porcentaje del valor agregado total, 1970-2019",
+    caption = "Fuente: elaboración propia en base a Naciones Unidas, valor agregado por sector (ISIC D), dólares constantes de 2020.\nNota: la serie de China comienza en 2004 por disponibilidad de datos.",
+    x = NULL, y = "VAM / PBI", colour = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(colour = "grey35", margin = margin(b = 12)),
+    plot.caption = element_text(colour = "grey45", hjust = 0, size = 8.5),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+En la dimensión productiva la hipótesis se verifica. Argentina cae de 24,7% a 17,0% y Brasil de 21,0% a 12,5%, mientras que Estados Unidos y Reino Unido, que partían de niveles bastante más bajos, descienden de 12,1% a 10,3% y de 14,1% a 9,2% respectivamente. Corea del Sur presenta la trayectoria inversa y más pronunciada de toda la muestra: pasa de 7,3% en 1970 a 28,3% en 2019, y termina el período con una participación manufacturera casi tres veces superior a la de Estados Unidos.
+
+Un detalle relevante es el punto de partida. Argentina y Brasil arrancan el período con participaciones manufactureras más altas que las de Estados Unidos y Reino Unido, y terminan por debajo de Corea. Esto es consistente con lo que el texto señala sobre lo inadecuado de clasificar las trayectorias según el ingreso per cápita: la caída latinoamericana no ocurre desde una base industrial insignificante, sino desde niveles comparables o superiores a los de los países centrales.
+
+## 6.2 La dimensión laboral
+
+```{r fig-empleo}
+ggplot(filter(panel, indicador == "Empleo manufacturero"),
+       aes(x = anio, y = valor, colour = nombre)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~grupo) +
+  scale_colour_manual(
+    values = c("Argentina" = "#0B7285", "Brasil" = "#2B8A3E",
+               "Estados Unidos" = "#C92A2A", "Reino Unido" = "#5F3DC4",
+               "China" = "#E8590C", "Corea del Sur" = "#1864AB")
+  ) +
+  scale_x_continuous(breaks = seq(1970, 2010, 20)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(0, 40)) +
+  labs(
+    title = "El empleo industrial se desplaza hacia el Este asiático",
+    subtitle = "Empleo manufacturero como porcentaje del empleo total, por grupo de países, 1970-2019",
+    caption = "Fuente: elaboración propia en base a la base de empleo de Graña y Terranova (ILO-Stats, OECD-Stats, LA-KLEMS, UNIDO, Groningen y cuentas nacionales).\nNota: la serie de China comienza en 1978 y la de Brasil finaliza en 2018.",
+    x = NULL, y = "Empleo manufacturero", colour = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(colour = "grey35", margin = margin(b = 12)),
+    plot.caption = element_text(colour = "grey45", hjust = 0, size = 8.5),
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+La dimensión laboral es donde el contraste resulta más nítido, y donde se aprecia mejor el sentido del desplazamiento. Reino Unido protagoniza la caída más pronunciada de la muestra: de 33,1% del empleo total en 1970 a 7,8% en 2019, más de veinticinco puntos porcentuales. Estados Unidos desciende de 22,8% a 8,6%. Argentina cae de 19,6% a 10,5% y Brasil se mantiene relativamente estable en torno al 10-11%, aunque partiendo de un nivel considerablemente más bajo. En el otro extremo, China asciende de 17,1% en 1978 a 27,6% en 2018 y Corea del Sur de 17,7% a 23,2%. La forma de la curva coreana es compatible con la interpretación de Graña y Terranova sobre las sucesivas "oleadas" de industrialización, según la cual el desarrollo industrial de un país eleva progresivamente sus costos laborales, lo que favorece la relocalización posterior de la producción más simple hacia destinos de menores salarios — aunque este informe, al no medir salarios ni productividad, no puede verificar ese mecanismo de manera directa.
+
+Presentar este indicador desagregado por grupo de países permite ver que la magnitud de la caída es mucho mayor en los países desarrollados que en los latinoamericanos, aunque en ambos casos el signo sea el mismo. Argentina y Brasil pierden empleo industrial, pero desde un piso que nunca fue el de una economía plenamente industrializada.
+
+## 6.3 La dimensión exportadora
+
+```{r fig-exportaciones}
+ggplot(filter(panel, indicador == "Exportaciones manufactureras"),
+       aes(x = anio, y = valor, colour = nombre)) +
+  geom_line(linewidth = 1) +
+  scale_colour_manual(
+    values = c("Argentina" = "#0B7285", "Brasil" = "#2B8A3E",
+               "Estados Unidos" = "#C92A2A", "Reino Unido" = "#5F3DC4",
+               "China" = "#E8590C", "Corea del Sur" = "#1864AB")
+  ) +
+  scale_x_continuous(breaks = seq(1970, 2015, 10), limits = c(1970, 2019)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(0, 100)) +
+  labs(
+    title = "La especialización exportadora no acompaña al empleo industrial",
+    subtitle = "Exportaciones manufactureras como porcentaje de las exportaciones de bienes, 1970-2019",
+    caption = "Fuente: elaboración propia en base a Banco Mundial, World Development Indicators (TX.VAL.MANF.ZS.UN), construido a partir de UNCTAD.\nNota: la serie de China comienza en 1984 por disponibilidad de datos.",
+    x = NULL, y = "Exportaciones manufactureras", colour = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(colour = "grey35", margin = margin(b = 12)),
+    plot.caption = element_text(colour = "grey45", hjust = 0, size = 8.5),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+Aquí aparece el resultado que más tensiona la hipótesis original. China pasa de 47,7% en 1984 a 92,9% en 2019 y Corea del Sur de 76,5% a 87,4%, en línea con lo esperado. Estados Unidos y Reino Unido descienden de manera moderada, de 66,7% a 59,1% y de 80,1% a 71,8% respectivamente. Pero Argentina aumenta de 13,9% a 16,6% y Brasil lo hace de 13,2% a 30,2%. Es decir que los dos países latinoamericanos, que pierden peso manufacturero en producción y en empleo, ganan participación manufacturera en su estructura exportadora. El contraste de niveles también es revelador: aun después de más de un punto de crecimiento por década, Argentina exporta manufacturas en una proporción cuatro veces menor que la de Estados Unidos y casi seis veces menor que la de China.
+
+## 6.4 Síntesis: las tres dimensiones no se mueven juntas
+
+```{r tabla-variaciones}
+tabla_antes_despues <- panel %>%
+  group_by(indicador, nombre, grupo) %>%
+  summarise(
+    inicio = round(valor[which.min(anio)], 1),
+    fin    = round(valor[which.max(anio)], 1),
+    .groups = "drop"
+  ) %>%
+  select(grupo, nombre, indicador, inicio, fin) %>%
+  pivot_wider(names_from = indicador, values_from = c(inicio, fin),
+              names_glue = "{indicador}_{.value}") %>%
+  arrange(grupo, nombre) %>%
+  select(grupo, nombre,
+         `VAM / PBI_inicio`, `VAM / PBI_fin`,
+         `Empleo manufacturero_inicio`, `Empleo manufacturero_fin`,
+         `Exportaciones manufactureras_inicio`, `Exportaciones manufactureras_fin`)
+
+tabla_antes_despues %>%
+  select(-grupo) %>%
+  kbl(caption = "Valor del indicador en el primer y el último año disponible, por país",
+      col.names = c("País", "Inicio", "Fin", "Inicio", "Fin", "Inicio", "Fin")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE, font_size = 13) %>%
+  add_header_above(c(" " = 1, "VAM / PBI" = 2,
+                     "Empleo manufacturero" = 2,
+                     "Exportaciones manufactureras" = 2)) %>%
+  pack_rows(index = table(tabla_antes_despues$grupo))
+```
+
+La tabla anterior permite comparar, de un vistazo, el punto de partida y de llegada de cada país en las tres dimensiones. Puede observarse que la hipótesis se cumple de manera completa: la desindustrialización no se manifiesta necesariamente de la misma manera en producción, empleo y exportaciones.
+
+## 6.5 ¿Qué sugieren estos casos sobre la desindustrialización?
+
+```{r fig-promedio}
+panel %>%
+  filter(indicador == "Empleo manufacturero", anio >= 1978) %>%
+  group_by(grupo, anio) %>%
+  summarise(promedio = mean(valor), .groups = "drop") %>%
+  ggplot(aes(x = anio, y = promedio, colour = grupo)) +
+  geom_line(linewidth = 1.2) +
+  scale_colour_manual(values = c("Desarrollados" = "#C92A2A",
+                                 "América Latina" = "#2B8A3E",
+                                 "Este asiático" = "#E8590C")) +
+  scale_x_continuous(breaks = seq(1980, 2015, 10)) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"), limits = c(0, 30)) +
+  labs(
+    title = "No todos pierden: el empleo industrial cambia de lugar",
+    subtitle = "Promedio simple del empleo manufacturero sobre empleo total, por grupo de países, 1978-2019",
+    caption = "Fuente: elaboración propia en base a la base de empleo de Graña y Terranova.\nNota: se toma 1978 como año inicial por el comienzo de la serie de China. Promedio simple de los países de cada grupo.",
+    x = NULL, y = "Empleo manufacturero", colour = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(colour = "grey35", margin = margin(b = 12)),
+    plot.caption = element_text(colour = "grey45", hjust = 0, size = 8.5),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+Los países desarrollados y latinoamericanos de la muestra muestran una reducción sostenida del peso del empleo manufacturero, mientras que China y Corea del Sur muestran trayectorias de expansión o mantenimiento durante buena parte del período. Estos resultados son compatibles con la interpretación de Graña y Terranova sobre una reconfiguración geográfica de la actividad manufacturera, aunque el ejercicio no permite por sí mismo establecer la evolución de la manufactura a escala mundial.
+
+En este sentido, la desindustrialización de unos países se relaciona con la expansión manufacturera de otros : no se trata de un proceso mecánico que acompaña la madurez de las economías, sino de *la deslocalización de los segmentos manufactureros más simples hacia donde el costo laboral resulta menor*. Los países centrales retuvieron las tareas complejas, el Este asiático absorbió la producción simple en oleadas sucesivas y América Latina no logró insertarse como plataforma exportadora porque ni sus salarios ni su productividad le permitieron competir en esa disputa.
+
+# 7. Conclusiones
+
+Los resultados muestran trayectorias divergentes en el peso relativo de la manufactura entre los países analizados. En la dimensión productiva y laboral, la participación manufacturera disminuyó en Argentina, Brasil, Estados Unidos y Reino Unido, mientras que aumentó en China y Corea del Sur. La dimensión exportadora presenta un comportamiento más heterogéneo: la hipótesis se cumple para cuatro de los seis países, pero Argentina y Brasil muestran un aumento de la participación de las manufacturas en sus exportaciones, a pesar de la pérdida de peso de la industria en la producción y el empleo. Esto muestra que las tres dimensiones captan aspectos diferentes de la estructura manufacturera y que su análisis conjunto permite identificar transformaciones que podrían quedar ocultas al utilizar un único indicador.
+
+Estos resultados son compatibles con la interpretación de Graña y Terranova sobre la nueva división internacional del trabajo (NDIT) y la reconfiguración geográfica de la producción manufacturera. La caída del peso de la manufactura en algunas economías desarrolladas y latinoamericanas, junto con su aumento en China y Corea del Sur, resulta consistente con un proceso de desplazamiento de actividades manufactureras hacia economías asiáticas. Sin embargo, los datos utilizados no permiten estimar directamente los mecanismos causales planteados por esta perspectiva, como la relocalización productiva, los diferenciales de costos laborales o los cambios tecnológicos. Por lo tanto, la evidencia permite identificar patrones compatibles con este proceso, pero no establecer una relación causal.
+
+Finalmente, los seis casos analizados permiten cuestionar una concepción de la desindustrialización como un fenómeno uniforme y exclusivamente nacional. Las trayectorias observadas sugieren una reconfiguración desigual del peso de la manufactura entre distintas economías. No obstante, estos resultados no permiten afirmar por sí solos qué ocurrió a escala mundial, ya que el análisis se limita a seis países y presenta diferencias en la disponibilidad temporal de los indicadores. Estas limitaciones deben ser consideradas al interpretar los resultados y señalan la necesidad de ampliar la cobertura de países y períodos para evaluar con mayor precisión la dimensión global de la transformación manufacturera.
+
+# 8. Referencias
+
+- Graña, J. M. y Terranova, L. (2022). "Neither mechanical nor
+  premature: deindustrialization and the New International Division of Labour (1970-2019)". *Revista de Historia Industrial – Industrial
+  History Review*, XXXI(86), 11-46.
+- Naciones Unidas. *National Accounts – Value added by economic activity* (dólares constantes de 2020).
+- Banco Mundial. *World Development Indicators*, indicador TX.VAL.MANF.ZS.UN ("Manufactures exports, % of merchandise exports"), elaborado a partir de datos de UNCTAD.

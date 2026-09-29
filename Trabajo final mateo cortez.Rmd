@@ -1,0 +1,53 @@
+---
+title: "Informalidad laboral en el sector público de Argentina 2023 - 2026"
+author: "Cortez Jaramillo Mateo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.align = "center"
+)
+
+library(tidyverse)
+library(eph)
+library(ggplot2)
+
+options(scipen = 999)
+```
+
+## Resumen ejecutivo
+texto
+
+## Introducción: problemática, discusiones a abordar y alcance del procesamiento
+El presente informe pretende echar luces sobre la situación de informalidad laboral que enfrentan los asalariados en Argentina, haciendo foco especialmente en el sector público. Para perseguir nuestro objetivo, en principio, abordaremos algunos de los principales debates sobre los mercados laborales en la región latinoamericana con la intención de comprender conceptualmente el fenómeno de la informalidad.  
+
+Luego, al momento de analizar la situación en nuestro país, haremos uso de las bases de microdatos de la EPH-INDEC para los períodos que van desde el cuarto trimestre de 2023 hasta el primer trimestre de 2026, esto es, los últimos 10 trimestres de los que hay datos disponibles. La intención del análisis es desagregar los datos para cada nivel de gobierno en el sector público (nacional, provincial o municipal) y también considerar la desagregación en ramas de actividad clasificadas según CAES, para el período considerado. 
+
+
+## Desarrollo conceptual: síntesis de la bibliografía y preguntas abiertas que justifiquen el ejercicio
+
+## Metodología: descripción de la base, limitaciones de cobertura, decisiones metodológicas
+
+## Resultados y análisis
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
