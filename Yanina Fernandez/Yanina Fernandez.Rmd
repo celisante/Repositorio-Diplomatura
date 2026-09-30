@@ -1,5 +1,5 @@
 ---
-title: "Precariedad laboral en Argentina: género, edad y nivele ducativo"
+title: "Desocupación e informalidad laboral en Argentina: brechas de género, edad y nivel educativo (2004-2024)"
 subtitle: "Trabajo final - Diplomatura en R Aplicada a Datos Económicos"
 author: "Yanina Fernandez"
 date: "`r Sys.Date()`"
@@ -9,12 +9,12 @@ output: html_document
 
 ## Resumen ejecutivo
 
-El presente trabajo presenta un análisis socio-laboral empírico sobre la evolución del mercado de trabajo en Argentina a través del procesamiento de los microdatos de la Encuesta Permanente de Hogares (EPH) para el cuarto trimestre de los años 2004, 2014 y 2024. El objetivo central es examinar las transformaciones y persistencias en las condiciones de inserción laboral, focalizando en dos dimensiones críticas: la desocupación según perfiles demográficos (edad y género) y la incidencia de la informalidad laboral (asalariados sin registro previsional) estructurada según el nivel educativo. Los hallazgos evidencian una marcada heterogeneidad estructural: mientras que la desocupación castiga de forma asimétrica a los jóvenes (con especial crudeza en las mujeres), la precariedad laboral exhibe una rigidez persistente donde las brechas de informalidad según el nivel educativo se mantienen prácticamente inalteradas a lo largo de las dos décadas analizadas.
+El presente trabajo presenta un análisis socio-laboral empírico sobre la evolución del mercado de trabajo en Argentina a través del procesamiento de los microdatos de la Encuesta Permanente de Hogares (EPH) para el cuarto trimestre de los años 2004, 2014 y 2024. El objetivo central es examinar las transformaciones y persistencias en las condiciones de inserción laboral, focalizando en dos dimensiones críticas: la desocupación según perfiles demográficos (edad y género) y la incidencia de la informalidad laboral (asalariados sin registro previsional) estructurada según el nivel educativo. Los hallazgos evidencian una marcada heterogeneidad estructural: mientras que la desocupación castiga de forma asimétrica a los jóvenes (con especial crudeza en las mujeres), la precariedad laboral exhibe una rigidez persistente donde las brechas de informalidad según el nivel educativo se mantienen prácticamente inalteradas a lo largo de las dos décadas analizadas. Asimismo, se observa que la brecha de género en la informalidad no es constante a lo largo del ciclo de vida, sino que se profundiza con la edad: es reducida entre los trabajadores jóvenes y se amplía notablemente en los tramos etarios más avanzados.
 
 
 ## Introducción
 
-El mercado de trabajo argentino se ha caracterizado históricamente por dinámicas de heterogeneidad estructural y recurrentes vaivenes macroeconómicos. En este contexto, las oportunidades de inserción distan de ser homogéneas. Las problemáticas de la desocupación juvenil y la informalidad laboral no constituyen desvíos coyunturales transitorios, sino que operan como rasgos estructurales consolidados que reproducen la desigualdad social y limitan el desarrollo económico con equidad.
+El mercado de trabajo argentino se ha caracterizado históricamente por dinámicas de heterogeneidad estructural y recurrentes vaivenes macroeconómicos. En este contexto, las oportunidades de inserción distan de ser homogéneas. Las problemáticas de la desocupación juvenil y la informalidad laboral no constituyen desvíos coyunturales transitorios, sino que operan como rasgos estructurales consolidados que reproducen la desigualdad social y limitan el desarrollo económico con equidad. De entre las múltiples dimensiones que componen la precariedad laboral, este trabajo focaliza en dos de ellas: la desocupación, como expresión de la dificultad de acceso al mercado de trabajo, y la informalidad medida a través de la falta de registro previsional, como expresión de la calidad del empleo una vez lograda la inserción.
 
 El trabajo se inserta en las discusiones clásicas de la economía laboral en torno a la segmentación del mercado de trabajo y la teoría del capital humano. Se debate, por un lado, el rol de las credenciales educativas como mecanismos de protección frente a la precariedad y, por el otro, la superposición de vulnerabilidades vinculadas al ciclo vital (juventud) y al género, las cuales configuran barreras severas para el acceso al empleo formal y protegido.
 
@@ -71,6 +71,7 @@ base_04 <- get_microdata(year = 2004, trimester = 4, type = 'individual', verbos
 base_14 <- get_microdata(year = 2014, trimester = 4, type = 'individual', verbose = FALSE)
 base_24 <- get_microdata(year = 2024, trimester = 4, type = 'individual', verbose = FALSE)
 
+
 # 2. Función de procesamiento, selección y estandarización
 
 procesar_eph <- function(df, anio) {
@@ -120,6 +121,8 @@ eph_2024_proc <- procesar_eph(base_24, 2024)
 
 # Unir en una sola gran base panel sin conflictos
 eph_panel <- bind_rows(eph_2004_proc, eph_2014_proc, eph_2024_proc)
+
+
 ```
 
 ## Resultados y analisis
@@ -145,7 +148,7 @@ tasa_desocupacion_demo <- eph_panel %>%
 # Indicador 2: Tasa de Asalariados No Registrados por Nivel Educativo y Año
 
 tasa_informalidad_edu <- eph_panel %>%
-  filter(es_asalariado == 1) %>% # Solo asalariados
+  filter(es_asalariado == 1, !is.na(PP07H)) %>% # Solo asalariados con datos de registro
   group_by(ANIO, nivel_educativo_rec) %>%
   summarise(
     total_asalariados = sum(PONDERA, na.rm = TRUE),
@@ -158,7 +161,7 @@ tasa_informalidad_edu <- eph_panel %>%
 # Indicador 3: Tasa de Asalariados No Registrados por Grupo Etario y Género
 
 tasa_informalidad_demo <- eph_panel %>%
-  filter(es_asalariado == 1) %>% 
+  filter(es_asalariado == 1, !is.na(PP07H)) %>% 
   group_by(ANIO, grupo_etario, genero) %>%
   summarise(
     total_asalariados = sum(PONDERA, na.rm = TRUE),
@@ -171,7 +174,7 @@ tasa_informalidad_demo <- eph_panel %>%
 
 ```{r}
 
-# Gráfico 1: Bracha de desocupación juvenil y género
+# Gráfico 1: Brecha de desocupación juvenil y género
 
 ggplot(tasa_desocupacion_demo, aes(x = factor(ANIO), y = tasa_desocupacion, fill = genero)) +
   geom_col(position = "dodge", width = 0.7) +
@@ -226,7 +229,34 @@ ggplot(tasa_informalidad_edu, aes(x = factor(ANIO), y = tasa_no_registro, color 
 ```
 
 
-```
 Al analizar la incidencia de la informalidad laboral según el nivel educativo, los datos revelan una profunda segmentación estructural que se mantiene invariable a lo largo de las dos décadas estudiadas.
 Como se observa en la trayectoria de las líneas, los niveles educativos operan como un factor de protección diferenciado: el tramo con nivel educativo bajo sufre sistemáticamente las tasas de precarización más elevadas, duplicando o triplicando en magnitud a los sectores con educación superior. Asimismo, la disposición casi paralela de las trayectorias temporales evidencia que la brecha de informalidad entre los distintos niveles educativos muestra una alta rigidez estructural, ya que las fluctuaciones macroeconómicas a lo largo de los años impactan de manera transversal sobre los distintos grupos sin alterar las distancias relativas entre ellos.
+
+
+```{r}
+# Gráfico 3: Informalidad laboral por grupo etario y género
+
+ggplot(tasa_informalidad_demo, aes(x = factor(ANIO), y = tasa_no_registro, fill = genero)) +
+  geom_col(position = "dodge", width = 0.7) +
+  facet_wrap(~ grupo_etario) +
+  scale_fill_manual(values = c("Varones" = "#2b5c8f", "Mujeres" = "#d95f02")) +
+  labs(
+    title = "Evolución de la Tasa de No Registro entre Asalariados",
+    subtitle = "Por Grupo Etario y Género (IV Trimestre 2004 - 2014 - 2024)",
+    x = "Año",
+    y = "Tasa de No Registro (%)",
+    fill = "Género",
+    caption = "Fuente: Elaboración propia en base a microdatos EPH (INDEC)."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13, color = "#222222"),
+    plot.subtitle = element_text(size = 10, color = "#555555"),
+    strip.text = element_text(face = "bold", size = 10),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+Al analizar la informalidad laboral según grupo etario y género, se observa que el grupo de 18 a 24 años presenta sistemáticamente las tasas de no registro más elevadas, confirmando que la vulnerabilidad juvenil identificada en la desocupación (Gráfico 1) se traslada también a la calidad del empleo una vez conseguida la inserción laboral. Sin embargo, la brecha de género no se comporta de manera uniforme a lo largo del ciclo de vida: mientras que en los tramos de 25 a 49 y de 50 y más años las mujeres presentan una informalidad sistemáticamente mayor a la de los varones en los tres períodos analizados (con una brecha particularmente amplia en 2004 entre los mayores de 50), esta diferencia se atenúa notablemente entre los jóvenes de 18 a 24 años, donde ambos géneros exhiben niveles de informalidad similares. Esto sugiere que la desventaja de género en el acceso a un empleo registrado se acumula y profundiza con la edad, en lugar de concentrarse en la etapa de inserción inicial al mercado de trabajo.
 
