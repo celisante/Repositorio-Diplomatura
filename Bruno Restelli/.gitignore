@@ -33,3 +33,5 @@ Thumbs.db
 *.dta
 *.rds
 *.RData
+
+file.exists(".gitignore")

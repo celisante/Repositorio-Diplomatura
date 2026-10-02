@@ -85,7 +85,6 @@ base_25_4 <- get_microdata(year = 2025, period = 4, type = "individual", vars = 
 # Año 2026
 base_26_1 <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables)
 
-
 ### UNION Y ORDEN DE LAS BASES ###
 
 nombres_bases <- ls(pattern = "^base_[0-9]{2}_[1-4]$")
@@ -358,10 +357,6 @@ base_25_3_inf <- get_microdata(year = 2025, period = 3, type = "individual", var
 base_25_4_inf <- get_microdata(year = 2025, period = 4, type = "individual", vars = mis_variables_informalidad)
 
 base_26_1_inf <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables_informalidad)
-
-
-
-
 
 nombres_bases_inf <- ls(pattern = "^base_[0-9]{2}_[1-4]_inf$")
 
@@ -976,3 +971,5 @@ grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
   )
 
 grafico_condicion_nuevos_asalariados
+
+
