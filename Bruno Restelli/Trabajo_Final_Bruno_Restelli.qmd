@@ -1139,7 +1139,7 @@ grafico_cambio_contribucion <- cambio_categoria %>%
 grafico_cambio_contribucion
 ```
 
-# Metodología
+# Metodología 
 
 Para el desarrollo del informe se utilizaron los microdatos de la Encuesta Permanente de Hogares (EPH) provistos por el Instituto Nacional de Estadística y Censos (INDEC). Se descargaron las bases trimestrales correspondientes al período comprendido entre el segundo trimestre de 2016 y el primer trimestre de 2026. A estas se incorporaron los datos publicados por el INDEC para el segundo trimestre de 2026, con el objetivo de actualizar las series.
 
@@ -1226,7 +1226,7 @@ A partir del análisis de los datos y del aporte bibliográfico, se sugieren las
 
 - La mitad del aumento de la densidad de los trabajadores informales se explica por el crecimiento del trabajo por cuenta propia. Entre los factores que podrían motivar el aumento relativo de esta categoría como ocupación principal no se encontraría la mejora del ingreso respecto de la condición de asalariado.
 
-## Algunas preguntas que deja abiertas este informe
+**Algunas preguntas que deja abiertas este informe:**
 
 - ¿A qué factores responde el aumento sostenido de las tasas de actividad y ocupación? ¿Qué papel desempeñan las variables culturales y económicas?
 
@@ -1234,7 +1234,7 @@ A partir del análisis de los datos y del aporte bibliográfico, se sugieren las
 
 - ¿Qué razones explican el aumento del peso relativo del trabajo por cuenta propia, en detrimento de otras categorías, desde 2024 hasta el presente?
 
-# Referencias
+# Referencias {-}
 
 Instituto Nacional de Estadística y Censos. (2025). *Encuesta Permanente de Hogares: Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH* (Metodología INDEC N° 43). https://www.indec.gob.ar/ftp/cuadros/sociedad/metodologia_informalidad_laboral.pdf
 
