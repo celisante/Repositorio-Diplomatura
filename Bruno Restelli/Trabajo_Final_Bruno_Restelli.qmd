@@ -1,5 +1,5 @@
 ---
-title: "Mercado de trabajo e informalidad"
+title: "Más cantidad, menos calidad"
 subtitle: "Evolución del mercado laboral y de la informalidad en Argentina"
 author: "Bruno Restelli"
 date: "`r format(Sys.Date(), '10/05/2026')`"
@@ -57,7 +57,7 @@ rm(list = ls())
 options(scipen = 999) 
 
 # ============================================================
-# LIBRERÍAS
+# 0. LIBRERÍAS
 # ============================================================
 
 library(tidyverse)
@@ -76,6 +76,7 @@ mis_variables <- c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH06", "PP3E_TOT", "PP0
 # 2. DESCARGA BASES (2ºT 2016 a 1ºT 2026)
 # ==============================================================================
 
+# A) BASES
 
 # Año 2016
 base_16_2 <- get_microdata(year = 2016, period = 2, type = "individual", vars = mis_variables)
@@ -140,7 +141,7 @@ base_25_4 <- get_microdata(year = 2025, period = 4, type = "individual", vars = 
 base_26_1 <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables)
 
 
-### UNION Y ORDEN DE LAS BASES ###
+# B) UNION Y ORDEN DE LAS BASES ###
 
 nombres_bases <- ls(pattern = "^base_[0-9]{2}_[1-4]$")
 
@@ -163,8 +164,10 @@ base_completa <- base_completa %>%
 
 
 # ============================================================
-# CATEGORIAS OCUPACIONALES
+# 3) PROCESAMIENTO DE BASES
 # ============================================================
+
+# A) CATEGORIAS OCUPACIONALES
 
 base_proc <- base_completa %>%
   rename(
@@ -267,9 +270,10 @@ base_proc <- base_completa %>%
       0)
   )
 
-# ============================================================
-# TASAS LABORALES
-# ============================================================
+
+# B) TASAS LABORALES
+
+
 tasas_laborales <- base_proc %>%
   group_by(año, trimestre) %>%
   summarise(
@@ -331,7 +335,7 @@ tasas_laborales <- tasas_laborales %>%
     )
   )
 
-# SE AGREGAN DATOS PROCESADOS DEL INFORME INDEC EPH 2T 2026 #
+### SE AGREGAN DATOS PROCESADOS DEL INFORME INDEC EPH 2T 2026 (microdatos no publicados aun) ###
 
 tasas_laborales <- tasas_laborales %>%
   add_row(
@@ -346,7 +350,9 @@ tasas_laborales <- tasas_laborales %>%
     tasa_informalidad = 37.9
   )
 
-# ASALARIADOS NUEVOS SEGUN CONDICION DE REGISTRO #
+
+# C) NUEVOS ASALARIADOS SEGUN CONDICION DE REGISTRO 
+
 
 condicion_nuevos_asalariados <- tasas_laborales %>%
   filter(
@@ -386,68 +392,9 @@ condicion_nuevos_asalariados <- tasas_laborales %>%
 view(condicion_nuevos_asalariados)
 
 
-grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
-  pivot_longer(
-    cols = c(
-      porcentaje_registrados,
-      porcentaje_no_registrados
-    ),
-    names_to = "tipo",
-    values_to = "porcentaje"
-  ) %>%
-  mutate(
-    tipo = recode(
-      tipo,
-      porcentaje_registrados = "Registrados",
-      porcentaje_no_registrados = "No registrados"
-    ),
-    tipo = factor(
-      tipo,
-      levels = c("Registrados", "No registrados")
-    )
-  ) %>%
-  ggplot(
-    aes(
-      x = tipo,
-      y = porcentaje
-    )
-  ) +
-  geom_col(
-    fill = "#9DD9E8",
-    width = 0.6
-  ) +
-  geom_text(
-    aes(
-      label = paste0(round(porcentaje, 1), "%"),
-      vjust = -0.5
-    ),
-    fontface = "bold",
-    size = 4
-  ) +
-  scale_y_continuous(
-    limits = c(0, 100),
-    breaks = seq(0, 100, 20),
-    labels = function(x) paste0(x, "%"),
-    expand = expansion(mult = c(0, 0.05))
-  ) +
-  labs(
-    title = "Condición de los nuevos asalariados",
-    subtitle = "Participación en el aumento neto entre 2T2016 y 1T2026",
-    x = NULL,
-    y = NULL,
-    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
-  ) +
-  theme_classic() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    plot.subtitle = element_text(size = 10)
-  )
+# D) NUEVA TASA DE INFORMALIDAD 4T 2023 - 2T 2026 #
 
-grafico_condicion_nuevos_asalariados
-
-
-
-# CALCULO DE TASA DE INFORMALIDAD NUEVA  4T 2023 - 2T 2026 #
+# NUEVAS VARIABLES
 
 mis_variables_informalidad <- c(
   "CODUSU",
@@ -459,6 +406,8 @@ mis_variables_informalidad <- c(
   "EMPLEO",
   "CAT_OCUP"
 )
+
+# NUEVAS BASES
 
 base_23_4_inf <- get_microdata(year = 2023, period = 4, type = "individual", vars = mis_variables_informalidad)
 
@@ -474,9 +423,7 @@ base_25_4_inf <- get_microdata(year = 2025, period = 4, type = "individual", var
 
 base_26_1_inf <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables_informalidad)
 
-
-
-
+# PROCESAMIENTO NUEVAS BASES Y VARIABLES
 
 nombres_bases_inf <- ls(pattern = "^base_[0-9]{2}_[1-4]_inf$")
 
@@ -495,6 +442,8 @@ base_informalidad <- base_informalidad %>%
 base_informalidad <- base_informalidad %>%
   relocate(periodo, año, trimestre, .before = 1)
 
+
+# CALCULO NUEVA TASA INFORMALIDAD
 
 tasa_informalidad_nueva <- base_informalidad %>%
   filter(
@@ -525,7 +474,6 @@ tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
 
 
 
-
 tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
   add_row(
     año = 2026,
@@ -535,7 +483,7 @@ tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
   ) %>%
   arrange(año, trimestre)
 
-# COMPARACION DE LAS MEDICIONES DE INFORMALIDAD #
+# E) COMPARACION DE LAS MEDICIONES DE INFORMALIDAD #
 
 comparacion_informalidad <- tasas_laborales %>%
   select(
@@ -567,7 +515,8 @@ comparacion_informalidad <- tasas_laborales %>%
       (tasa_informalidad + tasa_informalidad_nueva) / 2
   )
 
-      
+  # F) CONTRIBUCION DE CADA CATEGORIA A LA  NUEVA INFORMALIDAD PAR LOS NUEVOS OCUPADOS DEL PERIODO 4T 2023 - 1T 2026 #  
+   
   informalidad_categoria <- base_informalidad %>%
     filter(
       ESTADO == 1,
@@ -649,9 +598,11 @@ comparacion_informalidad <- tasas_laborales %>%
     arrange(desc(cambio_contribucion))
   
   
-  ### GRAFICOS ####
+ # ============================================================
+# 4) GRAFICOS
+# ============================================================
 
-# GRAFICO TASAS 2016-2026 ACTIVIDAD, OCUPACION E INFORMALIDAD #
+# A) GRAFICO TASAS 2016-2026 ACTIVIDAD, OCUPACION E INFORMALIDAD #
 
 tasas_laborales_grafico <- tasas_laborales %>%
   arrange(año, trimestre) %>%
@@ -795,7 +746,7 @@ grafico_tasas <- ggplot(
 
 grafico_tasas
 
-# GRAFICO DE TASAS DE DESOCUPACION, OCUPADOS DEMANDANTES Y DEMANDA DE TRABAJO #
+# B) GRAFICO DE TASAS DE DESOCUPACION, OCUPADOS DEMANDANTES Y DEMANDA DE TRABAJO #
 
 tasas_laborales_grafico <- tasas_laborales %>%
   arrange(año, trimestre) %>%
@@ -948,6 +899,71 @@ grafico_tasas_demanda <- ggplot(
 
 grafico_tasas_demanda
 
+
+# C) GRAFICO CONDICION DE REGISTRO DE LOS NUEVOS ASALARIADOS 2T2016-1T2026 #
+
+grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
+  pivot_longer(
+    cols = c(
+      porcentaje_registrados,
+      porcentaje_no_registrados
+    ),
+    names_to = "tipo",
+    values_to = "porcentaje"
+  ) %>%
+  mutate(
+    tipo = recode(
+      tipo,
+      porcentaje_registrados = "Registrados",
+      porcentaje_no_registrados = "No registrados"
+    ),
+    tipo = factor(
+      tipo,
+      levels = c("Registrados", "No registrados")
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = tipo,
+      y = porcentaje
+    )
+  ) +
+  geom_col(
+    fill = "#9DD9E8",
+    width = 0.6
+  ) +
+  geom_text(
+    aes(
+      label = paste0(round(porcentaje, 1), "%"),
+      vjust = -0.5
+    ),
+    fontface = "bold",
+    size = 4
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Condición de los nuevos asalariados",
+    subtitle = "Participación en el aumento neto entre 2T2016 y 1T2026",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_condicion_nuevos_asalariados
+
+
+# D) GRAFICO COMPARACION DE LAS MEDICIONES DE INFORMALIDAD 4T2023-2T2026
+
 comparacion_informalidad_grafico <- comparacion_informalidad %>%
   arrange(año, trimestre) %>%
   mutate(
@@ -1052,6 +1068,8 @@ grafico_comparacion_informalidad <- ggplot(
 
 grafico_comparacion_informalidad
 
+
+# E) CONTRIBUCION DE LAS CATEGORIAS OCUPACIONALS EN EL AUMENTO DE LA INFORMALIDAD EN NUEVOS OCUPADOS 4T2023-1T2026 #
 
 grafico_cambio_contribucion <- cambio_categoria %>%
   filter(
@@ -1218,12 +1236,12 @@ A partir del análisis de los datos y del aporte bibliográfico, se sugieren las
 
 # Referencias
 
-Instituto Nacional de Estadística y Censos. (2025). Encuesta Permanente de Hogares: Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH (Metodología INDEC N° 43). https://www.indec.gob.ar/ftp/cuadros/sociedad/metodologia_informalidad_laboral.pdf
+Instituto Nacional de Estadística y Censos. (2025). *Encuesta Permanente de Hogares: Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH* (Metodología INDEC N° 43). https://www.indec.gob.ar/ftp/cuadros/sociedad/metodologia_informalidad_laboral.pdf
 
-Fernández-Franco, S., Graña, J.M., Lastra, F., & Weksler, G. (2022). Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada. Ensayos de Economía, 32(61), 124-151. https://doi.org/10.15446/ede.v32n61.100343
+Fernández-Franco, S., Graña, J.M., Lastra, F., & Weksler, G. (2022). *Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada.* Ensayos de Economía, 32(61), 124-151. https://doi.org/10.15446/ede.v32n61.100343
 
 Instituto Nacional de Estadística y Censos (INDEC). (2026). Encuesta Permanente de Hogares (EPH): microdatos y documentos, 2016–2026. Buenos Aires: INDEC. 
 
-Instituto Nacional de Estadística y Censos (INDEC). (2026). Mercado de trabajo. Tasas e indicadores socioeconómicos. Segundo trimestre de 2026. Buenos Aires: INDEC. 
+Instituto Nacional de Estadística y Censos (INDEC). (2026). *Mercado de trabajo. Tasas e indicadores socioeconómicos*. Segundo trimestre de 2026. Buenos Aires: INDEC. 
 
-Di Grande, L. (2026, 13 de julio). Aumentó 900% la cantidad de repartidores de plataforma en los últimos 6 años. Infobae.
+Di Grande, L. (2026, 13 de julio). *Aumentó 900% la cantidad de repartidores de plataforma en los últimos 6 años*. Infobae.
