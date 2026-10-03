@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Bruno Restelli">
-<meta name="dcterms.date" content="2026-05-10">
+<meta name="dcterms.date" content="2026-10-05">
 
 <title>Mercado de trabajo e informalidad</title>
 <style>
@@ -53,17 +53,20 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#resumen-ejecutivo" id="toc-resumen-ejecutivo" class="nav-link active" data-scroll-target="#resumen-ejecutivo"><span class="header-section-number">1</span> Resumen ejecutivo</a></li>
   <li><a href="#introducción" id="toc-introducción" class="nav-link" data-scroll-target="#introducción"><span class="header-section-number">2</span> Introducción</a></li>
-  <li><a href="#desarrollo" id="toc-desarrollo" class="nav-link" data-scroll-target="#desarrollo"><span class="header-section-number">3</span> Desarrollo</a></li>
+  <li><a href="#desarrollo-conceptual" id="toc-desarrollo-conceptual" class="nav-link" data-scroll-target="#desarrollo-conceptual"><span class="header-section-number">3</span> Desarrollo conceptual</a></li>
   <li><a href="#metodología" id="toc-metodología" class="nav-link" data-scroll-target="#metodología"><span class="header-section-number">4</span> Metodología</a></li>
   <li><a href="#resultados-y-análisis" id="toc-resultados-y-análisis" class="nav-link" data-scroll-target="#resultados-y-análisis"><span class="header-section-number">5</span> Resultados y análisis</a>
   <ul class="collapse">
-  <li><a href="#evolución-de-las-tasas-de-actividad-ocupación-e-informalidad" id="toc-evolución-de-las-tasas-de-actividad-ocupación-e-informalidad" class="nav-link" data-scroll-target="#evolución-de-las-tasas-de-actividad-ocupación-e-informalidad"><span class="header-section-number">5.1</span> Evolución de las tasas de actividad, ocupación e informalidad</a></li>
+  <li><a href="#evolución-de-las-tasas-de-actividad-empleo-e-informalidad" id="toc-evolución-de-las-tasas-de-actividad-empleo-e-informalidad" class="nav-link" data-scroll-target="#evolución-de-las-tasas-de-actividad-empleo-e-informalidad"><span class="header-section-number">5.1</span> Evolución de las tasas de actividad, empleo e informalidad</a></li>
   <li><a href="#evolución-de-la-desocupación-y-la-demanda-de-empleo" id="toc-evolución-de-la-desocupación-y-la-demanda-de-empleo" class="nav-link" data-scroll-target="#evolución-de-la-desocupación-y-la-demanda-de-empleo"><span class="header-section-number">5.2</span> Evolución de la desocupación y la demanda de empleo</a></li>
   <li><a href="#condición-de-registro-de-los-nuevos-asalariados" id="toc-condición-de-registro-de-los-nuevos-asalariados" class="nav-link" data-scroll-target="#condición-de-registro-de-los-nuevos-asalariados"><span class="header-section-number">5.3</span> Condición de registro de los nuevos asalariados</a></li>
   <li><a href="#comparación-de-las-mediciones-de-informalidad" id="toc-comparación-de-las-mediciones-de-informalidad" class="nav-link" data-scroll-target="#comparación-de-las-mediciones-de-informalidad"><span class="header-section-number">5.4</span> Comparación de las mediciones de informalidad</a></li>
   <li><a href="#contribución-de-las-categorías-ocupacionales-al-aumento-de-la-informalidad" id="toc-contribución-de-las-categorías-ocupacionales-al-aumento-de-la-informalidad" class="nav-link" data-scroll-target="#contribución-de-las-categorías-ocupacionales-al-aumento-de-la-informalidad"><span class="header-section-number">5.5</span> Contribución de las categorías ocupacionales al aumento de la informalidad</a></li>
   </ul></li>
-  <li><a href="#síntesis-de-resultados" id="toc-síntesis-de-resultados" class="nav-link" data-scroll-target="#síntesis-de-resultados"><span class="header-section-number">6</span> Síntesis de resultados</a></li>
+  <li><a href="#síntesis-de-resultados-y-conclusiones" id="toc-síntesis-de-resultados-y-conclusiones" class="nav-link" data-scroll-target="#síntesis-de-resultados-y-conclusiones"><span class="header-section-number">6</span> Síntesis de resultados y conclusiones</a>
+  <ul class="collapse">
+  <li><a href="#algunas-preguntas-que-deja-abiertas-este-informe" id="toc-algunas-preguntas-que-deja-abiertas-este-informe" class="nav-link" data-scroll-target="#algunas-preguntas-que-deja-abiertas-este-informe"><span class="header-section-number">6.1</span> Algunas preguntas que deja abiertas este informe</a></li>
+  </ul></li>
   <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias"><span class="header-section-number">7</span> Referencias</a></li>
   </ul>
 </nav>
@@ -90,7 +93,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 10, 2026</p>
+      <p class="date">October 5, 2026</p>
     </div>
   </div>
   
@@ -110,43 +113,39 @@ p {
 <section id="resumen-ejecutivo" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Resumen ejecutivo</h1>
 <p>El siguiente informe analiza la transformación del mundo laboral argentino durante la última década. El objetivo central es determinar cuantitativamente la demanda de trabajo y las formas ocupacionales que satisfacen, en parte, esa demanda.</p>
-<p>Para tal fin se procesaron y analizaron microdatos de la Encuesta Permanente de Hogares (EPH) siguiendo la hipótesis según la cual el mercado laboral ha atravesado un proceso que podríamos resumir en “más cantidad, menos calidad”.</p>
-<p>Los resultados, si bien contienen oscilaciones, rupturas y periodos que no pueden analizarse de manera continua por la modificación en las formas de medición, arrojaron efectivamente un leve pero sostenido aumento tendencial en la tasa de actividad y de ocupación, una demanda de trabajo constante (con leves modificaciones al interior) y un aumento permanente de la tasa de informalidad, explicada principalmente por el peso de los cuentapropistas no registrados como principal categoría entre los nuevos ocupados.</p>
+<p>Para ello se procesaron y analizaron microdatos de la Encuesta Permanente de Hogares (EPH), siguiendo la hipótesis según la cual el mercado laboral ha atravesado un proceso que podría resumirse como “más cantidad, menos calidad”.</p>
+<p>Los resultados, si bien presentan oscilaciones, rupturas y períodos que no pueden analizarse de manera continua debido a modificaciones en las formas de medición, muestran un leve pero sostenido aumento tendencial de las tasas de actividad y ocupación, una demanda de trabajo relativamente constante y un incremento de la informalidad, explicado principalmente por el peso de los cuentapropistas no registrados entre los nuevos ocupados.</p>
 </section>
 <section id="introducción" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Introducción</h1>
-<p>En las últimas tres elecciones presidenciales que se dieron en Argentina, la población eligió de manera reiterada cambiar al gobierno de turno. En cada una de ellas, en especial en las particular las dos más recientes, el tema principal que estuvo sobre la mesa fue la economía del país. Si bien el problema a abordar fue distinto en cada periodo (el cepo cambiario, la presión impositiva, el desempleo, la pobreza, la inflación, etc) es sabido que la visión de la situación económica general suele estar estrechamente asociada a la situación económica particular, la cual en el caso de quienes forman parte de la población económica activa (PEA) está ligada a su situación laboral.</p>
-<p>La intención de este trabajo es poder determinar cuantitativamente el comportamiento de algunas variables del mercado de trabajo vinculadas a la densidad y la forma de participación por parte de la PEA con el afán de complementar aquellos estudios que desde el análisis de los ingresos encuentran explicaciones al ánimo de los trabajadores.</p>
-<p>Históricamente la demanda de trabajo ha sido estudiada principalmente desde el desempleo y en menor medida, en las últimas dos décadas, a través de la Tasa de presión sobre el mercado de trabajo. Sin embargo, se estima que la irrupción del trabajo vía plataformas ha que hoy en día emplea entre aquellos para quienes es su única ocupación y quienes lo realizan para conseguir un ingreso extra a más de un 1 millón de personas y que se ha multiplicado por diez la cantidad de gente ocupada en el sector en los últimos 6 años ha quitado efectividad de reflejar la realidad en un índice que ya traía cuestionamientos por la manera de preguntar y determinar la situación de desempleo.</p>
-<p>Se decidió poner el eje entonces en hallar, a partir del análisis de la EPH de la última década y la nueva medición de informalidad disponible desde el cuarto trimestre del 2023, las continuidades y modificaciones tanto de la demanda de trabajo como de las formas ocupacionales de aquellos que se han incorporado. Sobre el final y a partir de la incorporación de la bibliografía se plantean preguntas sobre si la dirección en la que está caminando el mundo del trabajo en la Argentina tiene líneas ya escritas en el pasado que puedan dar pistas sobre el futuro.&nbsp;</p>
+<p>El siguiente informe analiza la transformación del mundo laboral argentino durante la última década. El objetivo central es determinar cuantitativamente la demanda de trabajo y las formas ocupacionales que satisfacen, en parte, esa demanda.</p>
+<p>Para ello se procesaron y analizaron microdatos de la Encuesta Permanente de Hogares (EPH), siguiendo la hipótesis según la cual el mercado laboral ha atravesado un proceso que podría resumirse como “más cantidad, menos calidad”.</p>
+<p>Los resultados, si bien presentan oscilaciones, rupturas y períodos que no pueden analizarse de manera continua debido a modificaciones en las formas de medición, muestran un leve pero sostenido aumento tendencial de las tasas de actividad y ocupación, una demanda de trabajo relativamente constante y un incremento de la informalidad, explicado principalmente por el peso de los cuentapropistas no registrados entre los nuevos ocupados.</p>
 </section>
-<section id="desarrollo" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Desarrollo</h1>
-<p>El mercado laboral argentino ha experimentado en las últimas décadas un leve pero sostenido crecimiento acompañado por procesos de transformación cualitativa que si bien han tenido, el aumento del empleo informal se presenta como uno de los cambios más significativos y persistentes. Esta realidad plantea la necesidad de comprender y conceptualizar qué impulsa dichas tendencias.&nbsp;</p>
-<p>La informalidad laboral, ha sido entendida históricamente como un fenómeno asociado principalmente a empleos de subsistencia y baja calificación, en unidades productivas pequeñas, con limitaciones tecnológicas y condiciones laborales precarias (Fernández-Franco, Graña, Lastra y Weksler).</p>
-<p>Sin embargo, en el final del siglo XX y principios del siglo XXI, el debate académico comenzó a complejizar el análisis, identificando distintas dimensiones que atraviesan este concepto. Por un lado, se comenzó a distinguir entre el sector informal tradicional (“atrasado”)caracterizado por salarios bajos y tecnología obsoleta (recicladores urbanos, venta ambulante, horticultura, etc), y un sector “moderno” que puede ofrecer mejores condiciones relativas (ocupaciones calificadas que se desarrollan en entornos virtuales, oficios o profesiones calificadas que trabaja de manera independiente y sin registro, etc). Este enfoque reconoce que la informalidad no es un bloque homogéneo, sino que está compuesta por diversas capas, incluyendo una “capa alta” donde la inserción en la informalidad puede ser voluntaria, no simplemente un refugio laboral (Maloney, 2004; Günther &amp; Launov, 2012).</p>
-<p>El economista Gary S. Fields (2009) sintetiza las explicaciones sobre la permanencia de trabajadores en el sector informal en tres hipótesis centrales: que se trata de empleo involuntario como última opción, una preferencia voluntaria basada en beneficios extra-salariales, o una configuración dual en la que coexisten mejores y peores empleos (Fernández-Franco, Graña, Lastra y Weksler).&nbsp;</p>
-<p>Desde una óptica productivista, la informalidad se vincula con la estructura heterogénea y fragmentada de la economía latinoamericana, donde la coexistencia de sectores con diferentes niveles de productividad genera una persistencia significativa de empleos precarios en unidades de pequeña escala, con baja capitalización. La incapacidad de los sectores dinámicos para absorber la totalidad de la fuerza de trabajo resulta en la permanencia de ofertas laborales informales y de baja calidad, perspectiva estrechamente relacionada con el estructuralismo latinoamericano. Esta complejidad supone que las empresas, para mantener tasas de ganancia similares en contextos de menor productividad, recurren a la degradación de condiciones laborales y a la reducción de salarios (Fernández-Franco, Graña, Lastra y Weksler, 2022). En este marco, la &nbsp;informalidad ha sido asociada a aquellas cadenas de valor con alta tasa de subcontratación y tercerización del trabajo.</p>
-<p>Otros sectores que han aumentado fuertemente su densidad en la empleabilidad como son las economías de plataforma (puntualmente aquellas vinculadas al comercio digital, el transporte de mercadería y pasajeros) invitan a poner el foco en ellas en tanto dentro de la misma unidad económica conviven áreas de alto valor tecnológico, empleos de calidad con elevada registración (programación, finanzas, marketing), con otras (en general más masivos) donde los trabajadores aportan bajo valor tecnológico, acodado nivel de registración, relaciones laborales de precarias y baja seguridad social.&nbsp;</p>
-<p>A lo largo del tiempo y con el avance del interés por obtener datos masivos y fidedignos sobre el tema por parte de los estados nacionales, el análisis de la informalidad ha ido incorporando también un enfoque legalista, que se centra no tanto en la naturaleza del establecimiento productivo, o las características de la ocupación, sino en las condiciones formales de la relación laboral. Desde esta óptica, un trabajador puede estar empleado en una unidad formal y, sin embargo, carecer de acceso a mecanismos de protección social, lo que amplía la comprensión del problema de la informalidad más allá del lugar productivo (Fernández-Franco et al., 2022). En Argentina, esta perspectiva se operativiza desde el año 2003 a través de la medición de los descuentos jubilatorios en los asalariados, lo cual por un lado reduce la población a un subconjunto de los ocupados y por otro, deja fuera de la medición las perspectivas multidimensionales con limitaciones para captar otras formas de empleo informal y precariedad laboral. La inclusión, desde 2023, de mediciones ajustadas a categorías ocupacionales y a la formalidad de las unidades económicas marca un avance hacia el reconocimiento de nuevos actores y condiciones dentro de la informalidad laboral.</p>
-<p>En términos comparativos, estudios realizados en América Latina muestran la persistencia de una estructura laboral con predominio de pequeños establecimientos y trabajos de baja y media calificación, contrastando con países como Estados Unidos. La relación entre la informalidad y el nivel de desarrollo de los países es una constante a lo largo de todo el análisis. Se evidencia que el rezago productivo impacta negativamente en la calidad del empleo, particularmente en las unidades productivas más pequeñas. Asimismo, la heterogeneidad dentro del sector informal y la presencia de empleo precario en zonas tradicionalmente formales ponen en cuestión una interpretación simplista y dual del mercado de trabajo (Fernández-Franco et al., 2022).&nbsp;</p>
-<p>Este marco conceptual abre varias preguntas que motivan el presente análisis: ¿Qué modificaciones en el mundo del trabajo se esconden detrás de la tendencia estable (y por momentos a la baja) del desempleo en medio de cambios significativos en la estructura e inserción económica del país? ¿Cómo se ha transformado la informalidad a lo largo de las últimas dos décadas? ¿Cuáles son las categorías ocupacionales que impulsan la ocupación en la Argentina y qué vínculo tienen con la informalidad? ¿Qué papel juegan las distintas capas dentro del sector informal y las nuevas modalidades de trabajo en la configuración del mercado laboral? Estos interrogantes justifican un estudio detallado que contribuya a comprender las dinámicas estructurales y legales que configuran el empleo informal y la calidad del trabajo en el país, este informe busca ser un punto de partida en ese camino.</p>
+<section id="desarrollo-conceptual" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Desarrollo conceptual</h1>
+<p>El mercado laboral argentino ha experimentado en la última década un leve pero sostenido crecimiento, acompañado por transformaciones cualitativas entre las que el aumento del empleo informal constituye uno de los cambios más significativos y persistentes.</p>
+<p>Históricamente, la informalidad laboral fue asociada principalmente con empleos de subsistencia y baja calificación, desarrollados en pequeñas unidades productivas, con limitaciones tecnológicas y condiciones laborales precarias (Fernández-Franco, Graña, Lastra y Weksler, 2022). Sin embargo, el debate académico de fines del siglo XX y principios del XXI incorporó una visión más heterogénea del fenómeno, distinguiendo entre un sector informal tradicional o “atrasado” y otro “moderno”, que puede ofrecer mejores condiciones relativas. De este modo, la informalidad no constituye un bloque homogéneo y puede incluir una “capa alta” donde la inserción es voluntaria y no necesariamente un refugio laboral (Maloney, 2004; Günther &amp; Launov, 2012, citados en Fernández-Franco et al., 2022).</p>
+<p>El economista Gary Fields (2009, citado en Fernández-Franco et al., 2022) sintetiza las explicaciones sobre la permanencia en el sector informal en tres hipótesis: empleo involuntario como última opción, preferencia voluntaria por beneficios extrasalariales o una configuración dual en la que coexisten mejores y peores empleos.</p>
+<p>Desde una perspectiva productivista, la informalidad se vincula con la estructura heterogénea y fragmentada de las economías latinoamericanas. La coexistencia de sectores con distintos niveles de productividad favorece la persistencia de empleos precarios en unidades de pequeña escala y baja capitalización, mientras que los sectores dinámicos no logran absorber toda la fuerza de trabajo. Esta perspectiva también relaciona la informalidad con procesos de subcontratación y tercerización (Fernández-Franco et al., 2022).</p>
+<p>El enfoque legalista, por su parte, centra la atención en las condiciones formales de la relación laboral. Desde esta perspectiva, un trabajador puede desempeñarse en una unidad formal y, aun así, carecer de protección social. En Argentina, esta aproximación se operativiza desde 2003 mediante la medición de los descuentos jubilatorios entre los asalariados. Si bien permite construir una serie homogénea, restringe el universo analizado y no capta otras dimensiones de la informalidad y la precariedad laboral. La nueva medición implementada por el INDEC desde 2023 amplía este enfoque al considerar las categorías ocupacionales y la formalidad de las unidades económicas (INDEC, 2025).</p>
+<p>Los estudios comparativos también muestran la persistencia de pequeños establecimientos y trabajos de baja y media calificación en América Latina. La relación entre informalidad y nivel de desarrollo, junto con la heterogeneidad del sector informal y la existencia de empleo precario en ámbitos tradicionalmente formales, cuestionan una interpretación exclusivamente dual del mercado de trabajo (Fernández-Franco et al., 2022).</p>
+<p>Este marco conceptual plantea los interrogantes que orientan el análisis: ¿qué modificaciones en el mundo del trabajo se encuentran detrás de la tendencia estable —y por momentos descendente— de la desocupación? ¿Cómo se transformó la informalidad durante la última década? ¿Qué categorías ocupacionales impulsan la ocupación en Argentina y qué vínculo tienen con la informalidad?</p>
 </section>
 <section id="metodología" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Metodología</h1>
-<p>Para el desarrollo de este informe se utilizaron los microdatos de la Encuesta Permanente de Hogares (EPH) provistos por el Instituto Nacional de Estadística y Censos (INDEC). Con el objetivo de analizar la evolución de los principales indicadores del mercado de trabajo, tanto entre distintos períodos presidenciales como al interior de cada uno de ellos, se descargaron las bases trimestrales correspondientes al período comprendido entre el segundo trimestre de 2016 y el primer trimestre de 2026. A estas bases se incorporaron los datos publicados por el INDEC en el informe de mercado de trabajo correspondiente al segundo trimestre de 2026, con el propósito de actualizar las series.</p>
-<p>De este modo, fue posible mantener actualizadas las tasas de actividad, ocupación, desocupación, ocupados demandantes e informalidad laboral, tanto en su definición tradicional como en la nueva medición. Esta actualización no pudo replicarse para los análisis desagregados por categoría ocupacional y condición de registro, debido a que estos requieren el procesamiento de los microdatos correspondientes al período más reciente.</p>
-<p>Cabe señalar que, al tratarse de información proveniente de la EPH, los resultados abarcan los 31 aglomerados urbanos relevados por la encuesta y, por lo tanto, no representan directamente al conjunto de la población del país. En consecuencia, las conclusiones deben interpretarse con cautela al momento de ser extrapoladas al total nacional.</p>
-<p>Para el cálculo de la informalidad laboral por individuos se utilizaron dos aproximaciones. En primer lugar, se mantuvo para todo el período analizado la medición tradicional de informalidad entre los trabajadores asalariados, calculada como la proporción de asalariados no registrados sobre el total de asalariados. Si bien se considera que la nueva medición proporciona una caracterización más amplia de la informalidad laboral, se optó por conservar esta definición tradicional con el objetivo de disponer de una serie homogénea que permitiera analizar su evolución a lo largo de todo el período estudiado.</p>
-<p>En segundo lugar, se incorporó la nueva medición de informalidad laboral implementada por el INDEC a partir del cuarto trimestre de 2023. Esta metodología permite identificar la condición de formalidad o informalidad de las unidades económicas y, a partir de ello, medir la informalidad del trabajo independiente, así como la formalidad e informalidad de los negocios y empresas en los que se desempeñan los trabajadores asalariados y los trabajadores familiares sin remuneración.</p>
-<p>Para identificar la condición de registro de las unidades económicas se utilizaron distintas variables según la categoría ocupacional. En el caso de los trabajadores independientes, se consideró la realización de aportes correspondientes al propio trabajo. Para la identificación de la condición de las unidades económicas en las que trabajan los asalariados y trabajadores familiares sin remuneración, se utilizaron la posibilidad de emitir facturas y la existencia de un contador u oficina contable. Esta última variable se empleó como criterio de rescate en aquellos casos en los que no se disponía de información suficiente a partir de las variables principales.</p>
-<p>En el análisis de las tasas de actividad, ocupación e informalidad tradicional se adoptaron, además, dos decisiones de presentación. En primer lugar, se utiliza el término «tasa de ocupación» en lugar de «tasa de empleo», por considerarse que el primero resulta conceptualmente más preciso para describir la proporción de la población que se encuentra ocupada. En segundo lugar, se optó por presentar las tres tasas en un mismo gráfico con el objetivo de facilitar la observación de su evolución e interrelación temporal a sabiendas que las tasas se calculan sobre denominadores diferentes, por lo que su comparación debe interpretarse teniendo en cuenta esta característica metodológica.</p>
+<p>Para el desarrollo del informe se utilizaron los microdatos de la Encuesta Permanente de Hogares (EPH) provistos por el Instituto Nacional de Estadística y Censos (INDEC). Se descargaron las bases trimestrales correspondientes al período comprendido entre el segundo trimestre de 2016 y el primer trimestre de 2026. A estas se incorporaron los datos publicados por el INDEC para el segundo trimestre de 2026, con el objetivo de actualizar las series.</p>
+<p>De este modo, se obtuvieron las tasas de actividad, ocupación, desocupación, ocupados demandantes e informalidad laboral, tanto en su definición tradicional como en la nueva medición. Esta actualización no pudo replicarse en los análisis desagregados por categoría ocupacional y condición de registro, debido a que requieren el procesamiento de los microdatos más recientes.</p>
+<p>Para la informalidad laboral se utilizaron dos aproximaciones. La primera corresponde a la medición tradicional entre trabajadores asalariados, calculada como la proporción de asalariados no registrados sobre el total de asalariados. Se mantuvo para todo el período con el objetivo de disponer de una serie homogénea.</p>
+<p>La segunda corresponde a la nueva medición implementada por el INDEC a partir del cuarto trimestre de 2023. Esta permite identificar la formalidad o informalidad de las unidades económicas y, por lo tanto, incorporar al análisis el trabajo independiente y las condiciones de las unidades en las que se desempeñan asalariados y trabajadores familiares sin remuneración.</p>
+<p>Para identificar la condición de registro de las unidades económicas se utilizaron distintas variables según la categoría ocupacional. En los trabajadores independientes se consideró la realización de aportes correspondientes al propio trabajo. Para asalariados y trabajadores familiares sin remuneración se utilizaron la posibilidad de emitir facturas y la existencia de un contador u oficina contable, empleándose esta última como criterio de rescate cuando la información principal resultaba insuficiente (INDEC, 2025).</p>
+<p>En la presentación de las tasas de actividad, ocupación e informalidad tradicional se optó por incluirlas en un mismo gráfico para facilitar la observación de su evolución temporal, aun cuando se calculan sobre denominadores diferentes. Por ello, su comparación debe interpretarse considerando esta característica metodológica.</p>
+<p>Para analizar al subgrupo de la PEA que se encuentra buscando trabajo se construyó una tasa de demanda de empleo mediante la suma de desocupados y ocupados demandantes. De esta manera se buscó incluir a quienes ya poseen un empleo pero demandan otro, sin incorporar a los ocupados no demandantes disponibles.</p>
 </section>
 <section id="resultados-y-análisis" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Resultados y análisis</h1>
-<section id="evolución-de-las-tasas-de-actividad-ocupación-e-informalidad" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="evolución-de-las-tasas-de-actividad-ocupación-e-informalidad"><span class="header-section-number">5.1</span> Evolución de las tasas de actividad, ocupación e informalidad</h2>
-<p>Texto</p>
+<section id="evolución-de-las-tasas-de-actividad-empleo-e-informalidad" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="evolución-de-las-tasas-de-actividad-empleo-e-informalidad"><span class="header-section-number">5.1</span> Evolución de las tasas de actividad, empleo e informalidad</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -156,11 +155,12 @@ p {
 </div>
 </div>
 </div>
-<p>Texto</p>
+<p>Para el período 2T2016–2T2026, la tasa de actividad presenta, punta a punta, un aumento de 2,9 puntos porcentuales (p.p.), al pasar del 46,0% al 48,9%, equivalente a un crecimiento relativo del 6,3%. La tasa de empleo pasó del 41,7% al 45,0%, con un incremento de 3,3 p.p. y un crecimiento relativo del 7,9%. El crecimiento del empleo resulta, por lo tanto, superior al de la actividad, en relación con la reducción de la desocupación analizada en el apartado siguiente.</p>
+<p>Excluyendo el período comprendido entre el 1T2020 y el 1T2021, caracterizado por las mayores restricciones asociadas a la pandemia, se observa una tendencia general de crecimiento de ambas variables. Durante la presidencia de Mauricio Macri (2T2016–4T2019) y el período iniciado en 4T2023, las líneas tienden a separarse, reflejando un incremento de la desocupación. En cambio, durante el período posterior a la pandemia correspondiente a la presidencia de Alberto Fernández, la tendencia es inversa, con una mayor aproximación entre ambas tasas.</p>
+<p>La tasa de informalidad incluida en el gráfico se calcula exclusivamente sobre los trabajadores asalariados. Aun tratándose de un subconjunto de la población ocupada, su evolución resulta significativa: pasa del 33,4% al 37,9%, un incremento de 4,5 p.p. y un crecimiento relativo superior al 13%. El último dato constituye además el máximo de la serie: el 37,9% del 2T2026 supera en 0,1 p.p. el máximo anterior, de 37,8%, correspondiente al 2T2022.</p>
 </section>
 <section id="evolución-de-la-desocupación-y-la-demanda-de-empleo" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="evolución-de-la-desocupación-y-la-demanda-de-empleo"><span class="header-section-number">5.2</span> Evolución de la desocupación y la demanda de empleo</h2>
-<p>Texto</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -170,11 +170,11 @@ p {
 </div>
 </div>
 </div>
-<p>Texto</p>
+<p>En la década analizada, la tasa de desocupación pasó del 9,3% al 7,9%, una reducción de 1,4 p.p. Esta disminución es compensada en gran parte por el incremento de los ocupados demandantes, cuya tasa aumenta 1,2 p.p., al pasar del 15,7% al 16,9%. Al integrar ambas tasas, la demanda de empleo se mantiene prácticamente constante entre las puntas del período, con una reducción de apenas 0,2 p.p.</p>
+<p>Sin embargo, se registraron fluctuaciones importantes. En el último año del gobierno de Mauricio Macri, la demanda de empleo trepó hasta el 29%, mientras que en el último año del gobierno de Alberto Fernández se redujo al 20,9%, evidenciando variaciones significativas dentro del período.</p>
 </section>
 <section id="condición-de-registro-de-los-nuevos-asalariados" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="condición-de-registro-de-los-nuevos-asalariados"><span class="header-section-number">5.3</span> Condición de registro de los nuevos asalariados</h2>
-<p>Texto</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -184,11 +184,11 @@ p {
 </div>
 </div>
 </div>
-<p>Texto</p>
+<p>Analizada la evolución de las tasas de actividad, empleo y demanda de trabajo, se estudiaron las condiciones de registro de los nuevos asalariados, entendidos como aquellos puestos incorporados hasta el 1T2026 que no estaban presentes en el 4T2023.</p>
+<p>Los resultados muestran que, mientras al inicio de este período los trabajadores informales constituían el 33,4% de los asalariados —uno de cada tres—, el 72,8% de quienes se incorporaron como asalariados lo hizo sin registro. Esto evidencia un cambio en la composición de los nuevos puestos asalariados respecto de la estructura histórica del empleo en Argentina.</p>
 </section>
 <section id="comparación-de-las-mediciones-de-informalidad" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="comparación-de-las-mediciones-de-informalidad"><span class="header-section-number">5.4</span> Comparación de las mediciones de informalidad</h2>
-<p>Texto</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -198,11 +198,11 @@ p {
 </div>
 </div>
 </div>
-<p>Texto</p>
+<p>La incorporación de la nueva medición de informalidad desde el cuarto trimestre de 2023 permite comparar la tasa tradicional con una definición que incorpora nuevas variables de detección.</p>
+<p>La comparación muestra que la nueva medición se ubica inicialmente en 5,8 p.p. por encima de la tradicional, alcanzando el 41,5%. La brecha se amplía hasta 7,1 p.p. en el último dato disponible para esta comparación (1T 2026), cuando la nueva medición alcanza el 45%. Esto muestra que la informalidad presenta un crecimiento significativo también fuera del universo de asalariados analizado mediante los aportes jubilatorios.</p>
 </section>
 <section id="contribución-de-las-categorías-ocupacionales-al-aumento-de-la-informalidad" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="contribución-de-las-categorías-ocupacionales-al-aumento-de-la-informalidad"><span class="header-section-number">5.5</span> Contribución de las categorías ocupacionales al aumento de la informalidad</h2>
-<p>Texto</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -212,16 +212,37 @@ p {
 </div>
 </div>
 </div>
-<p>Texto</p>
+<p>Entre el 4T2023 y el 1T2026, la nueva medición de informalidad aumenta 3,5 p.p., al pasar del 41,5% al 45,0%. Para identificar la contribución de las distintas categorías ocupacionales —patrón, cuentapropista, obrero o empleado y trabajador familiar sin remuneración— se analizó el aporte de cada una al incremento. La última categoría fue excluida por su escasa significación estadística.</p>
+<p>De los 3,5 p.p. de crecimiento, prácticamente la mitad (1,71 p.p., equivalente al 48,9%) se explica por el peso ganado por el cuentapropismo dentro de los informales, categoría que históricamente ocupó un lugar secundario respecto de los empleados y obreros.</p>
+<p>El análisis mediante clusters realizado por Fernández-Franco et al.&nbsp;(2022) aporta un elemento relevante para interpretar este cambio. En Argentina, el trabajo por cuenta propia presenta, independientemente del nivel de calificación, un ingreso relativo inferior al de los trabajadores asalariados con igual nivel de calificación. Por lo tanto, las diferencias de ingresos no parecen constituir por sí solas una explicación suficiente del pasaje entre categorías, lo que plantea la necesidad de considerar otros factores.</p>
 </section>
 </section>
-<section id="síntesis-de-resultados" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Síntesis de resultados</h1>
-<p>Texto</p>
+<section id="síntesis-de-resultados-y-conclusiones" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Síntesis de resultados y conclusiones</h1>
+<p>A partir del análisis de los datos y del aporte bibliográfico, se sugieren las siguientes líneas de interpretación:</p>
+<ul>
+<li><p>La proporción de población que se incorpora a la actividad económica crece de manera sostenida y, dentro de este grupo, la mayoría se incorpora como ocupada, en porcentajes similares a los registrados al inicio del período.</p></li>
+<li><p>La demanda de empleo mantiene una tendencia constante. Si bien presenta fluctuaciones en momentos puntuales, estas se inscriben en ciclos relativamente cortos y regresan posteriormente hacia los valores centrales.</p></li>
+<li><p>Los cambios sociales y tecnológicos en el mundo laboral podrían haber contribuido a acortar los períodos de aumento de las tasas vinculadas con la demanda de trabajo, permitiendo que la población acceda a un empleo aun en períodos recesivos o de transformación del mercado laboral. Esto podría contribuir a explicar por qué los máximos de las ondas de desocupación presentan menor intensidad respecto del período previo: los registrados durante el gobierno de Mauricio Macri respecto de los observados durante la Convertibilidad, y los correspondientes al gobierno de Javier Milei respecto de los registrados durante el gobierno de Mauricio Macri.</p></li>
+<li><p>Los nuevos ocupados incorporados entre el 4T2023 y el 1T2026 presentan una relación inversa respecto de la proporción de trabajadores registrados y no registrados que caracterizaba al mercado laboral argentino hasta inicios de 2016: frente a una relación histórica de 70/30 entre formales e informales, los nuevos ocupados se incorporan en una proporción de 30/70.</p></li>
+<li><p>La mitad del aumento de la densidad de los trabajadores informales se explica por el crecimiento del trabajo por cuenta propia. Entre los factores que podrían motivar el aumento relativo de esta categoría como ocupación principal no se encontraría la mejora del ingreso respecto de la condición de asalariado.</p></li>
+</ul>
+<section id="algunas-preguntas-que-deja-abiertas-este-informe" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="algunas-preguntas-que-deja-abiertas-este-informe"><span class="header-section-number">6.1</span> Algunas preguntas que deja abiertas este informe</h2>
+<ul>
+<li><p>¿A qué factores responde el aumento sostenido de las tasas de actividad y ocupación? ¿Qué papel desempeñan las variables culturales y económicas?</p></li>
+<li><p>¿Existe una relación entre el lugar ocupado por Argentina en el marco de la Nueva División Internacional del Trabajo y el aumento de la informalidad?</p></li>
+<li><p>¿Qué razones explican el aumento del peso relativo del trabajo por cuenta propia, en detrimento de otras categorías, desde 2024 hasta el presente?</p></li>
+</ul>
+</section>
 </section>
 <section id="referencias" class="level1" data-number="7">
 <h1 data-number="7"><span class="header-section-number">7</span> Referencias</h1>
-<p>Texto</p>
+<p>Instituto Nacional de Estadística y Censos. (2025). Encuesta Permanente de Hogares: Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH (Metodología INDEC N° 43). https://www.indec.gob.ar/ftp/cuadros/sociedad/metodologia_informalidad_laboral.pdf</p>
+<p>Fernández-Franco, S., Graña, J.M., Lastra, F., &amp; Weksler, G. (2022). Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada. Ensayos de Economía, 32(61), 124-151. https://doi.org/10.15446/ede.v32n61.100343</p>
+<p>Instituto Nacional de Estadística y Censos (INDEC). (2026). Encuesta Permanente de Hogares (EPH): microdatos y documentos, 2016–2026. Buenos Aires: INDEC.&nbsp;</p>
+<p>Instituto Nacional de Estadística y Censos (INDEC). (2026). Mercado de trabajo. Tasas e indicadores socioeconómicos. Segundo trimestre de 2026. Buenos Aires: INDEC.&nbsp;</p>
+<p>Di Grande, L. (2026, 13 de julio). Aumentó 900% la cantidad de repartidores de plataforma en los últimos 6 años. Infobae.</p>
 </section>
 
 </main>
