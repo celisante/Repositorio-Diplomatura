@@ -9,6 +9,7 @@ format:
     toc-depth: 2
     number-sections: true
     html-math-method: katex
+    embed-resources: true
 ---
 
 ```{=html}
