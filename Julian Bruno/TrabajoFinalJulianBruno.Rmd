@@ -1,30 +1,121 @@
 ---
-title: "Trabajo Final Julian Bruno"
+title: "Trabajo Final - Desindustrialización y Especialización Comercial"
 author: "Julian Bruno"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(WDI)
 ```
 
-## R Markdown
+## Resumen Ejecutivo
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Este informe examina el desempeño industrial y la especialización comercial de Argentina durante el período 1990-2024 en perspectiva comparada con Brasil y Corea del Sur. A partir de datos del Banco Mundial (WDI), se analiza la evolución del Valor Agregado Manufacturero (VAM) sobre el PIB para discutir la hipótesis de la *desindustrialización prematura* en la región frente a patrones de industrialización madura en el Este Asiático (Graña y Terranova, 2022).
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Introducción y Marco Teórico
 
-```{r cars}
-summary(cars)
+### Problemática de la Desindustrialización
+
+La desindustrialización puede manifestarse como un proceso **natural** o **prematuro**:
+
+- **Desindustrialización Natural:** Característica de economías desarrolladas donde, tras alcanzar elevados niveles de ingreso per cápita, el empleo y el valor agregado se desplazan maduramente hacia los servicios debido a ganancias superiores de productividad industrial.
+
+- **Desindustrialización Prematira:** Presente en economías en desarrollo que pierden peso industrial de manera anticipada a niveles de ingreso sensiblemente menores, en general por apertura comercial acelerada, apreciación cambiaria y falta de integración en cadenas de mayor contenido tecnológico (Graña y Terranova, 2022).
+
+### Complejidad y Contenido Tecnológico
+
+Siguiendo la clasificación de Sanjaya Lall (2000), la estructura exportadora de una economía refleja la acumulación de capacidades productivas. Mientras que la especialización en **Productos Primarios (PP)** y **Manufacturas Basadas en Recursos Naturales (RB)** presenta límites al dinamismo de la productividad, las manufacturas de **Media (MT)** y **Alta Tecnología (HT)** resultan determinantes para sostener el crecimiento a largo plazo.
+
+## Metodología y Datos
+
+Para el abordaje empírico se procesó la base de datos de los **Indicadores del Desarrollo Mundial (WDI)** del Banco Mundial.
+
+- **Variable VAM Corriente (`NV.IND.MANF.ZS`):** Mide la participación del Valor Agregado Manufacturero sobre el PIB a precios corrientes.
+
+- **Variable VAM Constante (`NV.IND.MANF.KD`):** Registra el volumen físico real en dólares constantes de un año base.
+
+- **Cobertura geográfica y temporal:** Se seleccionaron Argentina (`ARG`), Brasil (`BRA`) y Corea del Sur (`KOR`) entre 1990 y 2024.
+
+```{r datos}
+#DATOS
+base_wdi <- WDI(country = "all", indicator = c(
+  "vam_pct" = "NV.IND.MANF.ZS",
+  "vam_constante" = "NV.IND.MANF.KD"),
+  start = 1990,
+  end = 2025
+  ) 
+# filtramos con 3 paises para comparar
+base_filtrada <- base_wdi %>% 
+  filter(iso2c %in% c ("AR","BR","KR"))
+
+
 ```
 
-## Including Plots
+## Resultados y Análisis Empírico
+
+El siguiente gráfico refleja la trayectoria del peso relativo de la industria manufacturera para los tres casos analizados:
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r grafico, echo=FALSE}
+#graficamos 
+ggplot(base_filtrada, aes(x = year, y = vam_pct, color = country)) +
+  geom_line(size = 1.2) +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) + # Formato % en el eje Y
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Evolución de la Participación Industrial en el PIB (1990-2024)",
+    subtitle = "Valor Agregado Manufacturero (% del PIB)",
+    x = "Año",
+    y = "Participación del VAM (%)",
+    color = "País",
+    caption = "Fuente: Elaboración propia en base a WDI (Banco Mundial)"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "bottom"
+  )
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+
+```
+
+### Análisis de la Composición Tecnológica de las Exportaciones
+
+El procesamiento de las series del Banco Mundial evidencia una marcada asimetría en la canasta exportadora argentina:
+
+- **Especialización Agroindustrial:** Se destaca un claro predominio de la categoría de alimentos y recursos procesados (manufacturas basadas en recursos naturales), que de forma continua absorbe entre el 45% y el 60% del valor total de las mercancías vendidas al exterior.
+- **Debilidad en Alta Tecnología:** En consonancia con los hallazgos de Lall (2000), las exportaciones de Alta Tecnología (HT) presentan una participación marginal (siempre inferior al 10%) con una trayectoria declinante hacia las últimas décadas.
+- **Conclusión Conceptual:** La pérdida de participación del sector industrial en el PIB (discutida en el primer indicador) no fue acompañada por una reconversión hacia ramas manufactureras complejas, sino por una acentuación de la especialización exportadora en bienes derivados del sector primario (Graña y Terranova, 2022; Fernández Franco et al., 2025).
+
+```{r}
+exportaciones_wdi <- WDI(country = "ARG",indicator = c("alta_tecnologia" = "TX.VAL.TECH.MF.ZS",
+                                                       "manufacturas_total" = "TM.VAL.MANF.ZS.UN",
+                                                       "alimentos_procesados" = "TX.VAL.FOOD.ZS.UN",
+                                                       "agricolas_primarios" = "TX.VAL.AGRI.ZS.UN" ),
+                         start = 1990,
+                         end = 2025)
+                         
+                         
+exportaciones_wdi_pivot <- exportaciones_wdi %>%
+  select(year, alta_tecnologia, alimentos_procesados, agricolas_primarios) %>%
+  pivot_longer(cols = -year, names_to = "categoria", values_to = "porcentaje") %>%
+  drop_na()
+
+ggplot(exportaciones_wdi_pivot,aes(x = year, y = porcentaje, color = categoria)) +
+  geom_line(size = 1.1) +
+  labs(
+    title = "Evolución de la Canasta Exportadora Argentina (WDI)",
+    x = "Año",
+    y = "Porcentaje del total exportado (%)",
+    caption = "Fuente: Elaboración propia en base a World Development Indicators."
+  ) +
+  theme_minimal()
+
+```
