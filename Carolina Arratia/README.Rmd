@@ -1,29 +1,501 @@
 ---
-title: "Arratia_Carolina"
+title: '<span style="color: purple;font-weight:bold;">Arratia Guillen Carolina Roxana - Trabajo Integrador Final</span>'
 output: html_document
-date: "2026-09-15"
+date: "Vto 2026-10-05"
 ---
+
+```{=html}
+<style>
+body { font-family: 'Georgia', serif;font-size: 16px;line-height: 1.8}
+</style>
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+### <u>**Resumen ejecutivo**</u>
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+El presente trabajo analiza la evolución de las ventajas comparativas reveladas (VCR) de un conjunto seleccionado de productos en países de América Latina, con foco en Argentina, Brasil y Chile, comparando 2003 y 2024. El análisis se basa en datos de comercio internacional de BACI-CEPII y utiliza la VCR como indicador de la especialización relativa de un país (en un x producto) frente a la estructura del comercio mundial.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+A partir de los resultados obtenidos, las ventajas comparativas reveladas permite realizar una primera aproximación a la estructura productiva y exportadora de un país así como también a la forma en que este se inserta en el comercio internacional. Sin embargo, el análisis de este indicador de manera aislada resulta insuficiente para comprender la totalidad de los fenómenos observados.
 
-```{r cars}
-summary(cars)
+Justamente, tiene sus limitaciones que quedaron expuestas por ej. en el caso de Brasil, que posee una ventaja comparativa asociada a la disponibilidad de recursos y cuyo desarrollo de esta actividad estuvo acompañado por importantes políticas públicas. Por lo que, no debe entenderse necesariamente como condiciones exclusivamente dadas por la naturaleza o por la dotación factorial de un país, sino que también pueden construirse, desarrollarse y fortalecerse mediante buenas políticas de estado.
+
+En contraste, con la carne ovina en Argentina, como la vcr se construye con valores del comercio exterior, no permite captar la dimensión productiva del sector. Es decir, se pierde parte de la información relativa a la producción destinada al mercado interno, particularmente cuando existen circuitos informales de comercialización, como la venta directa al consumidor sin pasar por gondolas.
+
+Respecto a la disminución en divesidad entre 2003 y 2024, los resultados pueden interpretarse como una señal de una menor amplitud de las especializaciones productivas de los países analizados. En el caso de América Latina, si bien lo veo como algo inherente, esta vinculada con la división internacional del trabajo, en la que los países tienden a concentrarse en determinadas actividades de acuerdo con sus capacidades y su inserción en los mercados internacionales.
+
+Ahora, esta transformación no es exclusivamente latinoamericana. Los avances tecnológicos están modificando las estructuras productivas y, con ellas, la composición del empleo a nivel mundial. La incorporación de nuevas tecnologías aún no ha logrado esparcirse dentro de los países, o sea, llega a las empresas y profesiones intelectuales pero no baja de ahí, y cito a Rodrick, 2025 en su libro **"Shared Prosperity in a Fractured World: A New Economics for the Middle Class, the Global Poor, and Our Climate"** donde señala que hasta en China ha experimentado una reducción en los empleos en industrias. Así, como próximo paso, a los países les correspondería no solo recuperar los puestros de trabajo desplazados, sino generar condiciones para que que la mano de obra puede adaptarse a las estructuras (con ello lograr más empleos de calidad) y acompañarlo de políticas flexibles en lugar de un mandatos rígidos que puedan limitar la capacidad de adaptación por ej. el seguir taxativamente una escuela de pensamiento.
+
+En definitiva, estos son valiosos indicadores para analizar, comprender y describir hechos pasados pero que deben analizarse en bloque con otros y considerar el contexto económico, productivo, social e institucional de cada país. Comprender las causas es clave para diseñar políticas adecuadas y evitar repetir medidas que no dieron resultados.
+
+### <u>**Introducción**</u>
+
+```{r libraries, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+
+options(scipen = 999)
+
 ```
 
-## Including Plots
+La intención fue abordar cierto grupo de productos de determinados países latinoamericanos a partir de las ventajas comparativas reveladas y hacer foco en el rubro de carnes carne bovina, carne de cerdo, carne ovina, cuero, lácteos y petróleo. Por un lado, permite observar actividades en las que varios países poseen una participación histórica en el comercio internacional. Por otro, permite comparar trayectorias diferentes: donde algunas economías fortalecieron su posición en determinados productos y otras redujeron su especialización relativa. La comparación entre 2003 y 2024 permite, por lo tanto, observar cambios en el tiempo de la estructura exportadora.
 
-You can also embed plots, for example:
+El análisis también busca conectar con la evolución de las escuelas de pensamiento. Finalmente, se amplía el análisis hacia la diversidad de un grupo de países latinoamericanos.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+### <u>**Desarrollo conceptual**</u>
+
+La entrega parte con la escuela de pensamiento de Adam Smith y su obra "La riqueza de las naciones (1776)" donde expone su teoría de ventajas absolutas. Según este enfoque, un país X posee dicha ventaja cuando es capaz de producir un bien a un costo menor en término de tiempo e insumo, y que por ende solo debería exportar eso para optimizar la eficiencia y productividad. Esta postura defiende el intercambio libre y voluntario bajo el principio de la "mano invisible". Esta idea, el autor resume de la siguiente manera: *"Cuando un país extranjero nos puede ofrecer una mercancía más barata de lo que nos cuesta a nosotros fabricarla, es mejor comprarla que producirla"*
+
+Avanzando en el tiempo, luego se encuentra David Ricardo con "Principios de economía política y tributación" (1817) y elabora el concepto de ventaja comparativa relativa. Con ello amplía la escuela anterior, porque consiste en que, aún cuando un país no se tenga una ventaja absoluta, igualmente puede dedicarse a producir y exportar un bien determinado. En mi opinión, sería una visión más amplia, avanzada y no rígida. Luego, retomaré este punto en la sección "Resultados y Análisis" donde también se expandirá junto al indicador económico, Balassa, las teorías de Heckscher-Ohliny Rodrick.
+
+### <u>**Metodología**</u>
+
+Para avanzar con el objeto de estudio, se utiliza la base del 2003 y 2024 descargada del CEPI del **"HS02 (2002-2024)"** junto con la base de códigos de países y productos.El procesamiento se realizó en R mediante los paquetes tidyverse, ggplot2, dplyr y plotly.
+
+Se estructuro en 5 etapas:
+
+1.  Cargar librerías
+2.  Importar base
+3.  Exploración
+4.  Transformación
+5.  Gráfico
+
+Una vez hecho los pasos 1 y 2, identifiqué las variables:
+
+::: {style="max-width: 400px; margin: 0 auto;"}
+| **Códigos** |          **Variables**           |
+|:------------|:--------------------------------:|
+| t           |               año                |
+| i           |   país exportador a 3 digitos    |
+| j           |    país receptor a 3 digitos     |
+| k           |       producto a 6 digitos       |
+| v           | valor en miles de USD corrientes |
+| q           |      cantidad en toneladas       |
+:::
+
+Para luego, armar los grupos de productos a analizar: carne bovina, carne de oveja, carne de cerdo, cuero, lácteos y petróleo. Con lo anterior de partida, sigo transformado los datos para arribar a las variables necesarias para llegar al cálculo de las ***Ventajas Comparativas Reveladas*** :
+
+$$VCR_{ij} = \frac{X_{xj} / X_j}{X_{xt} / X_t}$$
+
+donde:
+
+- valores_miles_usd de un producto x en un país j
+- exportaciones del país j
+- exportaciones de producto x en el mundo
+- exportación total mundial
+
+ Para una análisis más productivo y visual, las ***VCR*** la nomarlicé:
+
+$$IVCR\ Normalizado = \frac{IVCR - 1}{IVCR + 1}$$ Finalmente, eligí los países a analizar, principalmente, latinoamérica en dos momentos distintos y luego el cálculo sobre diversidad.
+
+### <u>**Resultados y análisis**</u>
+
+En base a lo comentado en la sección anterior, se presenta el cuadro por ventas comparativas normalizadas año 2003:
+
+```{r codigo 1, include=FALSE}
+
+#cargo base
+comercioproducto_mundial <- read_csv("~/prrof/BACI_HS02_Y2003_V202601.csv")
+
+#cargo base paises
+paises_baci <- read_csv("~/prrof/country_codes_V202601.csv") 
+
+#columnas necesarias
+comercioproducto_mundial <- comercioproducto_mundial %>%
+  select(i, j, k, v) %>%  #selecciono exportador, importador, producto y valor
+  group_by(i, k) %>% 
+  summarise(v = sum(v)) %>% 
+  ungroup()
+
+# añado nombre de paises a la base comercioproducto_mundial (2003)
+comercioproducto_mundial <- comercioproducto_mundial %>%
+  left_join(paises_baci %>% 
+              select(country_code, country_name, country_iso3),
+            by = c("i" = "country_code")) %>% 
+  ungroup() %>% 
+  rename(
+    pais = country_name,
+    producto = k,
+    valor_miles_usd = v) %>%
+  select(pais, country_iso3,producto, valor_miles_usd)
+
+#Productos seleccionados 2003
+
+productobajoestudio <- comercioproducto_mundial %>%
+  filter(producto %in% c( "020110","020120","020130","020210","020220","020230","020610","020621","020622","020629","020311","020312","020319","020321","020322","020329","020630","020641","020649","020410","020421","020422","020423","020430","020441","020442","020443","020680","020690","410711","410712","410719","410791","410792","410799","411200","411310","411320","411330","411390","411410","411420","411510","411520","040110","040120","040130","040210","040221","040229","040291","040299","040390","040490","040510","040590","270900"))
+
+#Productos seleccionados categorizados 2003
+productobajoestudio <- productobajoestudio %>%
+mutate(clasificacionproducto = case_when(
+      producto %in% c("020110","020120","020130","020210","020220","020230","020610","020621","020622","020629")~ "Carne bovina",
+      producto %in% c("020311","020312","020319","020321","020322","020329","020630","020641","020649" ) ~ "Carne de cerdo",
+      producto %in% c("020410","020421","020422","020423","020430","020441","020442","020443","020680","020690") ~ "Carne de oveja",
+      producto %in% c("410711","410712","410719","410791","410792","410799","411200","411310","411320","411330","411390","411410","411420","411510","411520") ~ "Cuero",
+      producto %in% c("040110","040120","040130","040210","040221","040229","040291","040299","040390","040490","040510","040590") ~ "Lacteos",
+      producto %in% c("270900") ~ "Petroleo"))
+
+
+# Agrupo por productos categorizados
+productobajoestudio <- productobajoestudio %>%
+  group_by(pais, clasificacionproducto) %>%
+  summarise(valor = sum(valor_miles_usd, na.rm = TRUE)) %>%
+            ungroup()
+
+#Armo denominador: exportacion total del país
+
+comercioproducto_mundial<- comercioproducto_mundial %>%
+  group_by(pais) %>%
+  mutate(expo_totales_pais=sum(valor_miles_usd)) %>%
+  ungroup()
+
+#Armo denominador: exportacion total del mundo
+
+comercioproducto_mundial<- comercioproducto_mundial %>%
+  mutate(expo_totalesmundo=sum(valor_miles_usd)) %>%
+  ungroup()
+
+#Armo numerador: encontrar el bien bajo estudio en el mundo paso 1
+
+productobajoestudio<- productobajoestudio %>% 
+  left_join(comercioproducto_mundial %>% 
+              select(pais,country_iso3, expo_totales_pais,expo_totalesmundo)%>%
+              distinct(), #si encuentra dos o más filas donde todos los datos coinciden exactamente, borra las sobrantes y deja solo una.
+            by="pais")
+
+#Armo numerador: encontrar el bien bajo estudio en el mundo paso 2
+
+productobajoestudio <- productobajoestudio %>%
+  group_by(clasificacionproducto) %>%
+  mutate(expo_totalproducmundo = sum(valor)) %>%
+            ungroup()
+
+
+#Armo VCR
+
+productobajoestudio<- productobajoestudio %>%
+  mutate(vcr = ((valor/expo_totales_pais)/(expo_totalproducmundo/expo_totalesmundo))) %>%
+  ungroup()
+
+#NORMALIZO
+
+productobajoestudio <- productobajoestudio %>%
+  mutate(IVCRmas103=vcr+1) %>% 
+  mutate(IVCRmenos103=vcr-1) %>% 
+  mutate(IVCRnorm03=round(IVCRmenos103/IVCRmas103, digits = 2))
+
+#tabla
+
+vcr_bajoestudio <- productobajoestudio %>% 
+  filter(country_iso3 %in% c("ARG", "CHL", "ARG", "BRA", "URY", "PER")) %>% 
+  select(pais, country_iso3, clasificacionproducto, IVCRnorm03)
+
+  
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r grafico vcr,fig.align='center', echo=FALSE}
+#formating
+  
+ggplot(vcr_bajoestudio, aes(x = factor(pais), 
+                             y = factor(clasificacionproducto), 
+                             fill = IVCRnorm03)) +
+  geom_tile(color = "red") +
+  geom_text(aes(label = scales::number(IVCRnorm03, accuracy = 0.01)), 
+            size = 5, fontface = "bold", color = "black") + 
+  scale_x_discrete(position = "top")+
+  scale_fill_gradient(low = "#BBBFFC", high = "#0B1BF4", labels = scales::number) +
+  labs(
+    title = "Ventajas Comparativas Reveladas (VCR) - Seleccionada (2003)",
+    x = "Pais",
+    y = "Clasificacion del Producto",
+    fill = "VCR",
+    caption = "Fuente: Elaboracion propia basado en BACI 2003") +
+  theme_minimal()+
+  theme(axis.text = element_text(family = "serif",face = "bold",size = 10),
+        plot.title = element_text(family = "serif", face = "bold",size=14), #titulograf
+        plot.caption = element_text(family = "serif"),
+        axis.title = element_text(family = "serif",size=13) )
+
+
+```
+
+Del cuadro precedente, se analizan los cambios princicipales en el indicador. Por ende, se procederá con 1) Brasil, en categoría producción de petróleo y 2) Argentina/Chile con la carne ovina.
+
+> Brasil y el petróleo 🛢️
+
+Mencioné anteriormente que la opinión de David Ricardo es más amplia y que menciona que un país aún cuando no tenga ventaja absoluta puede igual participar en la producción de bienes. Si bien lo que enunciaré ahora es breve y utilizo solo el cálculo de variable comparativas reveladas(versión normalizada) como indicador, se puede observar que Brasil en el año 2003, poseía -0.30, en petróleo. Pero, en el gráfico siguiente, 2024, pasó a 0.40. Pero, ¿Qué ocurrió? Descubrimiento a partir del 2006 del "Pré-sal" en las zonas de Buzios, Mero y Tupi. Que son ni más ni menos que una extensa reserva de petróleo y gas ubicada bajo una gruesa capa de sal dentro del mar. Lo increíble de esto y lo que permitió el desarrollo de ese factor fue la unión de empresas, entre ellas PetroBras, para realizar trabajos de investigación que hasta estos días consolidó en el uso de plataformas flotantes de producción, almacenamiento y descarga (FPSO) para alcanzar una alta productividad. Un dato importante es que el presar alcanza una profundidad de 7.000 metros por lo cual se necesita tecnología de punta para poder explorar. En resumen, conecta con la teoría de la dotación factorial de Heckscher-Ohlin, según el libro "Interregional and International Trade" (1933) donde expone que un país exportará aquellos bienes que requieran un uso intensivo del factor de producción que posee en abundancia e importará aquellos que requieran factores escasos, en el objeto bajo estudio, el petróleo descubierto. Cabe recordar que Brasil en el año 2003 solamente podía obtener petróleo pesado desde el mar principalemente de la cuenca marina de campos ubicada al norte de Rio de Janeiro y que encima importaba petróleo más ligero para poder trabajarlo. Sin dudas, el descubrimiento cambió completamente el escenario. Como otro punto, a destacar, debo decir que el crecimiento fue acompañado con políticas de gobierno que ayudó al desarrollo del Presal:
+
+- Regime de Partilha: las empresas deberían ceder parte al Estado brasileño una parte del excedente de petróleo y gas producido.
+- Exigencias de contratar proveedores locales
+- Destino de cierto porcentaje a inversión en investigacion y desarrollo
+
+Así, la evidencia demuestra que si estas teorías liberales se complementan en lugar de excluirse, los resultados son sumamente favorables.
+
+```{r codigo 24, include=FALSE}
+
+#cargo base
+comercioproducto_mundial24 <- read_csv("~/prrof/BACI_HS02_Y2024_V202601.csv")
+
+#cargo base paises
+paises_baci24 <- read_csv("~/prrof/country_codes_V202601.csv") 
+
+#columnas necesarias
+comercioproducto_mundial24 <- comercioproducto_mundial24 %>%
+  select(i, j, k, v) %>%  #selecciono exportador, importador, producto y valor
+  group_by(i, k) %>% 
+  summarise(v = sum(v)) %>% 
+  ungroup()
+
+# añado nombre de paises a la base comercioproducto_mundial 2003
+comercioproducto_mundial24 <- comercioproducto_mundial24 %>%
+  left_join(paises_baci24 %>% 
+              select(country_code, country_name, country_iso3),
+            by = c("i" = "country_code")) %>% 
+  ungroup() %>% 
+  rename(
+    pais = country_name,
+    producto = k,
+    valor_miles_usd = v) %>%
+  select(pais, country_iso3,producto, valor_miles_usd)
+
+#Productos seleccionados 2024
+
+productobajoestudio24 <- comercioproducto_mundial24 %>%
+  filter(producto %in% c( "020110","020120","020130","020210","020220","020230","020610","020621","020622","020629","020311","020312","020319","020321","020322","020329","020630","020641","020649","020410","020421","020422","020423","020430","020441","020442","020443","020680","020690","410711","410712","410719","410791","410792","410799","411200","411310","411320","411330","411390","411410","411420","411510","411520","040110","040120","040130","040210","040221","040229","040291","040299","040390","040490","040510","040590","270900"))
+
+#Productos seleccionados categorizados 2024
+productobajoestudio24 <- productobajoestudio24 %>%
+mutate(clasificacionproducto24 = case_when(
+      producto %in% c("020110","020120","020130","020210","020220","020230","020610","020621","020622","020629")~ "Carne bovina",
+      producto %in% c("020311","020312","020319","020321","020322","020329","020630","020641","020649" ) ~ "Carne de cerdo",
+      producto %in% c("020410","020421","020422","020423","020430","020441","020442","020443","020680","020690") ~ "Carne de oveja",
+      producto %in% c("410711","410712","410719","410791","410792","410799","411200","411310","411320","411330","411390","411410","411420","411510","411520") ~ "Cuero",
+      producto %in% c("040110","040120","040130","040210","040221","040229","040291","040299","040390","040490","040510","040590") ~ "Lacteos",
+      producto %in% c("270900") ~ "Petroleo"))
+
+
+
+
+# Agrupo por productos categorizados
+productobajoestudio24 <- productobajoestudio24 %>%
+  group_by(pais, clasificacionproducto24) %>%
+  summarise(valor = sum(valor_miles_usd, na.rm = TRUE)) %>%
+            ungroup()
+
+#Armo denominador: exportacion total del país
+
+comercioproducto_mundial24<- comercioproducto_mundial24 %>%
+  group_by(pais) %>%
+  mutate(expo_totales_pais=sum(valor_miles_usd)) %>%
+  ungroup()
+
+#Armo denominador: exportacion total del mundo
+
+comercioproducto_mundial24<- comercioproducto_mundial24 %>%
+  mutate(expo_totalesmundo=sum(valor_miles_usd)) %>%
+  ungroup()
+
+#Armo numerador: encontrar el bien bajo estudio en el mundo paso 1
+
+productobajoestudio24<- productobajoestudio24 %>% 
+  left_join(comercioproducto_mundial24 %>% 
+              select(pais,country_iso3, expo_totales_pais,expo_totalesmundo)%>%
+              distinct(), #si encuentra dos o más filas donde todos los datos coinciden exactamente, borra las sobrantes y deja solo una.
+            by="pais")
+
+#Armo numerador: encontrar el bien bajo estudio en el mundo paso 2
+
+productobajoestudio24 <- productobajoestudio24 %>%
+  group_by(clasificacionproducto24) %>%
+  mutate(expo_totalproducmundo = sum(valor)) %>%
+            ungroup()
+
+
+#Armo VCR
+
+productobajoestudio24<- productobajoestudio24 %>%
+  mutate(vcr24 = ((valor/expo_totales_pais)/(expo_totalproducmundo/expo_totalesmundo))) %>%
+  ungroup()
+
+#NORMALIZO
+
+productobajoestudio24 <- productobajoestudio24 %>%
+  mutate(IVCRmas124=vcr24+1) %>% 
+  mutate(IVCRmenos124=vcr24-1) %>% 
+  mutate(IVCRnorm24=round(IVCRmenos124/IVCRmas124, digits = 2))
+
+#tabla
+
+vcr_bajoestudio24 <- productobajoestudio24 %>% 
+  filter(country_iso3 %in% c("ARG", "CHL", "ARG", "BRA", "URY", "PER")) %>% 
+  select(pais, country_iso3, clasificacionproducto24, IVCRnorm24)
+
+
+
+
+```
+
+```{r grafico vcr24,fig.align='center', echo=FALSE}
+#formating24
+  
+ggplot(vcr_bajoestudio24, aes(x = factor(pais), 
+                             y = factor(clasificacionproducto24), 
+                             fill = IVCRnorm24)) +
+  geom_tile(color = "red") +
+  geom_text(aes(label = scales::number(IVCRnorm24, accuracy = 0.01)), 
+            size = 5, fontface = "bold", color = "black") + 
+  scale_x_discrete(position = "top")+
+  scale_fill_gradient(low = "#BBBFFC", high = "#0B1BF4", labels = scales::number) +
+  labs(
+    title = "Ventajas Comparativas Reveladas (VCR) - Seleccionada (2024)",
+    x = "Pais",
+    y = "Clasificacion del Producto",
+    fill = "VCR",
+    caption = "Fuente: Elaboracion propia basado en BACI 2024") +
+  theme_minimal()+
+  theme(axis.text = element_text(family = "serif",face = "bold",size = 10),
+        plot.title = element_text(family = "serif", face = "bold",size=14), #titulograf
+        plot.caption = element_text(family = "serif"),
+        axis.title = element_text(family = "serif",size=13) )
+
+
+```
+
+> Argentina/Chile y la carne ovina 🐏
+
+Podemos observar que Argentina en al año 2003 poseía ventajas comparativas, 0,01, pero en 2024 se muestra una contundente disminución. Profundizando sobre los cambios entre ambos períodos, se puede encontrar que alrededor del año 2000 hubo una crisis de enfermedad en el ganado y que dio paso al Plan Nacional de Erradicación de la fiebre aftosa (Resolución Senasa 5/2001) junto a esto también cito a la Ley N° 25.422, conocida como la Ley Ovina, sancionada el 4 de abril de 2001, destinada a lograr la adecuación, modernización de los sistemas productivos que permitan la sostenibilidad a través del tiempo y consecuentemente, mantenga las fuentes de trabajo y la radicación rural. Sin dudas, para el primer período bajo análisis logró cumplir su objetivo. Ahora, ¿Qué significa exactamente libre de aftosa? La Organización Mundial de Sanidad Animal (OMSA) reconoce a la fecha a nuestro territorio bajo dos condiciones estables: una amplia Zona Libre con Vacunación (centro y norte del país) y varias Zonas Libres sin Vacunación (ej. Patagonia), es decir, con la primera condición el territorio aplica de forma obligatoria y sistemática vacunas a sus rodeos y demuestra que, a pesar de usar la vacuna, el virus no está circulando en la región. La segunda condición, libre de fiebre aftosa sin vacunación, no se permite vacunar a los animales. Es el estatus sanitario más exigente, ya que requiere fronteras estrictas y auditorías para demostrar la ausencia absoluta del virus sin defensas artificiales introducidas por vacunación. Si bien estas políticas ayudaron a posicionar a Argentina en un lugar de excelencia para 2024, no lograron generar cambios drásticos en la cantidad ovina exportada y mejoras en la produtividad. Las variables limitantes de esto fue: costos fijos y variables que al medirlos en dólares, a un tipo de cambio planchado, y un con alta inflación, se vio encarecido, venta de productos en el mercado local, es decir, venta directa en el mercado interno sin que pase por las góndolas propias para medición. En la actualidad, la exportación de carne ovina se esta expandiendo con la apertura de mercados, pero sigue faltando producción para abastecerlo. La realidad, es que en el sector existe un amplio optimismo con este mercado aunque prevalece la duda de desarrollo. Retornando en el tiempo, en el año 2025, la ley que sirvió de base (25.422) se eliminó con el decreto N° 408/2025. En el comunicado informado por la Secretaría de Agricultura, Ganadería y Pesca justificó dicha decisión en la falta de aumento de las existencias. Entiendo que al revisar una sola variable y el tiempo transcurrido, 24 años, se logra fácilmente deducir en la poca utilidad de ello. Sin embargo, el escenario amerita política más desarrollada y compleja que logre impulsar el desarrollo del sector dado el reconocimiento de la carne en los mercados europeos (conseguido con políticas de estado) y actitutes colaborativas de los productores al escenario ovino actual. Por otro lado, si cruzamos la cordillera podemos encontrarnos con Chile cuya vcr de 0,31 paso a -0,05 donde también al igual que en nuestro territorio la disminución se dio por altos costos y sumado problemas de sequía. Sin embargo, Chile en un inicio poseía una alta capacidad para producir masivamente pero que se estanco dejando una industria sin VCR.
+
+```{r codigo diversidad03, include=FALSE}
+
+#variable 2003: exportacion del producto en el mundo
+datadiversidadlatam <- comercioproducto_mundial %>%
+  group_by(producto) %>%
+  mutate(expoproductomundial = sum(valor_miles_usd)) %>%
+  ungroup()
+
+
+datadiversidadlatam <- datadiversidadlatam %>%
+  mutate(vcr = ((valor_miles_usd/expo_totales_pais)/(expoproductomundial/expo_totalesmundo))) %>%
+  mutate(vcrmas1=vcr+1)%>%
+  mutate(vcrmenos1=vcr-1)%>%
+  mutate(vcrnorm=round(vcrmenos1/vcrmas1,digits = 2))%>%
+ ungroup()
+
+#columna indicando si tiene vcr si o no?¿
+
+datadiversidadlatam <- datadiversidadlatam %>%
+  mutate(hay_vcr2003 = ifelse(vcr>1,1,0))
+
+# Recontamos cantidad de productos con VCR por país para obtener diversidad
+diversidad2003 <- datadiversidadlatam %>%
+  filter(pais%in% c("Argentina","Bolivia (Plurinational State of)","Brazil","Ecuador","Peru","Venezuela","Uruguay","Paraguay","Colombia","Chile"))%>%
+  group_by(pais) %>%
+  summarize(productosdiversos2003 = sum(hay_vcr2003))%>%
+  arrange(desc(productosdiversos2003))
+
+```
+
+```{r codigo diversidad24, include=FALSE}
+
+#variable 2024: exportacion del producto en el mundo
+datadiversidadlatam24 <- comercioproducto_mundial24 %>%
+  group_by(producto) %>%
+  mutate(expoproductomundial24 = sum(valor_miles_usd)) %>%
+  ungroup()
+
+datadiversidadlatam24 <- datadiversidadlatam24 %>%
+  mutate(vcr24 = ((valor_miles_usd/expo_totales_pais)/(expoproductomundial24/expo_totalesmundo))) %>%
+  mutate(vcrmas1=vcr24+1)%>%
+  mutate(vcrmenos1=vcr24-1)%>%
+  mutate(vcrnorm24=round(vcrmenos1/vcrmas1,digits = 2))%>%
+ ungroup()
+
+#columna indicando si tiene vcr si o no?¿
+
+datadiversidadlatam24 <- datadiversidadlatam24 %>%
+  mutate(hay_vcr2024 = ifelse(vcr24>1,1,0))
+
+# Recontamos cantidad de productos con VCR por país para obtener diversidad
+diversidad2024 <- datadiversidadlatam24 %>%
+  filter(pais%in% c("Argentina","Bolivia (Plurinational State of)","Brazil","Ecuador","Peru","Venezuela","Uruguay","Paraguay","Colombia","Chile"))%>%
+  group_by(pais) %>%
+  summarize(productosdiversos2024 = sum(hay_vcr2024))%>%
+  arrange(desc(productosdiversos2024))
+
+
+```
+
+```{r grafico diversidad comparada paso 1,echo=FALSE}
+
+diversidad_comparativa <- diversidad2003 %>%
+  inner_join(diversidad2024, by = "pais")
+
+
+```
+
+#### <u>**Diversidad en LATAM**</u>
+
+Para ampliar el estudio sobre la región, se procede a plasmar la evolución de los países latinoaméricanos en 2003 y 2024 sobre la cantidad de productos exportados.
+
+<center>
+
+```{r grafico diversidad comparada, fig.align='center', echo=FALSE}
+
+
+# Preparar datos en formato largo (long format)
+diversidad_long <- diversidad_comparativa %>%
+  pivot_longer(
+    cols = c(productosdiversos2003, productosdiversos2024),
+    names_to = "anio",
+    values_to = "productos"
+  ) %>%
+  mutate(anio = ifelse(anio == "productosdiversos2003", "2003", "2024"))
+
+ggplotly(
+ggplot(diversidad_long, aes(x = anio, y = productos, group = pais, color = pais)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
+  geom_text(aes(label = paste(pais, productos)), 
+            data = filter(diversidad_long, anio == "2024"), 
+            hjust = 0.1, size = 3.5,nudge_x = 0.12,) +
+  scale_x_discrete(expand = expansion(mult = c(0.1, 0.2))) +
+  labs(
+    title = "Cambio en diversidad de productos (2003 - 2024)",
+    x = "year",
+    y = "Productos con VCR"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none"),
+  tooltip = "y")
+
+
+```
+
+</center>
+
+Al observar el gráfico de mancuernas, lamentablemente, brinda evidencia sobre la disminución en la cantidad de productos que son exportados con ventajas comparativas practicamente en toda la región, salvo por Paraguay. Ahondando en este cambio, se puede inferir que esta conectado en parte con la desindustrialización "prematura" (Rodrick,2015 y Palm,2019) donde, con el foco en la industria, exponen que las economías latinoaméricanas se fueron estancando por aperturas comerciales indiscriminadas, falta de producción en escala e informalidad. Si bien existieron y existen politicas de comercialización, no fueron del todo cooperativas de manera genuina, por ejemplo en aranceles preferenciales, intercambio de conocimientos, dinero y bienes. Con esos dos puntos, derivo en que la región logró ubicarse principalmente en el sector primario perdiendo foco en capacidades técnicas que permitan producir de manera más productiva y con recursos tecnologicos diversos productos en mayor medida. Con esto no digo que no hubo avances en la manufactura sino que el exportar bienes primarios, no manufacturados, tiene más que peso que otros productos.
+
+<u>**Biblografía**</u>
+
+- Referencia UN Trade and Development (UNCTAD) website : <https://unctadstat.unctad.org/EN/RcaRadar.html>
+
+- Standard International Trade Classification (SITC) Revisión 3: <https://unctadstat.unctad.org/EN/Classifications/DimSitcRev3Products_Official_Hierarchy.pdf>
+
+- Baci: <https://www.cepii.fr/CEPII/en/bdd_modele/bdd_modele_item.asp?id=37>
+
+- The CEPII-BACI dataset:<https://www.cepii.fr/DATA_DOWNLOAD/baci/doc/baci_webpage.html#download-links> // <https://www.cepii.fr/CEPII/en/publications/wp/abstract.asp?NoDoc=2726>
+
+- Petróle Brasil: <https://petrobras-com-br.translate.goog/en/pre-sal?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc> , <https://www.presalpetroleo.gov.br/contratos-de-partilha-e-producao/o-pre-sal/>
+
+- Ovino: <https://agroverdad.com.ar/2025/01/crisis-frigorificos-no-cubren-costos-el-final-es-claro-no-son-sostenibles-advierte-fifra>, <https://www.expoagro.com.ar/fiebre-aftosa-que-estatus-tiene-argentina/>,\< <https://www.argentina.gob.ar/noticias/la-omsa-ratifico-la-condicion-sanitaria-de-argentina-como-pais-libre-de-fiebre-aftosa>\>,<https://www.argentina.gob.ar/noticias/el-gobierno-nacional-elimino-los-regimenes-especificos-de-promocion-ganadera-por-especie>,<https://www.argentina.gob.ar/senasa/programas-sanitarios/cadena-animal/bovinos-y-bubalinos/bovinos-y-bubalinos-produccion-primaria/fiebre-aftosa>,<https://www.argentina.gob.ar/noticias/la-carne-ovina-argentina-incrementa-su-exportacion-europa-crece-y-chile-reabre-el-mercado>
+
+- Globalización latam: <https://www.americasquarterly.org/article/por-que-america-latina-perdio-con-la-globalizacion-y-como-puede-ganar-ahora/>
+
+- Reindustrializar no es la solución: las respuestas de Dani Rodrik para reconstruir una clase media en el siglo XXI: <https://legrandcontinent.eu/es/2026/04/17/la-desindustrializacion-no-es-el-problema-las-respuestas-de-dani-rodrik-para-reconstruir-una-clase-media-en-el-siglo-xxi/#easy-footnote-1-96555>
+
+
+
+
