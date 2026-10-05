@@ -99,10 +99,10 @@ En base a lo comentado en la sección anterior, se presenta el cuadro por ventas
 ```{r codigo 1, include=FALSE}
 
 #cargo base
-comercioproducto_mundial <- read_csv("~/prrof/BACI_HS02_Y2003_V202601.csv")
+comercioproducto_mundial <- read_csv("BASES/BACI_HS02_Y2003_V202601.csv")
 
 #cargo base paises
-paises_baci <- read_csv("~/prrof/country_codes_V202601.csv") 
+paises_baci <- read_csv("BASES/country_codes_V202601.csv") 
 
 #columnas necesarias
 comercioproducto_mundial <- comercioproducto_mundial %>%
@@ -237,10 +237,10 @@ Así, la evidencia demuestra que si estas teorías liberales se complementan en 
 ```{r codigo 24, include=FALSE}
 
 #cargo base
-comercioproducto_mundial24 <- read_csv("~/prrof/BACI_HS02_Y2024_V202601.csv")
+comercioproducto_mundial24 <- read_csv("BASES/BACI_HS02_Y2024_V202601.csv")
 
 #cargo base paises
-paises_baci24 <- read_csv("~/prrof/country_codes_V202601.csv") 
+paises_baci24 <- read_csv("BASES/country_codes_V202601.csv") 
 
 #columnas necesarias
 comercioproducto_mundial24 <- comercioproducto_mundial24 %>%
