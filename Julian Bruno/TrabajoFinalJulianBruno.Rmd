@@ -160,7 +160,7 @@ $$VCR_{arg, k} = \frac{X_{arg, k} / X_{arg, total}}{X_{w, k} / X_{w, total}}$$
 
 ```{r indicador3_baci}
 # 1. Carga de la base local BACI
-baci <- read_csv("C:/Users/Julian Bruno/OneDrive/Escritorio/Materiales/Repositorio-Diplomatura/Julian Bruno/BACI_HS22_Y2024_V202601.csv")
+baci <- read_csv("C:/Users/Julian Bruno/OneDrive/Escritorio/Materiales/Repositorio-Diplomatura/Julian Bruno/Bases/BACI_HS22_Y2024_V202601.csv")
 
 # 2. Asignación de código ISO3
 baci <- baci %>%
