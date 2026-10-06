@@ -1,0 +1,527 @@
+---
+title: "Especialización comercial y concentración de las exportaciones argentinas en 2024"
+author: "Santiago Soto"
+format:
+  html:
+    embed-resources: true
+lang: es
+editor: visual
+---
+
+## Resumen ejecutivo
+
+Este trabajo analiza la especialización comercial, la diversidad y la concentración de las exportaciones argentinas de bienes en 2024. A partir de la base BACI de CEPII, procesada en R, se calculan ventajas comparativas reveladas (VCR), la cantidad de productos con VCR mayor a 1 y la participación de los diez principales productos en el valor total exportado.
+
+Argentina registró ventajas comparativas reveladas en 466 productos, equivalentes al 11,72 % de las categorías exportadas. Estos productos reunieron el 91,2 % del valor exportado. A su vez, los diez principales productos concentraron el 52,78 % de las exportaciones, encabezados por los residuos de la extracción de aceite de soja, el maíz y el petróleo crudo.
+
+La diversidad exportadora argentina resultó inferior a la de Brasil y superior a las de Chile y Uruguay, y considerablemente menor que las de China, Alemania y Estados Unidos. Los resultados muestran una concentración del valor exportado en un conjunto reducido de productos. El análisis caracteriza la canasta de bienes de un año y no permite, por sí solo, demostrar desindustrialización ni medir complejidad tecnológica.
+
+## Introducción
+
+Este trabajo analiza la especialización comercial y la concentración de las exportaciones argentinas de bienes en 2024. La pregunta que orienta el análisis es: ¿en qué productos presenta Argentina ventajas comparativas reveladas, cuánto concentran sus principales exportaciones y cómo se compara su diversidad exportadora con la de otros países seleccionados?
+
+Para responder, se utiliza la base BACI de CEPII y se construyen tres indicadores: la ventaja comparativa revelada (VCR), la diversidad exportadora —definida como la cantidad de productos con VCR mayor a 1— y la participación de los diez principales productos en el valor total exportado. La diversidad argentina se compara con Brasil, Chile y Uruguay como referencias regionales, y con China, Alemania y Estados Unidos para ampliar el contraste internacional.
+
+El análisis se vincula con las discusiones de la cursada sobre estructura productiva, desindustrialización y división internacional del trabajo. Su alcance empírico se limita a caracterizar las exportaciones de bienes en un año determinado. Por eso, los resultados no permiten demostrar un proceso de desindustrialización ni medir directamente la complejidad tecnológica de la canasta exportadora.
+
+## Marco conceptual
+
+### Desindustrialización y estructura productiva
+
+La desindustrialización suele identificarse con una reducción de la participación del empleo manufacturero en el empleo total. Sin embargo, ese indicador no permite conocer por sí solo qué ocurre con la producción industrial, la productividad y el conjunto de la economía.
+
+Herrera Bartis (2021) muestra estas diferencias al comparar Estados Unidos, Reino Unido y Argentina. El autor caracteriza el caso estadounidense como una desindustrialización por madurez; el británico, como una reespecialización hacia servicios transables de alta productividad; y el argentino, como una desindustrialización fallida, acompañada por el deterioro de otras variables económicas y sociales. Por lo tanto, procesos que parecen similares al observar el empleo industrial pueden expresar transformaciones distintas.
+
+Graña y Terranova (2022) cuestionan la interpretación de la desindustrialización como un resultado mecánico o natural del desarrollo. Su explicación destaca la nueva división internacional del trabajo y las diferencias internacionales de salarios y productividad, que influyen en la localización de la producción. Desde esta perspectiva, la pérdida de peso industrial en algunos países debe estudiarse en relación con la industrialización de otros.
+
+Estos enfoques ofrecen un marco para discutir la inserción internacional argentina. No obstante, estudiar la composición de las exportaciones constituye una aproximación parcial a su estructura productiva: las exportaciones no incluyen toda la producción destinada al mercado interno y, en este ejercicio, tampoco se consideran los servicios.
+
+### Especialización, diversidad y concentración exportadora
+
+La ventaja comparativa revelada (VCR) compara la participación de un producto en las exportaciones de un país con su participación en las exportaciones mundiales. Un valor mayor a 1 indica que el producto tiene un peso relativo superior en la canasta del país. Es un indicador de especialización comercial observada, pero no constituye una medida directa de productividad, rentabilidad o contenido tecnológico.
+
+La diversidad exportadora se define, siguiendo el ejercicio de la cursada, como la cantidad de productos con VCR mayor a 1. Permite observar en cuántas categorías de productos un país presenta especialización relativa. Su comparación requiere utilizar el mismo año, clasificación y nivel de desagregación. Una mayor diversidad no implica, por sí sola, una mayor complejidad tecnológica.
+
+La concentración exportadora aporta otra dimensión: cuánto depende el valor exportado de un conjunto reducido de productos. En este trabajo se mide mediante la participación de los diez principales productos en las exportaciones totales. También se calcula qué proporción del valor exportado corresponde a los productos con VCR mayor a 1.
+
+Los tres indicadores se complementan: la VCR identifica la especialización relativa, la diversidad mide su amplitud y la concentración muestra cómo se distribuye el valor exportado. Permiten caracterizar la canasta argentina de 2024, aunque no establecer las causas de su configuración ni su evolución histórica.
+
+## Metodología
+
+### Datos y alcance
+
+Se utiliza la base de comercio internacional BACI de CEPII correspondiente a 2024, con la clasificación del Sistema Armonizado 2022 (HS22), versión V202601. También se emplean las tablas de códigos de países y descripciones de productos de esa versión.
+
+La base contiene flujos comerciales por país exportador, país importador y producto. Para este análisis se suman los valores exportados hacia todos los destinos, obteniendo las exportaciones de cada país por producto. El nivel de desagregación utilizado corresponde a códigos de seis dígitos; por lo tanto, cada “producto” representa una categoría de la clasificación y no un artículo individual.
+
+El procesamiento se realiza en R mediante un documento Quarto. Se utilizan rutas relativas para cargar los archivos y se incorporan los nombres de países y productos mediante uniones con sus respectivos diccionarios.
+
+### Construcción de los indicadores
+
+La ventaja comparativa revelada se calcula mediante la siguiente expresión:
+
+$$VCR_{cp} =
+\frac{X_{cp}/X_c}{X_{wp}/X_w}$$
+
+Donde $X_{cp}$ representa las exportaciones del país $c$ del producto $p$; $X_c$, las exportaciones totales de ese país; $X_{wp}$, las exportaciones mundiales del producto; y $X_w$, las exportaciones mundiales totales. Los totales mundiales se construyen con todos los exportadores incluidos en la base, incluida Argentina.
+
+Se considera que un producto presenta ventaja comparativa revelada cuando su VCR es estrictamente mayor a 1, siguiendo el criterio del ejercicio de clase. Para Argentina se calcula la cantidad de productos que cumplen esta condición y su porcentaje sobre el total de productos exportados registrados. Además, se obtiene la participación conjunta de esos productos en el valor total exportado.
+
+La diversidad exportadora se mide como la cantidad de productos con VCR mayor a 1 por país. Se compara Argentina con Brasil, Chile y Uruguay como referencias regionales, y con China, Alemania y Estados Unidos para ampliar el contraste. Esta selección es ilustrativa y no constituye una muestra representativa del conjunto de países.
+
+La concentración se calcula sumando las exportaciones de los diez productos de mayor valor y dividiendo ese resultado por el total exportado por Argentina. El resultado se expresa como porcentaje.
+
+### Limitaciones
+
+El análisis corresponde a un único año y considera exclusivamente el comercio de bienes. No permite evaluar cambios históricos, medir la producción destinada al mercado interno ni caracterizar las exportaciones de servicios.
+
+Los indicadores se construyen con valores monetarios, por lo que reflejan tanto cantidades como precios. Las diferencias observadas no pueden atribuirse únicamente a capacidades productivas o tecnológicas. Además, los resultados de diversidad y concentración dependen del nivel de desagregación de los productos.
+
+Por último, la VCR describe un patrón comercial observado y no identifica sus causas. Los resultados deben interpretarse como una caracterización de la especialización exportadora de 2024, sin equipararlos a una medición directa de desindustrialización o complejidad económica.
+
+## Resultados y análisis
+
+```{r}
+#| include: false
+library(tidyverse)
+library(countrycode)
+baci <- read_csv("bases/BACI_HS22_Y2024_V202601.csv.xz")
+paises <- read_csv("bases/country_codes_V202601.csv")
+productos <- read_csv("bases/product_codes_HS22_V202601.csv")
+
+head(baci)
+head(paises)
+head(productos)
+```
+
+```{r}
+#| include: false
+glimpse(baci)
+names(paises)
+names(productos)
+```
+
+```{r}
+#| include: false
+argentina <- paises %>%
+  filter(country_name == "Argentina")
+
+argentina
+```
+
+```{r}
+#| include: false
+exportaciones_argentina <- baci %>%
+  filter(i == 32)
+# ============================================================
+# EXPORTACIONES Y VENTAJA COMPARATIVA
+# ============================================================
+
+
+# ============================================================
+# 1. EXPORTACIONES DE ARGENTINA
+# ============================================================
+
+# Exportaciones de Argentina por producto
+
+glimpse(exportaciones_argentina)
+exportaciones_arg_producto <- exportaciones_argentina %>%
+  group_by(k) %>%
+  summarise(exportaciones_arg = sum(v, na.rm = TRUE))
+
+head(exportaciones_arg_producto)
+
+# Total de exportaciones de Argentina
+total_exportaciones_argentina <- exportaciones_arg_producto %>%
+  summarise(total_arg = sum(exportaciones_arg, na.rm = TRUE))
+
+total_exportaciones_argentina
+
+# ============================================================
+# 2. EXPORTACIONES MUNDIALES
+# ============================================================
+
+# Exportaciones mundiales por producto
+exportaciones_mundiales_producto <- baci %>%
+  group_by(k) %>%
+  summarise(exportaciones_mundiales = sum(v, na.rm = TRUE))
+
+head(exportaciones_mundiales_producto)
+
+# Total de exportaciones mundiales
+total_exportaciones_mundiales <- exportaciones_mundiales_producto %>%
+  summarise(total_mundial = sum(exportaciones_mundiales, na.rm = TRUE))
+total_exportaciones_mundiales
+# ============================================================
+# 3. PARTICIPACIÓN DE CADA PRODUCTO EN EL COMERCIO MUNDIAL
+# ============================================================
+
+# Calculamos qué porcentaje representan las exportaciones
+# de cada producto sobre el total de exportaciones mundiales
+exportaciones_mundiales_producto <- exportaciones_mundiales_producto %>%
+  mutate(
+    participacion_mundial = exportaciones_mundiales /
+      total_exportaciones_mundiales$total_mundial * 100
+  )
+
+head(exportaciones_mundiales_producto)
+# ============================================================
+# 4. UNIÓN DE LA INFORMACIÓN DE ARGENTINA Y DEL MUNDO
+# ============================================================
+
+# Unimos las exportaciones argentinas con las exportaciones
+# mundiales correspondientes a cada producto
+exportaciones_arg_producto <- exportaciones_arg_producto %>%
+  left_join(
+    exportaciones_mundiales_producto,
+    by = "k"
+  )
+
+head(exportaciones_arg_producto)
+exportaciones_arg_producto <- exportaciones_arg_producto %>%
+  mutate(
+    participacion_argentina = exportaciones_arg /
+      total_exportaciones_argentina$total_arg * 100
+  )
+
+head(exportaciones_arg_producto)
+# ============================================================
+# 5. CÁLCULO DE LA VENTAJA COMPARATIVA REVELADA (VCR)
+# ============================================================
+
+# Comparamos la participación de cada producto en las
+# exportaciones argentinas con su participación mundial
+exportaciones_arg_producto <- exportaciones_arg_producto %>%
+  mutate(
+    vcr = participacion_argentina / participacion_mundial
+  )
+
+head(exportaciones_arg_producto)
+# Ver los valores de VCR de los primeros productos
+head(
+  exportaciones_arg_producto %>%
+    select(k, participacion_argentina, participacion_mundial, vcr)
+)
+# ============================================================
+# 6. PRODUCTOS CON VENTAJA COMPARATIVA REVELADA
+# ============================================================
+
+# Seleccionamos los productos cuya VCR es mayor a 1
+productos_vcr_mayor_1 <- exportaciones_arg_producto %>%
+  filter(vcr > 1) %>%
+  arrange(desc(vcr))
+# Mostrar los productos con VCR mayor a 1
+productos_vcr_mayor_1 %>%
+  select(k, vcr, exportaciones_arg, participacion_argentina) %>%
+  head(10)
+# ============================================================
+# 7. CANTIDAD DE PRODUCTOS CON VENTAJA COMPARATIVA
+# ============================================================
+
+# Contamos cuántos productos tienen una VCR mayor a 1
+cantidad_productos_vcr <- productos_vcr_mayor_1 %>%
+  summarise(
+    cantidad = n()
+  )
+
+cantidad_productos_vcr
+
+head(productos_vcr_mayor_1)
+# ============================================================
+# 8. PORCENTAJE DE PRODUCTOS CON VENTAJA COMPARATIVA
+# ============================================================
+
+# Contamos todos los productos exportados por Argentina
+cantidad_total_productos <- exportaciones_arg_producto %>%
+  summarise(
+    cantidad = n()
+  )
+cantidad_total_productos
+
+# Porcentaje de los productos exportados por Argentina
+# que presentan una VCR mayor a 1
+porcentaje_productos_vcr <- cantidad_productos_vcr$cantidad /
+  cantidad_total_productos$cantidad * 100
+
+porcentaje_productos_vcr
+# Participación de los productos con VCR mayor a 1
+# en el valor total exportado por Argentina
+participacion_exportaciones_con_vcr <- productos_vcr_mayor_1 %>%
+  summarise(
+    porcentaje = sum(exportaciones_arg, na.rm = TRUE) /
+      total_exportaciones_argentina$total_arg * 100
+  )
+
+participacion_exportaciones_con_vcr
+# ============================================================
+# 9. REVISIÓN DE LA BASE BACI
+# ============================================================
+
+# Revisamos las variables disponibles en la base BACI
+names(baci)
+# ============================================================
+# 10. IDENTIFICACIÓN DE LOS PAÍSES EXPORTADORES
+# ============================================================
+
+# Revisamos algunos de los países que aparecen como exportadores
+baci %>%
+  select(i) %>%
+  distinct() %>%
+  head(20)
+# ============================================================
+# 11. REVISIÓN DE LOS CÓDIGOS DE PAÍS
+# ============================================================
+# Revisamos si la base ya contiene información sobre los países
+unique(baci$i) %>%
+  head(20)
+# ============================================================
+# 12. INCORPORACIÓN DE LOS NOMBRES DE LOS PAÍSES
+# ============================================================
+
+baci <- baci %>%
+  select(-any_of("pais_exportador")) %>%
+  left_join(
+    paises %>%
+      select(country_code, country_name),
+    by = c("i" = "country_code")
+  ) %>%
+  rename(pais_exportador = country_name)
+
+# Revisamos los códigos y sus nombres
+baci %>%
+  select(i, pais_exportador) %>%
+  distinct() %>%
+  head(20)
+# Comprobamos si quedaron países sin identificar
+baci %>%
+  filter(is.na(pais_exportador)) %>%
+  distinct(i)
+
+```
+
+En 2024, el 11,72 % de los productos exportados por Argentina presentó una ventaja comparativa revelada mayor a 1. Estos productos concentraron el 91,2 % del valor total exportado. Por lo tanto, una proporción reducida de los productos exportados reunió la mayor parte del valor de las exportaciones argentinas.
+
+```{r}
+#| echo: false
+# ============================================================
+# 13. INCORPORACIÓN DE LOS NOMBRES DE LOS PRODUCTOS
+# ============================================================
+
+# Preparamos los códigos y las descripciones
+nombres_productos <- productos %>%
+  transmute(
+    k = as.integer(code),
+    producto = description
+  )
+
+# Agregamos las descripciones a los resultados
+exportaciones_arg_descripcion <- exportaciones_arg_producto %>%
+  mutate(k = as.integer(k)) %>%
+  left_join(nombres_productos, by = "k")
+# Etiquetas resumidas en español para las tablas
+exportaciones_arg_descripcion <- exportaciones_arg_descripcion %>%
+  mutate(
+    producto = case_when(
+      k == 320110 ~ "Extracto de quebracho para curtido",
+      k == 150710 ~ "Aceite de soja en bruto",
+      k == 90300  ~ "Yerba mate",
+      k == 330113 ~ "Aceite esencial de limón",
+      k == 150790 ~ "Aceite de soja, excepto en bruto",
+      k == 230250 ~ "Salvados y otros residuos del procesamiento de leguminosas",
+      k == 230400 ~ "Tortas y residuos de la extracción de aceite de soja",
+      k == 230800 ~ "Materias y residuos vegetales para alimentación animal, no especificados en otras categorías",
+      k == 230500 ~ "Tortas y residuos de la extracción de aceite de maní",
+      k == 30474  ~ "Filetes de merluza congelados",
+      k == 100590 ~ "Maíz, excepto para siembra",
+      k == 270900 ~ "Petróleo crudo",
+      k == 870421 ~ "Vehículos diésel de carga de peso total con carga no superior a 5 toneladas",
+      k == 710812 ~ "Oro no monetario en bruto, excepto en polvo",
+      k == 120190 ~ "Soja, excepto para siembra",
+      k == 20230  ~ "Carne bovina congelada sin hueso",
+      k == 100199 ~ "Trigo y morcajo, excepto trigo duro y para siembra",
+      k == 271000 ~ "Aceites y preparaciones de petróleo no crudo",
+      TRUE ~ producto
+    )
+  )
+# Tabla de los diez productos con mayor VCR
+exportaciones_arg_descripcion %>%
+  filter(vcr > 1) %>%
+  arrange(desc(vcr)) %>%
+  select(k, producto, vcr) %>%
+  head(10) %>%
+  knitr::kable(
+    digits = 2,
+    col.names = c("Código", "Producto", "VCR"),
+    caption = "Los diez productos con mayor VCR de Argentina, 2024"
+  )
+
+# Tabla de los diez productos con mayor valor exportado
+exportaciones_arg_descripcion %>%
+  arrange(desc(exportaciones_arg)) %>%
+  select(k, producto, participacion_argentina, vcr) %>%
+  head(10) %>%
+  knitr::kable(
+    digits = 2,
+    col.names = c(
+      "Código", "Producto",
+      "Participación exportadora (%)", "VCR"
+    ),
+    caption = "Los diez principales productos exportados por Argentina, 2024"
+  )
+# Participación conjunta de los 10 productos más exportados
+participacion_top_10 <- exportaciones_arg_descripcion %>%
+  arrange(desc(exportaciones_arg)) %>%
+  head(10) %>%
+  summarise(
+    porcentaje = sum(participacion_argentina)
+  )
+
+```
+
+Los diez productos de mayor valor exportado concentraron el 52,78 % de las exportaciones argentinas en 2024. Los principales fueron los residuos de la extracción de aceite de soja, el maíz y el petróleo crudo. Nueve de estos diez productos presentaron una VCR mayor a 1. Esto muestra que los productos con mayor peso exportador también presentan, en su mayoría, especialización relativa frente al comercio mundial.
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 7
+
+# ============================================================
+# 14. GRÁFICO DE LOS DIEZ PRODUCTOS MÁS EXPORTADOS
+# ============================================================
+
+top_10_exportaciones <- exportaciones_arg_descripcion %>%
+  arrange(desc(exportaciones_arg)) %>%
+  head(10) %>%
+  mutate(
+    producto_corto = case_when(
+      k == 230400 ~ "Residuos de extracción de aceite de soja",
+      k == 100590 ~ "Maíz (excepto para siembra)",
+      k == 270900 ~ "Petróleo crudo",
+      k == 150710 ~ "Aceite de soja en bruto",
+      k == 870421 ~ "Vehículos diésel de carga (hasta 5 t)",
+      k == 710812 ~ "Oro no monetario en bruto",
+      k == 120190 ~ "Soja (excepto para siembra)",
+      k == 20230  ~ "Carne bovina congelada sin hueso",
+      k == 100199 ~ "Trigo y morcajo (excepto duro y para siembra)",
+      k == 271000 ~ "Aceites y preparaciones de petróleo no crudo",
+      TRUE ~ producto
+    ),
+    producto_corto = str_wrap(producto_corto, width = 32)
+  )
+
+ggplot(
+  top_10_exportaciones,
+  aes(
+    x = participacion_argentina,
+    y = reorder(producto_corto, participacion_argentina)
+  )
+) +
+  geom_col(fill = "steelblue", width = 0.7) +
+  labs(
+    title = "Principales productos exportados",
+    subtitle = "Argentina, 2024",
+    x = "Participación en el total exportado (%)",
+    y = NULL,
+    caption = "Fuente: elaboración propia con datos de BACI."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.major.y = element_blank()
+  )
+```
+
+```{r}
+#| echo: false
+# ============================================================
+# 15. DIVERSIDAD EXPORTADORA: COMPARACIÓN ENTRE PAÍSES
+# ============================================================
+
+# Sumamos las exportaciones de cada país por producto
+exportaciones_pais_producto <- baci %>%
+  group_by(i, k) %>%
+  summarise(
+    exportaciones = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Calculamos el total exportado por cada país
+vcr_paises <- exportaciones_pais_producto %>%
+  group_by(i) %>%
+  mutate(total_pais = sum(exportaciones)) %>%
+  ungroup()
+
+# Calculamos el total mundial de cada producto
+vcr_paises <- vcr_paises %>%
+  group_by(k) %>%
+  mutate(total_producto = sum(exportaciones)) %>%
+  ungroup()
+
+# Calculamos el total mundial y la VCR
+vcr_paises <- vcr_paises %>%
+  mutate(
+    total_mundo = sum(exportaciones),
+    vcr = (exportaciones / total_pais) /
+      (total_producto / total_mundo)
+  )
+
+# Contamos los productos con VCR mayor a 1 por país
+diversidad_paises <- vcr_paises %>%
+  group_by(i) %>%
+  summarise(
+    diversidad = sum(vcr > 1),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    paises %>% select(country_code, country_name),
+    by = c("i" = "country_code")
+  )
+
+# Seleccionamos los países y traducimos sus nombres
+comparacion_diversidad <- diversidad_paises %>%
+  filter(i %in% c(32, 76, 152, 858, 842, 276, 156)) %>%
+  select(
+    pais = country_name,
+    diversidad
+  ) %>%
+  mutate(
+    pais = case_when(
+      pais == "Germany" ~ "Alemania",
+      pais == "USA" ~ "Estados Unidos",
+      pais == "Brazil" ~ "Brasil",
+      TRUE ~ pais
+    )
+  ) %>%
+  arrange(desc(diversidad))
+
+knitr::kable(
+  comparacion_diversidad,
+  col.names = c("País", "Productos con VCR > 1"),
+  caption = "Diversidad exportadora de países seleccionados, 2024"
+)
+```
+
+La comparación de países seleccionados muestra que Argentina registró 466 productos con ventaja comparativa revelada en 2024, frente a 535 de Brasil, 392 de Chile y 315 de Uruguay. China, Alemania y Estados Unidos presentaron una diversidad exportadora considerablemente mayor, con 2741, 2225 y 1616 productos, respectivamente. Estos resultados permiten comparar la amplitud de la especialización exportadora, aunque no indican por sí solos la complejidad tecnológica de los productos ni permiten evaluar cambios en el tiempo.
+
+## Conclusiones
+
+El análisis muestra que las exportaciones argentinas de bienes en 2024 se concentraron en un conjunto reducido de productos: los diez principales reunieron el 52,78 % del valor total exportado. Entre ellos se destacaron los residuos de la extracción de aceite de soja, el maíz, el petróleo crudo y el aceite de soja. También tuvieron presencia productos como los vehículos de carga, por lo que la canasta no puede caracterizarse como exclusivamente primaria.
+
+Argentina presentó ventajas comparativas reveladas en 466 productos, equivalentes al 11,72 % de las categorías exportadas. Estos productos concentraron el 91,2 % del valor exportado. Sin embargo, una VCR elevada no implica necesariamente un gran aporte a las exportaciones totales: el extracto de quebracho encabezó el ranking de VCR, mientras que los residuos de la extracción de aceite de soja ocuparon el primer lugar por valor exportado.
+
+En la comparación seleccionada, la diversidad exportadora argentina fue inferior a la de Brasil y superior a las de Chile y Uruguay. La distancia respecto de China, Alemania y Estados Unidos fue considerablemente mayor. Estas diferencias describen la amplitud de la especialización comercial, sin constituir por sí solas una medición de la complejidad tecnológica o del desarrollo económico.
+
+Los resultados aportan una descripción de la inserción comercial argentina que puede discutirse en relación con los debates sobre estructura productiva y división internacional del trabajo. No obstante, no permiten confirmar las explicaciones causales de la bibliografía ni demostrar un proceso de desindustrialización. Para avanzar en esa dirección sería necesario incorporar otros años e indicadores de producción, empleo y productividad industrial, además de clasificaciones que permitan estudiar el contenido tecnológico de las exportaciones.
+
+## Bibliografía y fuentes
+
+- Graña, J. M., y Terranova, L. (2022). Neither mechanical nor premature: deindustrialization and the New International Division of Labour (1970–2019). *Revista de Historia Industrial – Industrial History Review, 31*(86), 11–46. https://doi.org/10.1344/rhiihr.36591
+
+- Herrera Bartis, G. (2021). Tres caminos de desindustrialización. Un análisis estilizado de los casos del Reino Unido, los Estados Unidos y la Argentina. *H-industri\@*, (28), 1–33.
+
+### Base de datos
+
+- CEPII. *BACI: base de comercio internacional de bienes*. Datos de 2024, clasificación HS22, versión V202601. Archivos utilizados: `BACI_HS22_Y2024_V202601.csv`, `country_codes_V202601.csv` y `product_codes_HS22_V202601.csv`.
+
+### Material de procesamiento
+
+- *calculo_diversidad.R*. Material de clase de la Diplomatura en Programación en R Aplicada a la Economía, FCE–UBA, utilizado como referencia para el cálculo de la diversidad exportadora.
