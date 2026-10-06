@@ -1,0 +1,382 @@
+---
+title: "Precariedad laboral en la Argentina: una mirada por género (2016-2026)"
+subtitle: "Trabajo Integrador Final - Diplomatura en Programación en R Aplicada a la Economía (FCE-UBA)"
+author: "Carolina Wittig"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: true
+    theme: cosmo
+lang: es
+editor: 
+  markdown: 
+    wrap: 72
+---
+<style>
+p {
+  text-align: justify;
+}
+</style>
+---
+
+```{r setup}
+#| echo: false
+#| message: false
+#| warning: false
+
+library(eph)
+library(tidyverse)
+library(knitr)
+
+options(scipen = 999)
+```
+
+## Resumen ejecutivo
+
+Este trabajo analiza la evolución de la precariedad laboral en Argentina
+entre 2016 y 2026, con foco en la brecha de género, a partir de
+microdatos de la Encuesta Permanente de Hogares (INDEC). Se construyen
+dos indicadores complementarios: la tasa de empleo no registrado entre
+asalariados (informalidad en su concepción legalista) y la tasa de
+empleo vulnerable, definida como la proporción de cuentapropistas y
+trabajadores familiares sin remuneración sobre el total de ocupados
+(concepción más cercana a la definición productivista). Los resultados
+muestran que la precariedad afecta a varones y mujeres por vías
+distintas: las mujeres asalariadas presentan sistemáticamente mayor
+informalidad, mientras que los varones muestran mayor incidencia de
+empleo vulnerable. Ambos indicadores empeoraron entre 2016 y 2026, con
+un quiebre visible durante la pandemia de 2020, sin que la salida de la
+emergencia sanitaria haya implicado una recuperación plena de los
+niveles previos. Estos hallazgos sugieren que hablar de "la" precariedad
+laboral en singular oculta mecanismos de exclusión diferenciados según
+el género.
+
+## Introducción
+
+La precariedad laboral es uno de los rasgos más persistentes de los
+mercados de trabajo latinoamericanos, y Argentina no es la excepción.
+Lejos de ser un fenómeno residual o transitorio, conviven en el mercado
+de trabajo argentino relaciones asalariadas no registradas, formas de
+empleo por cuenta propia de subsistencia y una distribución desigual de
+estas modalidades entre varones y mujeres. Este trabajo se propone
+caracterizar esa precariedad a partir de dos dimensiones —la
+informalidad salarial y el empleo vulnerable— y preguntarse en qué
+medida el género constituye un eje de diferenciación relevante.
+
+El análisis cubre tres momentos: 2016 (año de inicio de la serie
+continua de la EPH con el diseño de registro vigente), 2020 (año de la
+pandemia de COVID-19, que operó como un shock exógeno sobre el mercado
+laboral) y 2026 (el dato más reciente disponible). Esta ventana temporal
+permite observar no solo el nivel de precariedad en cada momento, sino
+su dinámica: si la brecha de género se amplía o se achica, y si el
+impacto de la pandemia sobre cada indicador fue transitorio o dejó una
+marca estructural.
+
+La pregunta que guía el trabajo es: ¿existe una brecha de género en la
+precariedad laboral en Argentina, y esa brecha es la misma según qué
+dimensión de precariedad se mida? La respuesta a la segunda pregunta es
+negativa, lo cual tiene implicancias tanto conceptuales (no hay una
+única "precariedad", sino formas distintas con lógicas de género
+distintas) como de política pública (una misma intervención no
+necesariamente ataca ambas formas).
+
+## Desarrollo conceptual
+
+El concepto de informalidad laboral tiene una larga trayectoria en el
+pensamiento económico latinoamericano, y su definición no es unívoca. La
+tradición fundada por el Programa Regional del Empleo para América
+Latina y el Caribe (PREALC) de la OIT en los años setenta propuso una
+concepción productivista: lo informal se define por las características
+de la unidad productiva (tamaño, nivel de capitalización, tecnología), y
+el "sector informal" aparece como refugio de la mano de obra excedente
+que no logra insertarse en el sector moderno de la economía. Frente a
+esta, se consolida una concepción legalista: lo informal se define por
+el incumplimiento de la normativa laboral y previsional —típicamente, la
+ausencia de aportes jubilatorios en una relación asalariada—, con
+independencia del tamaño o la naturaleza de la firma empleadora.
+
+Lastra, Fernández-Franco y Graña (2022) retoman esta tradición para
+analizar de manera comparada la calidad del empleo en 13 países
+latinoamericanos, construyendo perfiles ocupacionales según calificación
+del puesto y tamaño del establecimiento, y comparando los niveles
+salariales resultantes con los de Estados Unidos. Su hallazgo central es
+que la región se caracteriza por una heterogeneidad productiva
+estructural —la convivencia de unidades de muy distinta productividad
+dentro de una misma economía— que se traduce en un deterioro
+generalizado de las condiciones laborales respecto del país desarrollado
+de referencia, deterioro que golpea con mayor intensidad a los
+trabajadores de los establecimientos más pequeños. Este marco es
+relevante para el presente trabajo porque sugiere que la precariedad
+laboral no es un fenómeno homogéneo ni azaroso, sino que sigue el patrón
+de heterogeneidad estructural propio de las economías periféricas: no
+toda la fuerza de trabajo está expuesta por igual, sino que la
+exposición depende de en qué segmento de esa estructura heterogénea se
+inserta cada trabajador.
+
+A esta heterogeneidad por tamaño de establecimiento y calificación, este
+trabajo suma una dimensión adicional: el género. Si la calidad del
+empleo varía según el perfil ocupacional y el tamaño de la unidad
+productiva, cabe preguntarse si varones y mujeres se distribuyen de
+manera desigual entre esos perfiles, y si esa distribución desigual
+explica, al menos en parte, la brecha de género observada en los
+indicadores de informalidad y empleo vulnerable.
+
+Las dos dimensiones trabajadas en este ejercicio (empleo no registrado y
+empleo vulnerable) son dos manifestaciones concretas y medibles de esa
+heterogeneidad, y corresponden, respectivamente, a la tradición
+legalista y a la tradición productivista reseñadas más arriba.
+
+## Metodología
+
+Se utilizan microdatos individuales de la Encuesta Permanente de Hogares
+(EPH, INDEC), descargados mediante el paquete `eph` de R, para tres
+períodos: **4° trimestre de 2016** (inicio de la serie continua con el
+diseño de registro actual), **4° trimestre de 2020** (impacto de la
+pandemia de COVID-19) y **1° trimestre de 2026** (último dato disponible
+al momento de este trabajo).
+
+Se construyen dos indicadores de precariedad laboral, ambos calculados
+sobre la población ocupada y desagregados por sexo (`CH04`):
+
+- **Tasa de empleo no registrado**: proporción de asalariados
+  (`CAT_OCUP == 3`) a quienes no se les descuenta jubilación
+  (`PP07H == 2`) sobre el total de asalariados. Es el indicador más
+  utilizado de informalidad en su concepción legalista.
+- **Tasa de empleo vulnerable**: proporción de ocupados que son
+  cuentapropistas (`CAT_OCUP == 2`) o trabajadores familiares sin
+  remuneración (`CAT_OCUP == 4`) sobre el total de ocupados. Es un proxy
+  estándar (usado por la OIT) de inserción laboral precaria vinculado a
+  la concepción más "productivista" de la informalidad.
+
+**Limitaciones**: la EPH cubre 31 aglomerados urbanos (no representa a
+la población rural), y la comparación 2020 está afectada por cambios en
+el operativo de campo durante el aislamiento por COVID-19 (mayor no
+respuesta, migración a relevamiento telefónico), lo cual puede afectar
+la comparabilidad estricta de ese trimestre.
+
+```{r descarga-datos}
+#| message: false
+#| warning: false
+
+# Variables que necesitamos de la base individual
+variables_eph <- c(
+  "ANO4", "TRIMESTRE", "REGION", "CH04", "CH06",
+  "ESTADO", "CAT_OCUP", "PP07H", "PONDERA")
+
+# descargo 3 períodos.
+base_2016 <- get_microdata(year = 2016, period = 4, type = "individual",
+                            vars = variables_eph)
+base_2020 <- get_microdata(year = 2020, period = 4, type = "individual",
+                            vars = variables_eph)
+base_2026 <- get_microdata(year = 2026, period = 1, type = "individual",
+                            vars = variables_eph)
+
+eph_pool <- bind_rows(base_2016, base_2020, base_2026)
+
+# Guardo una copia
+dir.create("bases", showWarnings = FALSE)
+saveRDS(eph_pool, "bases/eph_pool_2016_2020_2026.rds")
+```
+
+```{r etiquetado}
+#| message: false
+#| warning: false
+
+# población ocupada (ESTADO == 1) 
+# etiqueta de sexo y período para que los gráficos y tablas queden legibles
+eph_ocupados <- eph_pool %>%
+  filter(ESTADO == 1) %>%
+  mutate(
+    sexo = case_when(
+      CH04 == 1 ~ "Varón",
+      CH04 == 2 ~ "Mujer",
+      TRUE ~ NA_character_
+    ),
+    periodo = case_when(
+      ANO4 == 2016 ~ "2016-T4",
+      ANO4 == 2020 ~ "2020-T4",
+      ANO4 == 2026 ~ "2026-T1",
+      TRUE ~ NA_character_
+    ),
+    periodo = factor(periodo, levels = c("2016-T4", "2020-T4", "2026-T1"))
+  ) %>%
+  filter(!is.na(sexo))
+```
+
+## Resultados y análisis
+
+### Tasa de empleo no registrado (informalidad) por sexo
+
+```{r tasa-informalidad}
+#| message: false
+#| warning: false
+
+tasa_informalidad <- eph_ocupados %>%
+  filter(CAT_OCUP == 3, !is.na(PP07H)) %>%  # solo asalariados que respondieron la pregunta
+  group_by(periodo, sexo) %>%
+  summarise(
+    asalariados = sum(PONDERA),
+    no_registrados = sum(PONDERA[PP07H == 2]),
+    tasa_no_registro = round(100 * no_registrados / asalariados, 1),
+    .groups = "drop"
+  )
+
+kable(
+  tasa_informalidad %>% select(periodo, sexo, tasa_no_registro),
+  col.names = c("Período", "Sexo", "Tasa de empleo no registrado (%)"),
+  align = "c"
+)
+```
+
+```{r grafico-informalidad}
+#| message: false
+#| warning: false
+
+grafico_informalidad <- tasa_informalidad %>%
+  ggplot(aes(x = periodo, y = tasa_no_registro, fill = sexo)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = paste0(tasa_no_registro, "%")),
+            position = position_dodge(width = 0.9), vjust = -0.4, size = 3.5) +
+  labs(
+    title = "Tasa de empleo no registrado entre asalariados, por sexo",
+    subtitle = "Total aglomerados EPH, 2016-2026",
+    caption = "Fuente: elaboración propia en base a EPH (INDEC)",
+    x = NULL, y = "Tasa de no registro (%)", fill = "Sexo"
+  ) +
+  theme_minimal()
+
+grafico_informalidad
+
+ggsave("resultados/tasa_informalidad_por_sexo.png",
+       plot = grafico_informalidad, width = 8, height = 5, dpi = 300)
+```
+
+La tasa de empleo no registrado muestra una brecha de género
+persistente, aunque no estable en el tiempo. En los tres períodos
+analizados, las mujeres asalariadas presentan una tasa de informalidad
+más alta que los varones: 36,2% frente a 31,4% en 2016-T4 (brecha de 4,8
+puntos porcentuales), 40,6% frente a 35,5% en 2026-T1 (brecha de 5,1
+puntos). La excepción es 2020-T4, donde la brecha prácticamente
+desaparece (32,9% mujeres vs. 32,4% varones, apenas 0,5 puntos), lo cual
+es consistente con el fuerte impacto que tuvo la pandemia sobre el
+empleo asalariado registrado de los varones, que llevó su tasa de no
+registro a converger transitoriamente con la de las mujeres.
+
+Sin embargo, esa convergencia no se sostuvo: hacia 2026-T1 la brecha de
+género vuelve a ampliarse, incluso por encima de su nivel de 2016. En
+términos de nivel, además, la informalidad crece para ambos sexos a lo
+largo de todo el período (de 31,4% a 35,5% entre los varones, y de 36,2%
+a 40,6% entre las mujeres), lo que sugiere un deterioro generalizado de
+la calidad del empleo asalariado en el período reciente, que afecta de
+manera algo más marcada a las mujeres.
+
+### Tasa de empleo vulnerable por sexo
+
+```{r tasa-vulnerable}
+#| message: false
+#| warning: false
+
+tasa_vulnerable <- eph_ocupados %>%
+  group_by(periodo, sexo) %>%
+  summarise(
+    ocupados = sum(PONDERA),
+    vulnerables = sum(PONDERA[CAT_OCUP %in% c(2, 4)]),
+    tasa_empleo_vulnerable = round(100 * vulnerables / ocupados, 1),
+    .groups = "drop"
+  )
+
+kable(
+  tasa_vulnerable %>% select(periodo, sexo, tasa_empleo_vulnerable),
+  col.names = c("Período", "Sexo", "Tasa de empleo vulnerable (%)"),
+  align = "c"
+)
+```
+
+```{r grafico-vulnerable}
+#| message: false
+#| warning: false
+
+grafico_vulnerable <- tasa_vulnerable %>%
+  ggplot(aes(x = periodo, y = tasa_empleo_vulnerable, fill = sexo)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = paste0(tasa_empleo_vulnerable, "%")),
+            position = position_dodge(width = 0.9), vjust = -0.4, size = 3.5) +
+  labs(
+    title = "Tasa de empleo vulnerable, por sexo",
+    subtitle = "Cuentapropistas + trabajadores familiares sin remuneración / total ocupados",
+    caption = "Fuente: elaboración propia en base a EPH (INDEC)",
+    x = NULL, y = "Tasa de empleo vulnerable (%)", fill = "Sexo"
+  ) +
+  theme_minimal()
+
+grafico_vulnerable
+
+ggsave("resultados/tasa_empleo_vulnerable_por_sexo.png",
+       plot = grafico_vulnerable, width = 8, height = 5, dpi = 300)
+```
+
+A diferencia de la informalidad salarial, la tasa de empleo vulnerable
+muestra el patrón de género invertido: en los tres períodos, los varones
+presentan una tasa más alta que las mujeres (23,6% vs. 17,1% en 2016-T4;
+27,3% vs. 26,4% en 2020-T4; 25,9% vs. 22,8% en 2026-T1). Esto sugiere
+que la precariedad laboral no afecta de la misma manera a varones y
+mujeres: mientras que las mujeres asalariadas están más expuestas a la
+falta de registro dentro de una relación de dependencia, los varones se
+concentran algo más en inserciones por fuera de la relación salarial
+(cuentapropismo y trabajo familiar sin remuneración), lo cual apunta a
+mecanismos de precarización distintos según el género antes que a una
+única forma común de vulnerabilidad laboral.
+
+En cuanto a la evolución temporal, ambos sexos muestran un salto
+pronunciado entre 2016 y 2020 (de 17,1% a 26,4% en mujeres, de 23,6% a
+27,3% en varones), coherente con el fuerte impacto de la pandemia sobre
+el empleo asalariado: la pérdida de puestos en relación de dependencia
+empujó a una parte de la población ocupada hacia "changas"" y
+cuentapropismo de subsistencia.
+
+Hacia 2026-T1 la tasa retrocede para ambos sexos respecto del pico
+pandémico, pero se mantiene por encima de los niveles de 2016 (22,8% y
+25,9% respectivamente), lo que indica que ese desplazamiento hacia
+formas de empleo vulnerable no se revirtió por completo una vez superada
+la emergencia sanitaria. Es interesante notar que la brecha de género en
+este indicador se achica fuertemente en 2020 (de 6,5 a 0,9 puntos) y
+luego se recompone parcialmente hacia 2026 (3,1 puntos), un
+comportamiento de "compresión y reapertura" de la brecha similar al que
+se observó en la tasa de informalidad, aunque en sentido de niveles
+opuesto.
+
+### Síntesis
+
+Los dos indicadores construidos muestran que la precariedad laboral en
+Argentina no afecta de manera homogénea a varones y mujeres, sino que
+opera a través de mecanismos distintos y con una dinámica temporal que
+no siempre coincide. En la dimensión legalista (empleo no registrado),
+las mujeres asalariadas están sistemáticamente más expuestas que los
+varones, con una brecha que se comprime transitoriamente durante la
+pandemia y luego se reabre, alcanzando en 2026 su nivel más alto de toda
+la serie (40,6% en mujeres, 35,5% en varones). En la dimensión más
+productivista (empleo vulnerable), el patrón se invierte: son los
+varones quienes muestran mayor incidencia de cuentapropismo y trabajo
+familiar sin remuneración en los tres períodos, aunque con una brecha
+que también se estrecha en 2020 y se recompone después.
+
+Este cruce de resultados es el hallazgo más relevante del trabajo: no
+existe una "precariedad laboral" única y homogénea, sino al menos dos
+vías diferenciadas de precarización con una lógica de género distinta.
+Reducir el análisis a un solo indicador, como suele hacerse cuando se
+habla genéricamente de "informalidad", invisibiliza media historia.
+Además, ambos indicadores comparten un rasgo preocupante: el shock de
+2020 dejó una marca que no se revirtió por completo hacia 2026, lo que
+sugiere una tendencia de deterioro de la calidad del empleo en el
+mediano plazo, consistente con la heterogeneidad estructural que
+describen Lastra et al. (2022) para la región, más allá del ciclo
+económico de corto plazo asociado a la pandemia.
+
+## Referencias
+
+Lastra, F. M., Fernández-Franco, S. y Graña, J. (2022). Calidad del
+empleo y estructura del mercado de trabajo en América Latina desde una
+perspectiva comparada. Ensayos de Economía, 32(61), 30-53.
+<https://doi.org/10.15446/ede.v32n61.100343>

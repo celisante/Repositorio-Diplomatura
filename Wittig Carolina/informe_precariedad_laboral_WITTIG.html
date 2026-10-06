@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Carolina Wittig">
+
+<title>Precariedad laboral en la Argentina: una mirada por género (2016-2026)</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="informe_precariedad_laboral_WITTIG_files/libs/clipboard/clipboard.min.js"></script>
+<script src="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/popper.min.js"></script>
+<script src="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/anchor.min.js"></script>
+<link href="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="informe_precariedad_laboral_WITTIG_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="informe_precariedad_laboral_WITTIG_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="informe_precariedad_laboral_WITTIG_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="informe_precariedad_laboral_WITTIG_files/libs/bootstrap/bootstrap-67270d1595a62d14f123c043d4fb2f18.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul class="collapse">
+  <li><a href="#resumen-ejecutivo" id="toc-resumen-ejecutivo" class="nav-link active" data-scroll-target="#resumen-ejecutivo">Resumen ejecutivo</a></li>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link" data-scroll-target="#introducción">Introducción</a></li>
+  <li><a href="#desarrollo-conceptual" id="toc-desarrollo-conceptual" class="nav-link" data-scroll-target="#desarrollo-conceptual">Desarrollo conceptual</a></li>
+  <li><a href="#metodología" id="toc-metodología" class="nav-link" data-scroll-target="#metodología">Metodología</a></li>
+  <li><a href="#resultados-y-análisis" id="toc-resultados-y-análisis" class="nav-link" data-scroll-target="#resultados-y-análisis">Resultados y análisis</a></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias">Referencias</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Precariedad laboral en la Argentina: una mirada por género (2016-2026)</h1>
+<p class="subtitle lead">Trabajo Integrador Final - Diplomatura en Programación en R Aplicada a la Economía (FCE-UBA)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Carolina Wittig </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">29 de septiembre de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+p {
+  text-align: justify;
+}
+</style>
+<hr>
+<section id="resumen-ejecutivo" class="level2">
+<h2 class="anchored" data-anchor-id="resumen-ejecutivo">Resumen ejecutivo</h2>
+<p>Este trabajo analiza la evolución de la precariedad laboral en Argentina entre 2016 y 2026, con foco en la brecha de género, a partir de microdatos de la Encuesta Permanente de Hogares (INDEC). Se construyen dos indicadores complementarios: la tasa de empleo no registrado entre asalariados (informalidad en su concepción legalista) y la tasa de empleo vulnerable, definida como la proporción de cuentapropistas y trabajadores familiares sin remuneración sobre el total de ocupados (concepción más cercana a la definición productivista). Los resultados muestran que la precariedad afecta a varones y mujeres por vías distintas: las mujeres asalariadas presentan sistemáticamente mayor informalidad, mientras que los varones muestran mayor incidencia de empleo vulnerable. Ambos indicadores empeoraron entre 2016 y 2026, con un quiebre visible durante la pandemia de 2020, sin que la salida de la emergencia sanitaria haya implicado una recuperación plena de los niveles previos. Estos hallazgos sugieren que hablar de “la” precariedad laboral en singular oculta mecanismos de exclusión diferenciados según el género.</p>
+</section>
+<section id="introducción" class="level2">
+<h2 class="anchored" data-anchor-id="introducción">Introducción</h2>
+<p>La precariedad laboral es uno de los rasgos más persistentes de los mercados de trabajo latinoamericanos, y Argentina no es la excepción. Lejos de ser un fenómeno residual o transitorio, conviven en el mercado de trabajo argentino relaciones asalariadas no registradas, formas de empleo por cuenta propia de subsistencia y una distribución desigual de estas modalidades entre varones y mujeres. Este trabajo se propone caracterizar esa precariedad a partir de dos dimensiones —la informalidad salarial y el empleo vulnerable— y preguntarse en qué medida el género constituye un eje de diferenciación relevante.</p>
+<p>El análisis cubre tres momentos: 2016 (año de inicio de la serie continua de la EPH con el diseño de registro vigente), 2020 (año de la pandemia de COVID-19, que operó como un shock exógeno sobre el mercado laboral) y 2026 (el dato más reciente disponible). Esta ventana temporal permite observar no solo el nivel de precariedad en cada momento, sino su dinámica: si la brecha de género se amplía o se achica, y si el impacto de la pandemia sobre cada indicador fue transitorio o dejó una marca estructural.</p>
+<p>La pregunta que guía el trabajo es: ¿existe una brecha de género en la precariedad laboral en Argentina, y esa brecha es la misma según qué dimensión de precariedad se mida? La respuesta a la segunda pregunta es negativa, lo cual tiene implicancias tanto conceptuales (no hay una única “precariedad”, sino formas distintas con lógicas de género distintas) como de política pública (una misma intervención no necesariamente ataca ambas formas).</p>
+</section>
+<section id="desarrollo-conceptual" class="level2">
+<h2 class="anchored" data-anchor-id="desarrollo-conceptual">Desarrollo conceptual</h2>
+<p>El concepto de informalidad laboral tiene una larga trayectoria en el pensamiento económico latinoamericano, y su definición no es unívoca. La tradición fundada por el Programa Regional del Empleo para América Latina y el Caribe (PREALC) de la OIT en los años setenta propuso una concepción productivista: lo informal se define por las características de la unidad productiva (tamaño, nivel de capitalización, tecnología), y el “sector informal” aparece como refugio de la mano de obra excedente que no logra insertarse en el sector moderno de la economía. Frente a esta, se consolida una concepción legalista: lo informal se define por el incumplimiento de la normativa laboral y previsional —típicamente, la ausencia de aportes jubilatorios en una relación asalariada—, con independencia del tamaño o la naturaleza de la firma empleadora.</p>
+<p>Lastra, Fernández-Franco y Graña (2022) retoman esta tradición para analizar de manera comparada la calidad del empleo en 13 países latinoamericanos, construyendo perfiles ocupacionales según calificación del puesto y tamaño del establecimiento, y comparando los niveles salariales resultantes con los de Estados Unidos. Su hallazgo central es que la región se caracteriza por una heterogeneidad productiva estructural —la convivencia de unidades de muy distinta productividad dentro de una misma economía— que se traduce en un deterioro generalizado de las condiciones laborales respecto del país desarrollado de referencia, deterioro que golpea con mayor intensidad a los trabajadores de los establecimientos más pequeños. Este marco es relevante para el presente trabajo porque sugiere que la precariedad laboral no es un fenómeno homogéneo ni azaroso, sino que sigue el patrón de heterogeneidad estructural propio de las economías periféricas: no toda la fuerza de trabajo está expuesta por igual, sino que la exposición depende de en qué segmento de esa estructura heterogénea se inserta cada trabajador.</p>
+<p>A esta heterogeneidad por tamaño de establecimiento y calificación, este trabajo suma una dimensión adicional: el género. Si la calidad del empleo varía según el perfil ocupacional y el tamaño de la unidad productiva, cabe preguntarse si varones y mujeres se distribuyen de manera desigual entre esos perfiles, y si esa distribución desigual explica, al menos en parte, la brecha de género observada en los indicadores de informalidad y empleo vulnerable.</p>
+<p>Las dos dimensiones trabajadas en este ejercicio (empleo no registrado y empleo vulnerable) son dos manifestaciones concretas y medibles de esa heterogeneidad, y corresponden, respectivamente, a la tradición legalista y a la tradición productivista reseñadas más arriba.</p>
+</section>
+<section id="metodología" class="level2">
+<h2 class="anchored" data-anchor-id="metodología">Metodología</h2>
+<p>Se utilizan microdatos individuales de la Encuesta Permanente de Hogares (EPH, INDEC), descargados mediante el paquete <code>eph</code> de R, para tres períodos: <strong>4° trimestre de 2016</strong> (inicio de la serie continua con el diseño de registro actual), <strong>4° trimestre de 2020</strong> (impacto de la pandemia de COVID-19) y <strong>1° trimestre de 2026</strong> (último dato disponible al momento de este trabajo).</p>
+<p>Se construyen dos indicadores de precariedad laboral, ambos calculados sobre la población ocupada y desagregados por sexo (<code>CH04</code>):</p>
+<ul>
+<li><strong>Tasa de empleo no registrado</strong>: proporción de asalariados (<code>CAT_OCUP == 3</code>) a quienes no se les descuenta jubilación (<code>PP07H == 2</code>) sobre el total de asalariados. Es el indicador más utilizado de informalidad en su concepción legalista.</li>
+<li><strong>Tasa de empleo vulnerable</strong>: proporción de ocupados que son cuentapropistas (<code>CAT_OCUP == 2</code>) o trabajadores familiares sin remuneración (<code>CAT_OCUP == 4</code>) sobre el total de ocupados. Es un proxy estándar (usado por la OIT) de inserción laboral precaria vinculado a la concepción más “productivista” de la informalidad.</li>
+</ul>
+<p><strong>Limitaciones</strong>: la EPH cubre 31 aglomerados urbanos (no representa a la población rural), y la comparación 2020 está afectada por cambios en el operativo de campo durante el aislamiento por COVID-19 (mayor no respuesta, migración a relevamiento telefónico), lo cual puede afectar la comparabilidad estricta de ese trimestre.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Variables que necesitamos de la base individual</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>variables_eph <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ANO4"</span>, <span class="st">"TRIMESTRE"</span>, <span class="st">"REGION"</span>, <span class="st">"CH04"</span>, <span class="st">"CH06"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ESTADO"</span>, <span class="st">"CAT_OCUP"</span>, <span class="st">"PP07H"</span>, <span class="st">"PONDERA"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># descargo 3 períodos.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>base_2016 <span class="ot">&lt;-</span> <span class="fu">get_microdata</span>(<span class="at">year =</span> <span class="dv">2016</span>, <span class="at">period =</span> <span class="dv">4</span>, <span class="at">type =</span> <span class="st">"individual"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                            <span class="at">vars =</span> variables_eph)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>base_2020 <span class="ot">&lt;-</span> <span class="fu">get_microdata</span>(<span class="at">year =</span> <span class="dv">2020</span>, <span class="at">period =</span> <span class="dv">4</span>, <span class="at">type =</span> <span class="st">"individual"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">vars =</span> variables_eph)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>base_2026 <span class="ot">&lt;-</span> <span class="fu">get_microdata</span>(<span class="at">year =</span> <span class="dv">2026</span>, <span class="at">period =</span> <span class="dv">1</span>, <span class="at">type =</span> <span class="st">"individual"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                            <span class="at">vars =</span> variables_eph)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>eph_pool <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(base_2016, base_2020, base_2026)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Guardo una copia</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"bases"</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(eph_pool, <span class="st">"bases/eph_pool_2016_2020_2026.rds"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># población ocupada (ESTADO == 1) </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># etiqueta de sexo y período para que los gráficos y tablas queden legibles</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>eph_ocupados <span class="ot">&lt;-</span> eph_pool <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ESTADO <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sexo =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      CH04 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Varón"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      CH04 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">"Mujer"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">periodo =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      ANO4 <span class="sc">==</span> <span class="dv">2016</span> <span class="sc">~</span> <span class="st">"2016-T4"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      ANO4 <span class="sc">==</span> <span class="dv">2020</span> <span class="sc">~</span> <span class="st">"2020-T4"</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      ANO4 <span class="sc">==</span> <span class="dv">2026</span> <span class="sc">~</span> <span class="st">"2026-T1"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">periodo =</span> <span class="fu">factor</span>(periodo, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"2016-T4"</span>, <span class="st">"2020-T4"</span>, <span class="st">"2026-T1"</span>))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(sexo))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="resultados-y-análisis" class="level2">
+<h2 class="anchored" data-anchor-id="resultados-y-análisis">Resultados y análisis</h2>
+<section id="tasa-de-empleo-no-registrado-informalidad-por-sexo" class="level3">
+<h3 class="anchored" data-anchor-id="tasa-de-empleo-no-registrado-informalidad-por-sexo">Tasa de empleo no registrado (informalidad) por sexo</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tasa_informalidad <span class="ot">&lt;-</span> eph_ocupados <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CAT_OCUP <span class="sc">==</span> <span class="dv">3</span>, <span class="sc">!</span><span class="fu">is.na</span>(PP07H)) <span class="sc">%&gt;%</span>  <span class="co"># solo asalariados que respondieron la pregunta</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(periodo, sexo) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">asalariados =</span> <span class="fu">sum</span>(PONDERA),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">no_registrados =</span> <span class="fu">sum</span>(PONDERA[PP07H <span class="sc">==</span> <span class="dv">2</span>]),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">tasa_no_registro =</span> <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> no_registrados <span class="sc">/</span> asalariados, <span class="dv">1</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  tasa_informalidad <span class="sc">%&gt;%</span> <span class="fu">select</span>(periodo, sexo, tasa_no_registro),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Período"</span>, <span class="st">"Sexo"</span>, <span class="st">"Tasa de empleo no registrado (%)"</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"c"</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Período</th>
+<th style="text-align: center;">Sexo</th>
+<th style="text-align: center;">Tasa de empleo no registrado (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2016-T4</td>
+<td style="text-align: center;">Mujer</td>
+<td style="text-align: center;">36.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2016-T4</td>
+<td style="text-align: center;">Varón</td>
+<td style="text-align: center;">31.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2020-T4</td>
+<td style="text-align: center;">Mujer</td>
+<td style="text-align: center;">32.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2020-T4</td>
+<td style="text-align: center;">Varón</td>
+<td style="text-align: center;">32.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2026-T1</td>
+<td style="text-align: center;">Mujer</td>
+<td style="text-align: center;">40.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2026-T1</td>
+<td style="text-align: center;">Varón</td>
+<td style="text-align: center;">35.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>grafico_informalidad <span class="ot">&lt;-</span> tasa_informalidad <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> periodo, <span class="at">y =</span> tasa_no_registro, <span class="at">fill =</span> sexo)) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(tasa_no_registro, <span class="st">"%"</span>)),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.9</span>), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Tasa de empleo no registrado entre asalariados, por sexo"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Total aglomerados EPH, 2016-2026"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Fuente: elaboración propia en base a EPH (INDEC)"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Tasa de no registro (%)"</span>, <span class="at">fill =</span> <span class="st">"Sexo"</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>grafico_informalidad</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="informe_precariedad_laboral_WITTIG_files/figure-html/grafico-informalidad-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"resultados/tasa_informalidad_por_sexo.png"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> grafico_informalidad, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>La tasa de empleo no registrado muestra una brecha de género persistente, aunque no estable en el tiempo. En los tres períodos analizados, las mujeres asalariadas presentan una tasa de informalidad más alta que los varones: 36,2% frente a 31,4% en 2016-T4 (brecha de 4,8 puntos porcentuales), 40,6% frente a 35,5% en 2026-T1 (brecha de 5,1 puntos). La excepción es 2020-T4, donde la brecha prácticamente desaparece (32,9% mujeres vs.&nbsp;32,4% varones, apenas 0,5 puntos), lo cual es consistente con el fuerte impacto que tuvo la pandemia sobre el empleo asalariado registrado de los varones, que llevó su tasa de no registro a converger transitoriamente con la de las mujeres.</p>
+<p>Sin embargo, esa convergencia no se sostuvo: hacia 2026-T1 la brecha de género vuelve a ampliarse, incluso por encima de su nivel de 2016. En términos de nivel, además, la informalidad crece para ambos sexos a lo largo de todo el período (de 31,4% a 35,5% entre los varones, y de 36,2% a 40,6% entre las mujeres), lo que sugiere un deterioro generalizado de la calidad del empleo asalariado en el período reciente, que afecta de manera algo más marcada a las mujeres.</p>
+</section>
+<section id="tasa-de-empleo-vulnerable-por-sexo" class="level3">
+<h3 class="anchored" data-anchor-id="tasa-de-empleo-vulnerable-por-sexo">Tasa de empleo vulnerable por sexo</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tasa_vulnerable <span class="ot">&lt;-</span> eph_ocupados <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(periodo, sexo) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ocupados =</span> <span class="fu">sum</span>(PONDERA),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnerables =</span> <span class="fu">sum</span>(PONDERA[CAT_OCUP <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>)]),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">tasa_empleo_vulnerable =</span> <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> vulnerables <span class="sc">/</span> ocupados, <span class="dv">1</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  tasa_vulnerable <span class="sc">%&gt;%</span> <span class="fu">select</span>(periodo, sexo, tasa_empleo_vulnerable),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Período"</span>, <span class="st">"Sexo"</span>, <span class="st">"Tasa de empleo vulnerable (%)"</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"c"</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Período</th>
+<th style="text-align: center;">Sexo</th>
+<th style="text-align: center;">Tasa de empleo vulnerable (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2016-T4</td>
+<td style="text-align: center;">Mujer</td>
+<td style="text-align: center;">17.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2016-T4</td>
+<td style="text-align: center;">Varón</td>
+<td style="text-align: center;">23.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2020-T4</td>
+<td style="text-align: center;">Mujer</td>
+<td style="text-align: center;">26.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2020-T4</td>
+<td style="text-align: center;">Varón</td>
+<td style="text-align: center;">27.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2026-T1</td>
+<td style="text-align: center;">Mujer</td>
+<td style="text-align: center;">22.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2026-T1</td>
+<td style="text-align: center;">Varón</td>
+<td style="text-align: center;">25.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>grafico_vulnerable <span class="ot">&lt;-</span> tasa_vulnerable <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> periodo, <span class="at">y =</span> tasa_empleo_vulnerable, <span class="at">fill =</span> sexo)) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(tasa_empleo_vulnerable, <span class="st">"%"</span>)),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.9</span>), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Tasa de empleo vulnerable, por sexo"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Cuentapropistas + trabajadores familiares sin remuneración / total ocupados"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Fuente: elaboración propia en base a EPH (INDEC)"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Tasa de empleo vulnerable (%)"</span>, <span class="at">fill =</span> <span class="st">"Sexo"</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>grafico_vulnerable</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="informe_precariedad_laboral_WITTIG_files/figure-html/grafico-vulnerable-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"resultados/tasa_empleo_vulnerable_por_sexo.png"</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> grafico_vulnerable, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>A diferencia de la informalidad salarial, la tasa de empleo vulnerable muestra el patrón de género invertido: en los tres períodos, los varones presentan una tasa más alta que las mujeres (23,6% vs.&nbsp;17,1% en 2016-T4; 27,3% vs.&nbsp;26,4% en 2020-T4; 25,9% vs.&nbsp;22,8% en 2026-T1). Esto sugiere que la precariedad laboral no afecta de la misma manera a varones y mujeres: mientras que las mujeres asalariadas están más expuestas a la falta de registro dentro de una relación de dependencia, los varones se concentran algo más en inserciones por fuera de la relación salarial (cuentapropismo y trabajo familiar sin remuneración), lo cual apunta a mecanismos de precarización distintos según el género antes que a una única forma común de vulnerabilidad laboral.</p>
+<p>En cuanto a la evolución temporal, ambos sexos muestran un salto pronunciado entre 2016 y 2020 (de 17,1% a 26,4% en mujeres, de 23,6% a 27,3% en varones), coherente con el fuerte impacto de la pandemia sobre el empleo asalariado: la pérdida de puestos en relación de dependencia empujó a una parte de la población ocupada hacia “changas”” y cuentapropismo de subsistencia.</p>
+<p>Hacia 2026-T1 la tasa retrocede para ambos sexos respecto del pico pandémico, pero se mantiene por encima de los niveles de 2016 (22,8% y 25,9% respectivamente), lo que indica que ese desplazamiento hacia formas de empleo vulnerable no se revirtió por completo una vez superada la emergencia sanitaria. Es interesante notar que la brecha de género en este indicador se achica fuertemente en 2020 (de 6,5 a 0,9 puntos) y luego se recompone parcialmente hacia 2026 (3,1 puntos), un comportamiento de “compresión y reapertura” de la brecha similar al que se observó en la tasa de informalidad, aunque en sentido de niveles opuesto.</p>
+</section>
+<section id="síntesis" class="level3">
+<h3 class="anchored" data-anchor-id="síntesis">Síntesis</h3>
+<p>Los dos indicadores construidos muestran que la precariedad laboral en Argentina no afecta de manera homogénea a varones y mujeres, sino que opera a través de mecanismos distintos y con una dinámica temporal que no siempre coincide. En la dimensión legalista (empleo no registrado), las mujeres asalariadas están sistemáticamente más expuestas que los varones, con una brecha que se comprime transitoriamente durante la pandemia y luego se reabre, alcanzando en 2026 su nivel más alto de toda la serie (40,6% en mujeres, 35,5% en varones). En la dimensión más productivista (empleo vulnerable), el patrón se invierte: son los varones quienes muestran mayor incidencia de cuentapropismo y trabajo familiar sin remuneración en los tres períodos, aunque con una brecha que también se estrecha en 2020 y se recompone después.</p>
+<p>Este cruce de resultados es el hallazgo más relevante del trabajo: no existe una “precariedad laboral” única y homogénea, sino al menos dos vías diferenciadas de precarización con una lógica de género distinta. Reducir el análisis a un solo indicador, como suele hacerse cuando se habla genéricamente de “informalidad”, invisibiliza media historia. Además, ambos indicadores comparten un rasgo preocupante: el shock de 2020 dejó una marca que no se revirtió por completo hacia 2026, lo que sugiere una tendencia de deterioro de la calidad del empleo en el mediano plazo, consistente con la heterogeneidad estructural que describen Lastra et al.&nbsp;(2022) para la región, más allá del ciclo económico de corto plazo asociado a la pandemia.</p>
+</section>
+</section>
+<section id="referencias" class="level2">
+<h2 class="anchored" data-anchor-id="referencias">Referencias</h2>
+<p>Lastra, F. M., Fernández-Franco, S. y Graña, J. (2022). Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada. Ensayos de Economía, 32(61), 30-53. <a href="https://doi.org/10.15446/ede.v32n61.100343" class="uri">https://doi.org/10.15446/ede.v32n61.100343</a></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

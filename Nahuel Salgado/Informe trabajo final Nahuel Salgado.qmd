@@ -1,0 +1,1120 @@
+---
+title: "Suficiencia de ingresos de adultos mayores"
+subtitle: "Trabajo final - Diplomatura en Programación en R Aplicada a la Economía"
+author: "Nahuel Exequiel Salgado"
+author-title: "Estudiante"
+date: "2026-09-29"
+published-title: "Fecha de entrega"
+lang: es
+format: 
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 2
+    toc-title: "Índice"
+    code-fold: true
+    code-tools: true
+    number-sections: true
+    theme: journal
+    page-layout: article
+    embed-resources: true
+editor: visual
+---
+
+```{=html}
+<style>
+
+.header-section-number { /\* Para numerar los encabezados\*/
+
+color: inherit;
+
+}
+
+.header-section-number::after { /\* Para agregar dos puntos luego del número\*/
+
+content: ":";
+
+}
+
+#TOC { /\* Para hacer converger el índice con el estilo y color del trabajo\*/
+
+background-color: #f5f5f5;
+
+border-left: 4px solid #eb6864;
+
+padding: 15px;
+
+border-radius: 5px;
+
+}
+
+</style>
+```
+
+```{r}
+#| label: configuracion
+#| include: false
+
+library(tidyverse)
+library(readxl)
+library(scales)
+
+options(scipen = 999)
+
+archivo_datos   <- "Datos.xlsx" #Base propia con canasta elaborada a partir del paper de referencia, cantidades y precios
+archivo_ice     <- "serie_cba_cbt.xls" #Base con ICE
+archivo_haberes <- "haber-minimo-jubilatorio-pesos-corrientes-valores-mensuales-desde-1971.csv" #Base con haberes
+
+fecha_inicio <- as.Date("2018-10-01") #Fecha del paper de referencia
+fecha_fin    <- as.Date("2026-08-01")
+
+fechas <- seq.Date( #Fechas relevantes para el trabajo
+  from = fecha_inicio,
+  to   = fecha_fin,
+  by   = "month"
+)
+
+etiquetas_persona <- c( 
+  "mujer_65_74"   = "Mujer 65-74",
+  "mujer_75_mas"  = "Mujer 75+",
+  "hombre_65_74"  = "Hombre 65-74",
+  "hombre_75_mas" = "Hombre 75+"
+)
+
+colores_persona <- c( 
+  "Mujer 65-74"  = "#2F5597",
+  "Mujer 75+"    = "#5B9BD5",
+  "Hombre 65-74" = "#70ADBF",
+  "Hombre 75+"   = "#1F4E79"
+)
+```
+
+# Resumen ejecutivo {.unnumbered}
+
+- **Hipótesis**. La metodología de medición de la pobreza en Argentina conduciría a una subestimación sistemática en los adultos mayores.
+
+- **Metodología**. Se construyen cuatro canastas básicas alimentarias para adultos mayores de GBA, por sexo y grupo etario, a partir de la estructura definida por Durán et al., valorizadas mensualmente con precios del IPC-GBA entre octubre de 2018 y agosto 2026. Esas canastas son luego convertidas en canastas básicas totales siguiendo la metodología del INDEC.
+
+- **Análisis**. Se analiza la suficiencia de los ingresos más representativos en la tercera y cuarta edad: el haber mínimo jubilatorio y la PUAM. Estos se contrastan con las canastas calculadas para medir su suficiencia. También se considera la relevancia del bono en este contexto.
+
+- **Principales resultados**.
+
+  - En el período analizado, los haberes resultan generalmente suficientes para cubrir la canasta básica alimentaria modificada, exceptuando los momentos de menor poder adquisitivo o en los que las prestaciones no se actualizaron. Esto implicaría, en términos generales, que **la indigencia en tercera y cuarta edad sería evitada por los haberes mínimos.**
+  - En el período analizado, ninguno de los haberes resulta suficiente para cubrir la canasta básica total modificada. Esto implicaría, en términos generales, que **la pobreza en tercera y cuarta edad no sería evitada por los haberes mínimos**.
+  - Considerando que estos haberes son los más generales en el segmento etario de 65 años o más, **la pobreza en adultos mayores sería sistemáticamente subestimada** por las metodologías oficiales de medición.
+  - El bono extraordinario resulta **insuficiente** para cubrir las brechas entre las prestaciones y las canastas.
+
+# Introducción
+
+La utilización de la metodología de Líneas de Pobreza parte de la comparación entre los recursos disponibles de los hogares y el costo de una canasta representativa, calculada como una expansión de una canasta básica de alimentos que satisfaga un requerimiento mínimo. En Argentina, este enfoque es utilizado por el INDEC, que define una canasta básica alimentaria (CBA) y, a partir de esta, una canasta básica total (CBT).\
+\
+Sin embargo, esta metodología utiliza un consumidor representativo, ajustando las necesidades individuales mediante la noción del "adulto equivalente", manteniendo así para todos la misma canasta y modificando las cantidades requeridas bajo ciertos supuestos de requerimientos energéticos según sexo y edad.
+
+\
+A partir de esta discusión, el presente trabajo analiza si la utilización de canastas específicas para adultos mayores modifica la evaluación de suficiencia de sus principales ingresos previsionales. Para ello, se reconstruyen cuatro canastas diferenciadas por sexo y grupo etario, para hombres y mujeres de tercera y cuarta edad (definidas como 65-74 años y 75 años o más, respectivamente), tomando como referencia la metodología de Durán et al[^1]. y valorizándolas con la evolución específica de los precios de cada artículo en la canasta. La serie se construye entre octubre 2018 (punto de partida del trabajo de referencia) y agosto 2026 (último dato disponible de IPC-GBA).\
+\
+Sobre esta base, se calcula tanto la CBA como la CBT y se compara su evolución con el haber mínimo jubilatorio y la Pensión Universal para el Adulto Mayor (PUAM), con el objetivo de evaluar la suficiencia de estas prestaciones frente a las canastas, considerando que son las fuentes de ingresos más comunes en los grupos analizados.
+
+[^1]: Durán et al. (2019), *Canasta básica alimentaria para la persona mayor en Argentina.*
+
+# Desarrollo
+
+## Medición de la pobreza
+
+La pobreza puede abordarse desde una concepción **absoluta o relativa**. Bajo la absoluta, las personas son categorizadas como pobres/no pobres según parámetros que no varían con las condiciones económicas de la sociedad a la que pertenece. Por otro lado, bajo la concepción relativa se define la pobreza con relación al nivel de vida de la población de referencia, por ejemplo mediante un umbral asociado a un porcentaje de la mediana del ingreso[^2].
+
+[^2]: Gasparini, Cicowiez y Sosa Escudero (2013), *Pobreza y desigualdad en América Latina: conceptos, heramientas y aplicaciones*, p. 189.
+
+En la práctica, la medición de la pobreza se da mediante métodos **directos o indirectos**. Los primeros identifican directamente privaciones concretas en el bienestar, mientras que los segundos evalúan la suficiencia de los recursos disponibles frente a un nivel determinado de consumo mínimo. En Argentina, el primer enfoque se aplica mediante el método de **Necesidades Básicas Insatisfechas** (NBI)[^3], que identifica hogares con carencias vinculadas a vivienda, saneamiento, hacinamiento, asistencia escolar y capacidad de subsistencia[^4].
+
+[^3]: Gasparini, Cicowiez y Sosa Escudero, 283.
+
+[^4]: Aunque no es el punto central de este trabajo, cabe aclarar que esta metodología también subestimará la pobreza en adultos mayores. Esto es así porque, por un lado, más del 50% viven solos o con su cónyuge, por lo que para ellos no aplicarían los indicadores referidos a hacinamiento, asistencia escolar y capacidad de subsistencia. Por otro lado, la vivienda inconveniente y el saneamiento (inodoro con descarga de agua) reflejan condiciones de acumulación patrimonial a lo largo de su vida, por lo que los adultos mayores no presentarían carencias en estos sentidos con la misma frecuencia que otros individuos. Para sincerar este método se deberían incluir indicadores que contemplen necesidades específicas del segmento etario en cuestión, como un acceso continuado a los medicamentos necesarios.
+
+El presente trabajo se concentra, sin embargo, en un método indirecto: la medición mediante **Líneas de Pobreza**. Este enfoque parte de la construcción de una Canasta Básica Alimentaria (CBA), destinada a representar requerimientos alimentarios mínimos, y, a partir de esta, de una Canasta Básica Total (CBT), calculada mediante el coeficiente de Orshansky[^5]. La principal ventaja de esta metodología es su simplicidad al comparar de forma directa el costo de un conjunto de necesidades con los recursos disponibles. Pero esto es un arma de doble filo: el resultado dependerá directamente de cómo se defina la canasta y los supuestos que se utilicen.
+
+[^5]: La inversa del coeficiente de Engel, que define la proporción del gasto total destinado a los alimentos. De esta forma, si un hogar gasta el 40% de sus ingresos en alimentos, el coeficiente de Engel arroja un valor de 0,4 y su inversa, el de Orshansky, un valor de 2,5. Así, una CBA de \$100 implicaría una CBT de \$250. Véase Gasparini, Cicowiez y Sosa Escudero (2013), p. 182.
+
+## Adultos equivalentes y adultos mayores
+
+La metodología oficial define la CBA y la adapta a las distintas necesidades alimentarias de los individuos mediante la noción del **adulto equivalente**. En lugar de construir una canasta distinta para cada grupo, se parte de un individuo de referencia (varones de entre 30 y 60 años) y se aplican coeficientes que reflejan diferencias de requerimientos energéticos según edad y sexo[^6]. La problemática de esta metodología es que no son representadas las diferencias en los patrones de consumo entre individuos, ignorando sus necesidades específicas.
+
+[^6]: En la escala utilizada por el INDEC, los varones de 61 a 75 años representan el 83% del consumo del adulto equivalente, y los mayores de 75 años el 74%. En las mujeres, esos coeficientes se reducen al 67% y 63%, respectivamente.
+
+Referido a las necesidades específicas de los adultos mayores, la Encuesta Nacional de Factores de Riesgo de 2018 es ilustrativa. Esta mostró una prevalencia combinada de hipertensión arterial del **78%**. de glucemia elevada/diabetes del **21%**, y una prevalencia autorreportada de colesterol elevado del **40%** entre quienes se habían realizado controles[^7]. Estos indicadores justifican preguntarse si una metodología centrada en equivalencias calóricas captura las particularidades de cada sexo y grupo etario. El presente ejercicio parte precisamente de esta pregunta y evalúa qué ocurre cuando se utilizan canastas específicas.
+
+[^7]: INDEC, 4° Encuesta Nacional de Factores de Riesgo. Resultados definitivos, 2018**.**
+
+## Suficiencia de los ingresos previsionales
+
+Una vez considerada la canasta específica, se debe contrastar con la fuente de ingresos principal de los adultos mayores. En Argentina, una parte significativa de este grupo depende únicamente de transferencias del sistema previsional, por lo que la evolución de los haberes resulta central para analizar su capacidad de consumo.
+
+El presente trabajo se enfoca en dos prestaciones: el haber mínimo jubilatorio y la Pensión Universal para el Adulto Mayor. La primera constituye una referencia particularmente relevante por la concentración de beneficiarios en torno a los haberes más bajos del sistema previsional. La PUAM, por su parte, equivale al 80% del haber mínimo y es la principal prestación no contributiva para quienes no reúnen los requisitos para acceder a una jubilación contributiva.
+
+La comparación entre estas prestaciones y las canastas construidas permitirá definir un indicador sencillo de suficiencia real de las prestaciones: qué proporción del costo de la CBA y de la CBT puede ser cubierta por cada ingreso previsional.
+
+# Metodología
+
+## Datos y períodos de análisis
+
+El ejercicio utiliza información mensual para el Gran Buenos Aires (GBA) entre octubre de 2018 y agosto de 2026. La construcción de las canastas combina tres fuentes principales. En primer lugar, las cantidades consumidas por tipo de individuo provienen de las canastas propuestas por Durán et al. para adultos mayores, diferenciados según sexo y rango etario. Se consideran cuatro perfiles: hombres y mujeres de tercera y cuarta edad, es decir, de entre 65 y 74 años y de 75 años o más, respectivamente. En segundo lugar, estas cantidades se valorizan utilizando los precios medios mensuales relevados por el INDEC para el IPC-GBA. La serie resultante es una aplicación de la metodología propuesta por Durán et al. para otra región. Por último, para estudiar la suficiencia de los ingresos se utiliza la serie mensual del haber mínimo jubilatorio publicada por Datos Argentina. La PUAM se calcula para cada periodo como el 80% del haber mínimo.
+
+## Construcción de las CBA
+
+Para cada uno de los cuatro perfiles, el costo mensual de la CBA se obtiene multiplicando la cantidad correspondiente a cada producto por su precio en el período y sumando posteriormente los costos de todos los productos:
+
+$$CBA_{jt} = \sum_i q_{ij}p_{it}$$
+
+donde $q_{ij}$ representa la cantidad mensual del producto $i$ correspondiente al tipo $j$, y $p_{it}$ su precio en GBA en el mes $t$.
+
+Cuando el producto incluido en la canasta de referencia se encuentra disponible en las series del IPC-GBA se utiliza directamente su precio. Cuando no existe una observación equivalente, se emplea un producto cercano como proxy de actualización. En ciertos casos se conserva la relación de precios de la canasta del trabajo de referencia y se aplica esa relación al producto disponible en la serie del INDEC. Esta estrategia permite mantener la composición de la canasta y construir una serie mensual completa, aunque introduce necesariamente cierto margen de arbitrariedad.
+
+| Producto de la canasta | Precio utilizado |
+|----|----|
+| Leche común descremada | IPC-GBA: Leche fresca entera en sachet |
+| Yogur natural o saborizado | IPC-GBA: yogur firme |
+| Queso doble crema - cuartirolo | IPC-GBA: Queso cremoso |
+| Queso por salut | Proxy a partir del precio relativo al queso cremoso |
+| Queso crema para untar | Proxy a partir del precio relativo al queso cremoso |
+| Huevos de gallina | IPC-GBA: Huevos de gallina |
+| Pollo entero | IPC-GBA: Pollo entero |
+| Pollo trozado | Proxy a partir del precio relativo al pollo entero |
+| Asado | IPC-GBA: Asado |
+| Carne picada | IPC-GBA: Carne Picada común |
+| Hueso con carne | Proxy a partir del precio relativo al asado |
+| Merluza | IPC-GBA: Filet de merluza fresco |
+| Supremas de pollo rebozadas | Proxy a partir del precio relativo al pollo entero |
+| Cuadril | IPC-GBA: Cuadril |
+| Nalga | IPC-GBA: Nalga |
+| Paleta | IPC-GBA: Paleta |
+| Vacío | Proxy a partir del precio relativo al asado |
+| Tomate redondo fresco | IPC-GBA: Tomate redondo |
+| Tomates en conserva | IPC-GBA: Tomate entero en conserva |
+| Lechuga fresca | IPC-GBA: Lechuga |
+| Acelga fresca | Proxy a partir del precio relativo a la lechuga |
+| Zapallitos frescos | Proxy a partir del precio relativo al zapallo |
+| Cebolla común fresca | IPC-GBA: Cebolla |
+| Zapallo fresco | IPC-GBA: Zapallo anco |
+| Zanahoria fresca | Proxy a partir del precio relativo a la papa |
+| Papa fresca | IPC-GBA: Papa |
+| Naranja | IPC-GBA: Naranja |
+| Banana | IPC-GBA: Banana |
+| Manzana | IPC-GBA: Manzana |
+| Mandarina | Proxy a partir del precio relativo a la naranja |
+| Pera | Proxy a partir del precio relativo a la manzana |
+| Fideos secos | IPC-GBA: Fideos secos tipo guisero |
+| Arroz blanco | IPC-GBA: Arroz blanco simple |
+| Harina de trigo | IPC-GBA: Harina de trigo común 000 |
+| Ravioles frescos | Proxy a partir del precio relativo a los fideos secos |
+| Harina de maíz | Proxy a partir del precio relativo a harina de trigo |
+| Pan francés fresco en piezas | IPC-GBA: Pan francés tipo flauta |
+| Azúcar | IPC-GBA: Azúcar |
+| Edulcorante | Proxy a partir del precio relativo al azúcar |
+| Mermeladas, otros dulces y jaleas | Proxy a partir del precio relativo al azúcar |
+| Dulce de leche | IPC-GBA: Dulce de leche |
+| Dulce de membrillo | Proxy a partir del precio relativo al azúcar |
+| Aceites de girasol | IPC-GBA: Aceite de girasol |
+| Aceite mezcla | Proxy a partir del precio relativo al aceite de girasol |
+| Yerba mate | IPC-GBA: Yerba mate |
+
+En los productos construidos mediante precios relativos, se supone que la relación entre el precio del producto faltante y su proxy permanece constante en el tiempo.
+
+```{r}
+#| label: construccion-cba
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de construcción de las CBA"
+#| message: false
+#| warning: false
+
+canasta <- read_excel(
+  archivo_datos,
+  sheet = "canasta_final",
+  range = "A1:E46"
+)
+
+names(canasta) <- c(
+  "producto",
+  "mujer_65_74",
+  "mujer_75_mas",
+  "hombre_65_74",
+  "hombre_75_mas"
+)
+
+canasta <- canasta %>% 
+  mutate(
+    producto = trimws(producto)
+  )
+
+precios <- read_excel(
+  archivo_datos,
+  sheet = "precios",
+  range = "A2:CR46",
+  col_names = FALSE,
+  .name_repair="minimal"
+)
+
+names(precios) <- c(
+  "producto",
+  as.character(fechas)
+)
+
+precios <- precios %>% 
+  mutate(
+    producto = trimws(producto),
+    across(-producto, as.numeric)
+  )
+
+canasta_larga <- canasta %>% 
+  pivot_longer(
+    cols = -producto,
+    names_to = "tipo_persona",
+    values_to = "cantidad"
+  )
+
+precios_largos <- precios %>% 
+  pivot_longer(
+    cols = -producto,
+    names_to = "fecha",
+    values_to = "precio"
+  ) %>% 
+  mutate(
+    fecha = as.Date(fecha)
+  )
+
+cba_detalle <- canasta_larga %>% 
+  left_join(
+    precios_largos,
+    by = "producto",
+    relationship = "many-to-many" #Para silenciar warning
+  ) %>% 
+  mutate(
+    costo_producto = cantidad * precio
+  )
+
+cba_larga <- cba_detalle %>% 
+  group_by(
+    fecha,
+    tipo_persona
+  ) %>% 
+  summarise(
+    cba = sum(costo_producto),
+    .groups = "drop" #Para silenciar warning
+  ) %>% 
+  arrange(
+    fecha,
+    tipo_persona
+  )
+```
+
+## Construcción de las CBT
+
+A partir de las CBA obtenidas se construyen las CBT utilizando la inversa mensual del coeficiente de Engel (ICE) publicada por el INDEC en su serie de CBA y CBT. Para cada tipo y período:
+
+$$CBT_{jt} = CBA_{jt} \times ICE_t$$
+
+```{r}
+#| label: construccion-cbt
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de construcción de las CBT"
+
+ice <- read_xls(
+  archivo_ice,
+  sheet = "ice"
+)
+
+ice_proc <- ice[, 1:2]
+
+names(ice_proc) <- c(
+  "fecha",
+  "ice"
+)
+
+ice_proc <- ice_proc  %>% 
+  mutate(
+    fecha = as.Date(fecha),
+    fecha = as.Date(format(fecha, "%Y-%m-01")),
+    ice = as.numeric(ice)
+  ) %>% 
+  filter(
+    fecha >= fecha_inicio,
+    fecha <= fecha_fin
+  ) %>% 
+  arrange(fecha)
+
+canastas_larga <- cba_larga %>% 
+  left_join(
+    ice_proc,
+    by = "fecha",
+    relationship = "many-to-one"
+  ) %>% 
+  mutate(
+    cbt = cba * ice
+  )
+
+canastas_ancha <- canastas_larga %>% 
+  select(
+    fecha,
+    ice,
+    tipo_persona,
+    cba,
+    cbt
+  ) %>% 
+  pivot_wider(
+    id_cols = c(fecha, ice),
+    names_from = tipo_persona,
+    values_from = c(cba, cbt),
+    names_glue = "{.value}_{tipo_persona}"
+  ) %>% 
+  arrange(fecha)
+```
+
+Este procedimiento supone aplicar a los adultos mayores la misma relación entre gasto alimentario y no alimentario utilizada por el INDEC para la población de referencia[^8].
+
+[^8]: Este resulta ser otro mecanismo mediante el cual la pobreza en adultos mayores podría ser subestimada, lo cual es una limitación técnica del ejercicio. Rubros como salud, medicamentos o cuidados podrían representar una proporción mayor del gasto de este grupo, resultando en un coeficiente de Engel menor, ergo en una ICE mayor. En consecuencia, las CBT calculadas podrían seguir subestimando el costo efectivo de satisfacer sus necesidades.
+
+## Haberes previsionales
+
+Para evaluar la capacidad de los ingresos previsionales de financiar las canastas construidas se utiliza el haber mínimo jubilatorio mensual, y, a partir de este, se calcula la PUAM, definida como el 80% del haber mínimo.
+
+```{r}
+#| label: haberes-previsionales
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de procesamiento de haberes"
+#| message: false
+#| warning: false
+
+haberes <- read.csv(
+  archivo_haberes,
+  stringsAsFactors = FALSE
+)
+
+haberes_proc <- haberes %>% 
+  mutate(
+    fecha = as.Date(
+      indice_tiempo,
+      format = "%Y-%m-%d"
+    )
+  ) %>% 
+  filter(
+    fecha >= fecha_inicio,
+    fecha <= fecha_fin
+  ) %>% 
+  transmute( #transmute es mutate+select
+    fecha,
+    haber_minimo = as.numeric(mensual_pesos_corrientes),
+    puam = haber_minimo * 0.80
+  ) %>% 
+  arrange(fecha)
+```
+
+## Integración de las bases
+
+Las series de CBA y CBT se integran con los ingresos previsionales mediante la fecha mensual. De esta forma se obtiene una única base que contiene, para cada período, las cuatro CBA, las cuatro CBT, la inversa del coeficiente de Engel, el haber mínimo y la PUAM.
+
+```{r}
+#| label: unir-bases
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de integración de las bases"
+#| message: false
+#| warning: false
+
+base_final <- canastas_ancha %>% 
+  left_join(
+    haberes_proc,
+    by = "fecha",
+    relationship = "one-to-one"
+  ) %>% 
+  select(
+    fecha,
+    cba_mujer_65_74,
+    cba_mujer_75_mas,
+    cba_hombre_65_74,
+    cba_hombre_75_mas,
+    cbt_mujer_65_74,
+    cbt_mujer_75_mas,
+    cbt_hombre_65_74,
+    cbt_hombre_75_mas,
+    ice,
+    haber_minimo,
+    puam
+  )
+```
+
+## Indicador de suficiencia
+
+La suficiencia de una prestación se define como el cociente entre cada una de ellas y el costo de la canasta analizada:
+
+$$S_{pjt} = \frac{Ingreso_{pt}}{Canasta_{jt}}$$
+
+donde $p$ identifica la prestación, $j$ el tipo de adulto mayor y $t$ el período.
+
+El resultado del indicador puede ser interpretado como porcentajes de cobertura: 100% indica cobertura exacta de la prestación, mientras que valores inferiores o superiores indican insuficiencia o cobertura superior, respectivamente. El indicador se calcula por separado para las CBA y CBT de cada uno de los cuatro perfiles.
+
+```{r}
+#| label: indicadores-suficiencia
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de cálculo de suficiencia"
+#| message: false
+#| warning: false
+
+base_final <- base_final %>% 
+  mutate(
+    # Haber mínimo / CBA
+    suf_min_cba_mujer_65_74 =
+      haber_minimo / cba_mujer_65_74,
+    suf_min_cba_mujer_75_mas =
+      haber_minimo / cba_mujer_75_mas,
+    suf_min_cba_hombre_65_74 =
+      haber_minimo / cba_hombre_65_74,
+    suf_min_cba_hombre_75_mas =
+      haber_minimo / cba_hombre_75_mas,
+    
+    # Haber mínimo / CBT
+    suf_min_cbt_mujer_65_74 =
+      haber_minimo / cbt_mujer_65_74,
+    suf_min_cbt_mujer_75_mas =
+      haber_minimo / cbt_mujer_75_mas,
+    suf_min_cbt_hombre_65_74 =
+      haber_minimo / cbt_hombre_65_74,
+    suf_min_cbt_hombre_75_mas =
+      haber_minimo / cbt_hombre_75_mas,
+    
+    # PUAM / CBA
+    suf_puam_cba_mujer_65_74 =
+      puam / cba_mujer_65_74,
+    suf_puam_cba_mujer_75_mas =
+      puam / cba_mujer_75_mas,
+    suf_puam_cba_hombre_65_74 =
+      puam / cba_hombre_65_74,
+    suf_puam_cba_hombre_75_mas =
+      puam / cba_hombre_75_mas,
+    
+    # PUAM / CBT
+    suf_puam_cbt_mujer_65_74 =
+      puam / cbt_mujer_65_74,
+    suf_puam_cbt_mujer_75_mas =
+      puam / cbt_mujer_75_mas,
+    suf_puam_cbt_hombre_65_74 =
+      puam / cbt_hombre_65_74,
+    suf_puam_cbt_hombre_75_mas =
+      puam / cbt_hombre_75_mas
+  )
+```
+
+# Análisis de los resultados
+
+## Evolución de las canastas y los ingresos previsionales
+
+En la primera parte del análisis, la evolución de las canastas construidas se compara con la evolución del haber mínimo jubilatorio y la PUAM. Primero se presenta la comparación con la CBA, que resultará útil para analizar la **indigencia o pobreza extrema**.
+
+```{r}
+#| label: fig-cba-haberes
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de gráfico CBA"
+#| message: false
+#| warning: false
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-cap: "Evolución de las CBA, el haber mínimo y la PUAM. GBA, octubre de 2018-agosto de 2026."
+
+datos_grafico_cba <- canastas_larga  %>% 
+  select(
+    fecha,
+    tipo_persona,
+    cba
+  ) %>% 
+  mutate(
+    persona = factor(
+      tipo_persona,
+      levels = names(etiquetas_persona),
+      labels = unname(etiquetas_persona)
+    )
+  )
+
+grafico_cba <- ggplot() +
+  geom_line(
+    data = datos_grafico_cba,
+    aes(
+      x=fecha,
+      y=cba,
+      color= persona,
+      group =persona
+    ),
+    linewidth = 0.9
+  ) +
+  geom_point(
+    data=datos_grafico_cba,
+    aes(
+      x= fecha,
+      y= cba,
+      color = persona
+    ),
+    size = 1.3
+  ) +
+  geom_line(
+    data = haberes_proc,
+    aes(
+      x = fecha,
+      y = haber_minimo,
+      linetype = "Haber mínimo"
+    ),
+    color = "#303030",
+    linewidth = 1.1
+  ) +
+  geom_line(
+    data = haberes_proc,
+    aes(
+      x = fecha,
+      y = puam,
+      linetype="PUAM"
+    ),
+    color = "#6E6E6E",
+    linewidth = 1.1
+  ) +
+  scale_color_manual(
+    values = colores_persona,
+    name="Canasta"
+  ) +
+  scale_linetype_manual(
+    values =c(
+      "Haber mínimo" = "solid",
+      "PUAM" = "dashed"
+    ),
+    name = "Prestación"
+  ) +
+  scale_x_date(
+    date_breaks = "4 months",
+    date_labels = "%m/%Y",
+    expand = expansion(mult = c(0.01, 0.02))
+  ) +
+  scale_y_continuous(
+    labels = label_number(
+      prefix = "$ ",
+      big.mark = ".",
+      decimal.mark = ",",
+      accuracy = 1
+    )
+  ) +
+  labs(
+    title = "CBA vs ingresos previsionales",
+    subtitle = "GBA, octubre 2018 - agosto 2026",
+    caption = "Fuente: elaboración propia en base a IPC-GBA y Datos Argentina.",
+    x = NULL,
+    y = "Pesos corrientes"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(
+      face = "bold"
+    ),
+    legend.position = "bottom"
+  )
+
+grafico_cba
+```
+
+Resulta evidente a simple vista que el haber mínimo es suficiente para cubrir la canasta básica en casi todo el periodo bajo análisis, excepto por los primeros meses de 2024; mientras que la PUAM sigue un sendero idéntico, pero por debajo, resultando insuficiente en más períodos. Si definimos la indigencia con esta nueva metodología como los individuos que no llegan a cubrir la CBA modificada, **quienes cobran el haber mínimo evitarían la indigencia**.
+
+```{r}
+#| label: fig-cbt-haberes
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de gráfico CBT"
+#| message: false
+#| warning: false
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-cap: "Evolución de las CBT, el haber mínimo y la PUAM. GBA, octubre de 2018-agosto de 2026."
+
+datos_grafico_cbt <- canastas_larga %>% 
+  select(
+    fecha,
+    tipo_persona,
+    cbt
+  ) %>% 
+  mutate(
+    persona = factor(
+      tipo_persona,
+      levels = names(etiquetas_persona),
+      labels = unname(etiquetas_persona)
+    )
+  )
+
+grafico_cbt <- ggplot() +
+  geom_line(
+    data = datos_grafico_cbt,
+    aes(
+      x = fecha,
+      y = cbt,
+      color = persona,
+      group = persona
+    ),
+    linewidth = 0.9
+  ) +
+  geom_point(
+    data = datos_grafico_cbt,
+    aes(
+      x = fecha,
+      y = cbt,
+      color = persona
+    ),
+    size = 1.3
+  ) +
+  geom_line(
+    data = haberes_proc,
+    aes(
+      x = fecha,
+      y = haber_minimo,
+      linetype = "Haber mínimo"
+    ),
+    color = "#303030",
+    linewidth = 1.1
+  ) +
+  geom_line(
+    data = haberes_proc,
+    aes(
+      x = fecha,
+      y = puam,
+      linetype = "PUAM"
+    ),
+    color = "#6E6E6E",
+    linewidth = 1.1
+  ) +
+  scale_color_manual(
+    values = colores_persona,
+    name = "Canasta"
+  ) +
+  scale_linetype_manual(
+    values = c(
+      "Haber mínimo" = "solid",
+      "PUAM" = "dashed"
+    ),
+    name = "Prestación"
+  ) +
+  scale_x_date(
+    date_breaks = "4 months",
+    date_labels = "%m/%Y",
+    expand = expansion(mult = c(0.01, 0.02))
+  ) +
+  scale_y_continuous(
+    labels = label_number(
+      prefix = "$ ",
+      big.mark = ".",
+      decimal.mark = ",",
+      accuracy = 1
+    )
+  ) +
+  labs(
+    title = "CBT vs ingresos previsionales",
+    subtitle = "GBA, octubre 2018 - agosto 2026",
+    caption = "Fuente: elaboración propia en base a IPC-GBA, ICE INDEC y Datos Argentina.",
+    x = NULL,
+    y = "Pesos corrientes"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(
+      face = "bold"
+    ),
+    legend.position = "bottom"
+  )
+
+grafico_cbt
+```
+
+Al analizar la relación con la CBT se ve que el resultado es el opuesto: el haber mínimo (ergo la PUAM) se encuentran sistemáticamente por debajo de la canasta. En consecuencia, con nuestra redefinición de la pobreza, **quienes cobran la jubilación mínima serían pobres**.
+
+Esto es particularmente interesante considerando que, de acuerdo con los datos que suele publicar el INDEC, los adultos mayores son el segmento con menores niveles de pobreza. Considerando que, según los datos del ANSES, del total de personas que reciben beneficios contributivos (unos 6 millones de personas) más de la mitad percibe ingresos de hasta un haber mínimo (unos 3,1 millones de personas), no es descabellado suponer que la última estimación de la pobreza en adultos mayores del **14,8%** en el primer semestre de 2026 es una grosera subestimación. Si bien el procedimiento metodológico no es el mismo, una estimación con esta metodología pareciera mostrar que **por lo menos el 50% de los individuos mayores de 65 años serían pobres**.
+
+Para profundizar sobre la dinámica reciente, se replica la comparación para los últimos 3 años de la serie (agosto 2023 - agosto 2026). Esto permite capturar conjuntamente la aceleración inflacionaria de 2023-2024 y el cambio de régimen.
+
+```{r}
+#| label: fig-cba-haberes-reciente
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de gráfico CBA 2023-2026"
+#| message: false
+#| warning: false
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-cap: "Evolución de las CBA, el haber mínimo y la PUAM. GBA, agosto de 2023-agosto de 2026."
+
+grafico_cba_reciente <- grafico_cba +
+  coord_cartesian(
+    xlim = as.Date(c(
+      "2023-08-01",
+      "2026-08-01"
+    ))
+  ) +
+  labs(
+    title = "CBA vs ingresos previsionales",
+    subtitle = "GBA, agosto 2023 - agosto 2026"
+  )
+
+grafico_cba_reciente
+```
+
+El periodo inicia con un relativo estancamiento con algunos saltos discretos, consecuencia de las actualizaciones trimestrales por ley de movilidad. Bajo esta ley, la última actualización de 2023 fue en diciembre, del **20,87%**, contra una inflación trimestral de **más del 50%**. La siguiente y última actualización bajo esta fórmula fue en marzo de 2024, cuando el haber trepó **27,18%** contra una inflación trimestral que nuevamente **superó el 50%**. Si bien desde abril inició un periodo de transición en el cual la actualización sería mensual según la inflación de 2 períodos atrás, el daño ya estaba hecho: **el haber mínimo perdió fuertemente en el semestre, aumentando 54% contra el 132% de inflación**.
+
+```{r}
+#| label: fig-cbt-haberes-reciente
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código de gráfico CBT 2023-20206"
+#| message: false
+#| warning: false
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-cap: "Evolución de las CBT, el haber mínimo y la PUAM. GBA, agosto de 2023-agosto de 2026."
+
+grafico_cbt_reciente <- grafico_cbt +
+  coord_cartesian(
+    xlim = as.Date(c(
+      "2023-08-01",
+      "2026-08-01"
+    ))
+  ) +
+  labs(
+    title = "CBT vs ingresos previsionales",
+    subtitle = "GBA, agosto 2023 - agosto 2026"
+  )
+
+grafico_cbt_reciente
+```
+
+Los gráficos en conjunto permiten ver que, si bien el haber jubilatorio y los precios evolucionaron de forma similar desde el cambio de fórmula que los relaciona a mediados de 2024, el punto de partida era tan bajo que 2 años después el haber mínimo no logra evitar por sí solo la pobreza al considerar una canasta que satisfaga realmente las necesidades de los adultos mayores.
+
+## Suficiencia de los ingresos previsionales
+
+Si bien la comparación entre los niveles y la evolución de las canastas y los haberes es ilustrativa, la variable de interés es la suficiencia de estas prestaciones.
+
+El siguiente gráfico presenta la cobertura del haber mínimo y de la PUAM sobre las CBA y CBT de los cuatro perfiles en cinco momentos seleccionados del período[^9]. Un valor de 100% representa cobertura exacta; valores inferiores indican insuficiencia y valores superiores que la prestación supera el costo estimado de la canasta.
+
+[^9]: Septiembre 2020 como referencia en pandemia, octubre 2023 como referencia en aceleración inflacionaria, febrero 2024 como piso detectado, y agosto 2025 y 2026 para una comparación interanual con los últimos datos disponibles.
+
+```{r}
+#| label: fig-heatmap-suficiencia
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código del heatmap de suficiencia"
+#| message: false
+#| warning: false
+#| fig-width: 14
+#| fig-height: 7
+#| fig-cap: "Cobertura del haber mínimo y la PUAM sobre las CBA y CBT de adultos mayores en períodos seleccionados."
+
+meses_heatmap <- as.Date(c(
+  "2020-09-01",
+  "2023-10-01",
+  "2024-02-01",
+  "2025-08-01",
+  "2026-08-01"
+))
+
+etiquetas_meses <- c(
+  "2020-09-01" = "Sep-20",
+  "2023-10-01" = "Oct-23",
+  "2024-02-01" = "Feb-24",
+  "2025-08-01" = "Ago-25",
+  "2026-08-01" = "Ago-26"
+)
+
+datos_heatmap <- base_final %>% 
+  filter(
+    fecha %in% meses_heatmap
+  ) %>% 
+  select(
+    fecha,
+    starts_with("suf_")
+  ) %>% 
+  pivot_longer(
+    cols = starts_with("suf_"),
+    names_to = c(
+      "prestacion",
+      "canasta",
+      "sexo",
+      "edad"
+    ),
+    names_pattern =
+      "^suf_(min|puam)_(cba|cbt)_(mujer|hombre)_(65_74|75_mas)$",
+    values_to = "cobertura"
+  ) %>% 
+  mutate(
+    prestacion = recode(
+      prestacion,
+      "min" = "Haber mínimo",
+      "puam" = "PUAM"
+    ),
+    canasta = recode(
+      canasta,
+      "cba" = "CBA",
+      "cbt" = "CBT"
+    ),
+    persona = case_when(
+      sexo == "mujer" &
+        edad == "65_74" ~ "Mujer 65-74",
+      sexo == "mujer" &
+        edad == "75_mas" ~ "Mujer 75+",
+      sexo == "hombre" &
+        edad == "65_74" ~ "Hombre 65-74",
+      sexo == "hombre" &
+        edad == "75_mas" ~ "Hombre 75+"
+    ),
+    periodo =
+      etiquetas_meses[as.character(fecha)],
+    cobertura_pct =
+      percent(
+        cobertura,
+        accuracy = 1
+      )
+  ) %>% 
+  mutate(
+    periodo = factor(
+      periodo,
+      levels = c(
+        "Sep-20",
+        "Oct-23",
+        "Feb-24",
+        "Ago-25",
+        "Ago-26"
+      )
+    ),
+    prestacion = factor(
+      prestacion,
+      levels = c(
+        "Haber mínimo",
+        "PUAM"
+      )
+    ),
+    canasta = factor(
+      canasta,
+      levels = c(
+        "CBA",
+        "CBT"
+      )
+    ),
+    persona = factor(
+      persona,
+      levels = c(
+        "Mujer 65-74",
+        "Mujer 75+",
+        "Hombre 65-74",
+        "Hombre 75+"
+      )
+    )
+  )
+
+grafico_heatmap <- ggplot(
+  datos_heatmap,
+  aes(
+    x = periodo,
+    y = prestacion,
+    fill = cobertura
+  )
+) +
+  geom_tile(
+    color = "white",
+    linewidth = 0.8
+  ) +
+  geom_text(
+    aes(
+      label = cobertura_pct
+    ),
+    size = 3.4,
+    fontface = "bold"
+  ) +
+  facet_grid(
+    rows = vars(canasta),
+    cols = vars(persona)
+  ) +
+  scale_fill_gradient2(
+    low = "#C23B22",
+    mid = "#F4F1EA",
+    high = "#5B7FA3",
+    midpoint = 1,
+    limits = c(0.5, 1.5),
+    oob = squish,
+    labels = percent_format(
+      accuracy = 1
+    ),
+    name = "Cobertura"
+  ) +
+  guides(
+    fill=guide_colorbar(
+      barwidth=15,
+      barheight=0.8
+    )
+  )+
+  labs(
+    title = "Suficiencia del haber previsional frente a las canastas",
+    subtitle = "Cobertura del haber mínimo y la PUAM sobre CBA y CBT de adultos mayores",
+    x = NULL,
+    y = NULL,
+    caption = "100% indica cobertura exacta de la canasta. Valores inferiores indican insuficiencia."
+  ) +
+  theme_minimal(
+    base_size = 12
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(
+      face = "bold",
+      size = 10.5
+    ),
+    strip.background = element_rect(
+      fill = "grey95",
+      color = NA
+    ),
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      size = 9
+    ),
+    axis.text.y = element_text(
+      face = "bold",
+      size = 9.5
+    ),
+    plot.title = element_text(
+      face = "bold",
+      size = 15
+    ),
+    plot.subtitle = element_text(
+      size = 11
+    ),
+    legend.title=element_text(margin=margin(r=17.5)),
+    legend.position = "bottom",
+    panel.spacing = grid::unit(
+      0.8,
+      "lines"
+    )
+  )
+
+grafico_heatmap
+```
+
+El heatmap permite identificar tanto las diferencias entre perfiles como los cambios temporales en la suficiencia de los ingresos. En primer lugar, salta a la vista que efectivamente febrero de 2024 es el piso en los periodos seleccionados: el haber mínimo no lograba siquiera cubrir la canasta básica alimentaria modificada. Resulta interesante que la mejor performance entre los meses seleccionados es en septiembre de 2020, en plena pandemia. En ese periodo, el haber mínimo llegaba en casi todos los casos a cubrir la canasta básica total, evitando por sí solo la pobreza. En los últimos periodos seleccionados se verifica que la suficiencia de la PUAM y el haber mínimo se mantienen relativamente constantes, consecuencia directa de la construcción de la fórmula de actualización.
+
+Por otro lado, el bono otorgado para quienes perciben el haber mínimo desde marzo de 2024 es de \$70.000, por lo que resulta interesante analizar si este llega a cubrir la brecha observada entre el haber y la CBT en algún período desde entonces. Para este análisis, tomaré la CBT menos exigente: la de mujeres de cuarta edad (75 años o más).
+
+```{r}
+#| label: fig-bono-cbt-minima
+#| echo: true
+#| code-fold: true
+#| code-summary: "Ver código del gráfico CBT vs bono"
+#| message: false
+#| warning: false
+#| fig-width: 11
+#| fig-height: 6
+#| fig-cap: "Haber mínimo, haber mínimo con bono de $70.000 y CBT de mujeres de 75 años y más. GBA, marzo de 2024-agosto de 2026."
+
+bono <- 70000
+
+datos_grafico_bono <- base_final %>% 
+  filter(
+    fecha >= as.Date("2024-03-01"),
+    fecha <= as.Date("2026-08-01")
+  ) %>% 
+  transmute(
+    fecha,
+    `CBT mujer 75+` = cbt_mujer_75_mas,
+    `Haber mínimo` = haber_minimo,
+    `Haber mínimo + bono` = haber_minimo + bono
+  ) %>% 
+  pivot_longer(
+    cols = -fecha,
+    names_to = "serie",
+    values_to = "valor"
+  )
+
+grafico_bono <- ggplot(
+  datos_grafico_bono,
+  aes(
+    x = fecha,
+    y = valor,
+    color = serie,
+    linetype = serie
+  )
+) +
+  geom_line(
+    linewidth = 1
+  ) +
+  geom_point(
+    size = 1.5
+  ) +
+  scale_color_manual(
+    values = c(
+      "CBT mujer 75+" = "#5B9BD5",
+      "Haber mínimo" = "#303030",
+      "Haber mínimo + bono" = "#C23B22"
+    )
+  ) +
+  scale_linetype_manual(
+    values = c(
+      "CBT mujer 75+" = "solid",
+      "Haber mínimo" = "solid",
+      "Haber mínimo + bono" = "dashed"
+    )
+  ) +
+  scale_x_date(
+    date_breaks = "3 months",
+    date_labels = "%m/%Y",
+    expand = expansion(mult = c(0.01, 0.02))
+  ) +
+  scale_y_continuous(
+    labels = label_number(
+      prefix = "$ ",
+      big.mark = ".",
+      decimal.mark = ",",
+      accuracy = 1
+    )
+  ) +
+  labs(
+    title = "Haber mínimo, bono y CBT más accesible",
+    subtitle = "Mujeres de 75 años y más, GBA, marzo 2024 - agosto 2026",
+    x = NULL,
+    y = "Pesos corrientes",
+    color = NULL,
+    linetype = NULL,
+    caption = "El bono se modeliza como un adicional fijo de $70.000 mensuales."
+  ) +
+  theme_minimal(
+    base_size = 12
+  ) +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(
+      face = "bold"
+    ),
+    legend.position = "bottom"
+  )
+
+grafico_bono
+```
+
+Como se puede observar, el bono resulta insuficiente en todo el periodo para cubrir la brecha entre el haber mínimo y la CBT modificada incluso para el perfil menos exigente. De esto se infiere que incluir o no el bono **no** altera los resultados obtenidos, al menos desde el cambio de régimen.
+
+# Conclusiones
+
+Los resultados muestran que la utilización de canastas específicas para adultos mayores modifica de manera relevante la evaluación de suficiencia de sus ingresos previsionales. Las diferencias por sexo y edad no son menores: los cuatro perfiles presentan costos distintos y, en consecuencia, una misma prestación puede ofrecer niveles de cobertura diferentes. Esto refuerza la idea de que una aproximación basada únicamente en equivalencias calóricas puede ocultar heterogeneidades relevantes dentro de la población adulta mayor.
+
+La comparación con el haber mínimo y la PUAM muestra, además, que la principal restricción aparece al considerar las Canastas Básicas Totales. Si bien ambas prestaciones presentan una cobertura considerablemente mayor frente a las CBA, la suficiencia frente a las CBT resulta mucho más limitada y exhibe un fuerte deterioro durante 2023 y comienzos de 2024. Posteriormente se observa una recuperación parcial, aunque en los períodos recientes persisten situaciones de insuficiencia para distintos perfiles. El ejercicio adicional incorporando un bono mensual de \$70.000 desde marzo de 2024 muestra que esta conclusión no depende exclusivamente de haber excluido los refuerzos extraordinarios: aun sumando ese monto, el haber mínimo no logra cubrir completamente la CBT del perfil menos exigente durante el período analizado.

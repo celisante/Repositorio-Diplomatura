@@ -1,29 +1,158 @@
 ---
-title: "trabajo_final_montano"
-output: html_document
-date: "2026-09-15"
+title: "Desindustrialización y Especialización Comercial: aproximaciones a los casos de Argentina, Brasil y Perú. (1960 -2018)"
+subtitle: "Trabajo Final - Diplomatura en R aplicada a la economica - FCE - UBA"
+author: "Enzo Montano"
+output:  
+  html_document:
+    theme: flatly 
+    toc: true
+    toc_float: true
+    code_folding: show
+date: "2026-10-05"
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 9,
+  fig.height = 5.5,
+  fig.align = "center"
+  )
+
+# llamamos librerias, no pude descargar desde la pagina del banco mundial las bases que queria usar. Entiendo que desde R es a traves de la libreria (wdi).
+
+library(tidyverse)
+library(WDI)
+library(knitr)
+
+
 ```
 
-## R Markdown
+### Secciones:
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+### **Sección 1: Marco Teorico - La Nueva División Internacional del Trabajo (NDIT)**
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+- **Contenido**: Abordar como la relocalización de procesos manufactureros hacia Asia Oriental (principalmente China) reconfiguró la producción industrial mundial, a partir de diferencias salariales y costos laborales.
 
-```{r cars}
-summary(cars)
+- **Concepto clave**: Hiper - industrializacion Asiatica y Des - industrialización de paises americanos.
+
+### **Sección 2: Trayectorias de desindustrialización (1960 - 2018)**
+
+En esta sección se analiza la evolución de la industria en **Argentina, Brasil y Perú** entre los años 1960 a 2018, poniendo puntos en los años de cambio de gobierno, para preguntarnos si eso implica un cambio en la politica economica.
+Para aproximarnos a una respuesta evaluamos la participación del sector en el producto como su evolución en términos per cápita.
+
+- ** Procesamiento:** Datos del Banco Mundial para **Argentina, Brasil y Perú** en los años: **1960, 1976, 1983, 1989, 1999, 2001, 2002, 2015, 2018**.
+
+- ** Indicadores: ** VAB Manufacturero (% del PIB), Empleo Industrial (%) y VAB Manufacturero Real Per Cápita en USD constanstes.
+
+```{r seccion2-banco-mundial, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Definimos parámetros
+paises <- c("AR", "BR", "PE") 
+anios <- c(1960, 1976, 1983, 1989, 1999, 2001, 2002, 2015, 2018) 
+
+# Descarga de indicadores desde la API del Banco Mundial
+
+datos_bm_raw <- WDI( 
+  country = paises, 
+  indicator = c( "vab_manuf_pib" = "NV.IND.MANF.ZS",
+                 "empleo_ind_pct" = "SL.IND.EMPL.ZS", 
+                 "vab_manuf_usd" = "NV.IND.MANF.KD",
+                 "poblacion" = "SP.POP.TOTL" ), 
+  start = 1960, end = 2018 ) 
+
+# Procesamiento de datos y cálculo del VAB industrial per cápita 
+
+datos_historicos <- datos_bm_raw %>%  
+  filter(year %in% anios) %>% 
+  mutate( 
+    vab_ind_per_capita = vab_manuf_usd / poblacion,
+    country = case_when( 
+      country == "Argentina" ~ "Argentina",
+      country == "Brazil" ~ "Brasil",
+      country == "Peru" ~ "Perú",
+      TRUE ~ country ) 
+    ) 
+
+# Guardamos la base procesada en la carpeta "bases".
+
+write.csv(datos_historicos,
+          "bases/datos_banco_mundial_historico.csv", row.names = FALSE) 
+
+# Gráfico 1: VAB Manufacturero (% del PIB)
+#teniendo en cuenta falta de datos
+
+datos_historicos_graf1 <-  datos_historicos %>% 
+  filter(!(country == "Brasil" & year < 1983)) %>% 
+  mutate(vab_manuf_pib = ifelse(
+    vab_manuf_pib == 0, NA, vab_manuf_pib))
+
+#para grafico
+grafico_vab_pib <- ggplot(datos_historicos_graf1,
+                          aes(x = factor (year), 
+             y = vab_manuf_pib, 
+             color = country, 
+             group = country)) + 
+  geom_line(size = 1.1, na.rm=FALSE) + 
+  geom_point(size = 3, na.rm = TRUE) +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) + labs( 
+    title = "Evolución del VAB Manufacturero (% del PIB)",
+    subtitle = "Argentina, Brasil y Perú (1960-2018)", 
+    x = "Año", 
+    y = "VAB Manufacturero (% del PIB)", 
+    color = "País", 
+    caption = "Fuente: Elaboración propia en base a Banco Mundial (WDI). Nota: se omiten años sin registro oficial" ) + 
+  theme_minimal() + 
+  theme( axis.text.x = 
+           element_text(angle = 90, hjust = 1),
+         legend.position = "bottom" ) 
+
+# Guardamos el Gráfico 1 en la carpeta resultados.
+
+ggsave("resultados/grafico_1_vab_pib.png", grafico_vab_pib, width = 8, height = 5) 
+
+grafico_vab_pib 
+
+# Gráfico 2: VAB Manufacturero Real Per Cápita (USD constantes). 
+grafico_vab_per_capita <- 
+  ggplot(datos_historicos, 
+         aes(x = factor (year),
+             y = vab_ind_per_capita, 
+             color = country, group = country)) + 
+  geom_line(size = 1.1) + 
+  geom_point(size = 3) +
+  scale_y_continuous(labels = scales::dollar_format(prefix = "USD ")) + 
+  labs( title = "Evolución del VAB Manufacturero Real Per Cápita", 
+        subtitle = "Valores en USD constantes por habitante (1960-2018)", 
+        x = "Año", 
+        y = "VAB Industrial Per Cápita (USD constantes)", color = "País", 
+        caption = "Fuente: Elaboración propia en base a Banco Mundial (WDI)." ) + 
+  theme_minimal() + 
+  theme( axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "bottom" ) 
+
+# Guardamos Gráfico 2.
+ggsave("resultados/grafico_2_vab_per_capita.png", grafico_vab_per_capita, width = 8, height = 5)
+
+#chequeamos grafico
+grafico_vab_per_capita 
 ```
 
-## Including Plots
+#### **Análisis de los resultados**
 
-You can also embed plots, for example:
+El contraste entre la participación del VAB manufacturero en el PIB y el VAB industrial per cápita permite caracterizar las diferentes naturalezas de los procesos de desindustrialización: 1.**Desindustrialización por Madurez vs. Regresiva:** Mientras que en las economías desarrolladas la menor participación del empleo industrial suele convivir con incrementos continuos en la productividad e ingreso por habitante (desindustrialización por madurez), los países de América Latina muestran dinámicas dispares.
+2.**El caso argentino:** Inicia un quiebre estructural a partir del golpe de Estado de 1976.
+La fuerte caída relativa del VAB industrial no responde a una transición hacia servicios de alta productividad, sino a un proceso de **desindustrialización prematura y regresiva**, acompañado por el estancamiento y la pérdida neta de capacidad productiva per cápita.
+3.
+**Brasil y Perú:** Brasil logró consolidar la estructura industrial más diversificada de la región, sufriendo tensiones de reprimarización en décadas recientes.
+Perú, por su parte, mantiene un perfil históricamente primario-extractivo, con niveles de VAB industrial per cápita sensiblemente menores.
+4.**Articulación con la Nueva División Internacional del Trabajo (NDIT):** Este repliegue latinoamericano es, en parte, la contrapartida de la masiva relocalización de capacidades manufactureras hacia Asia Oriental (destacando China), donde los diferenciales salariales, y de costos laborales, reorganizaron la geografía industrial global.
+Acompañado también por desiciones de politica economica que tomaron cada uno de estos paises americanos a lo largo del periodo analizado.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+### **Sección 3: Complejidad Economica (CEPII - BACI)**
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
