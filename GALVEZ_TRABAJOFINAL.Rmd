@@ -1,0 +1,335 @@
+---
+title: "Una mirada a la informalidad asalariada en la Argentina reciente, con perspectiva de género"
+author: "Gálvez. A. Amanda"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: readable
+    toc: true
+    toc_float: true
+    code_folding: hide
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+options(scipen = 999)
+library(tidyverse)
+library(eph)
+library(plotly)   # gráficos interactivos. Si falta: install.packages("plotly")
+
+# ---- Paleta ----
+col_mujer  <- "#D81B9F"   # magenta
+col_varon  <- "#2E8BE9"   # azul
+col_titulo <- "#6D28A1"   # violeta vibrante
+col_subt   <- "#0A8D5C"   # verde
+col_texto  <- "#3B2A5E"   # violeta oscuro para ejes y texto
+col_fondo  <- "#EEE2FF"   # lila de fondo
+col_panel  <- "#D880FF"   # área de las barras
+col_grilla <- "#D9C7F5"   # grilla
+
+# Alto de cada gráfico en píxeles. 
+alto_grafico <- 650
+
+fuente_eph <- paste0(
+  "Fuente: elaboración propia con microdatos de la EPH (INDEC)",
+  "<br>1º - 4º trimestre de 2024"
+)
+
+# Funciones auxiliares para el texto 
+f <- function(x) format(round(x, 1), decimal.mark = ",", nsmall = 1)
+mayor_menor <- function(a, b) ifelse(a > b, "mayor", ifelse(a < b, "menor", "igual"))
+
+# Estilo de los gráficos 
+estilo_genero <- function(p, titulo, subtitulo, ymax, leyenda = TRUE) {
+  layout(
+    p,
+    title = list(text = paste0("<b>", titulo, "</b>"),
+                 x = 0.5, xanchor = "center", y = 0.91, yanchor = "top",
+                 font = list(color = col_titulo, size = 20)),
+    paper_bgcolor = col_fondo,
+    plot_bgcolor = col_panel,
+    font = list(color = col_texto, size = 14),
+    xaxis = list(title = "", gridcolor = col_grilla, tickfont = list(size = 15)),
+    yaxis = list(title = "(%)", ticksuffix = "%",
+                 range = c(0, ymax), gridcolor = col_grilla, zerolinecolor = col_grilla),
+    showlegend = leyenda,
+    legend = list(orientation = "h", x = 0.5, xanchor = "center",
+                  y = 1.03, yanchor = "bottom", font = list(size = 15)),
+    margin = list(t = 185, b = 155, l = 130, r = 130),
+    annotations = list(
+      list(text = paste0("<b>", subtitulo, "</b>"),
+           x = 0.5, xref = "paper", xanchor = "center",
+           y = 1, yref = "paper", yanchor = "bottom",
+           yshift = if (leyenda) 50 else 18, showarrow = FALSE,
+           font = list(size = 14, color = col_subt)),
+      list(text = fuente_eph,
+           x = 0.5, xref = "paper", xanchor = "center",
+           y = 0, yref = "paper", yanchor = "top",
+           yshift = -62, showarrow = FALSE,
+           font = list(size = 11, color = col_texto))
+    )
+  )
+}
+```
+
+# Resumen ejecutivo
+
+Este trabajo indaga si ser **mujer** se asocia o no con una mayor probabilidad de tener un **empleo informal** en la Argentina y cómo se comporta esa relación cuando hay dependientes en el hogar. Tomando microdatos de la EPH ára el 1º  y 4º trimestre de 2024, se calculan tasas ponderadas de informalidad de asalariados y asalariadas, según el criterio **legalista de INDEC** (= ausencia de descuento jubilatorio), desagregadas por sexo, dependientes en el hogar (siguiendo a Pineda et al., 2024) y por grupo etario (siguiendo a Pradier, 2023).
+Las asalariadas presentan una tasa de 37,8%, frente a 34,2% de los asalariados. La diferencia es de 4,9 puntos porcentuales en los hogares sin dependientes y en casos de los hogares con dependientes 40,3% para las mujeres y 40,4% en el caso de los hombres. Por edad la diferencia es mayor entre los 30 y los 64 años (5,1 puntos) que entre los 14 y los 29 (2,8). Los resultados son descriptivos.
+
+# Introducción
+
+La informalidad laboral es una característica estructural de los mercados de trabajo de América Latina. En la Argentina, la EPH la mide con el criterio legalista que adopta el INDEC (2025), que entiende el caracter formal como un umbral básico de protección frente al puesto de trabajo, es decir consiste en la existencia (o no) de un piso mínimo de condiciones, como el acceso a derechos laborales, al seguro social y al retiro en la vejez. Para lxs asalariadxs, el indicador es la falta de aportes jubilatorios por parte del empleador.
+
+Según el estudio de la CEPAL (2024), que abarca 14 países de la región en el período comprendido entre 2013-2022, el hecho de ser mujer se asocia con una mayor probabilidad de tener un empleo informal, con un efecto marginal de 4,58 puntos porcentuales para la Argentina, y esperan que la presencia de dependientes en el hogar (niños pequeños o personas mayores inactivas) se amplifique con esa asociación. Pradier (2023) por su parte aporta el marco para interpretar lo que sucede desde una perspectiva de género. La desigual distribución del trabajo doméstico y de cuidado no remunerado condiciona la inserción de las mujeres en el mercado laboral y, con datos de la EPH de 2019, demuestra que el no registro de las asalariadas supera al de los asalariados a partir de los 30 años.
+
+Este trabajo toma estos planteos como disparador y los contrasta con datos recientes de la EPH. La pregunta central es si en la Argentina, **¿ser mujer se asocia con una mayor probabilidad de tener un empleo asalariado informal?**, y esa asociación ¿se mantiene, se reduce o se revierte cuando hay **dependientes** en el hogar?
+
+**Alcance:** se analiza únicamente el empleo asalariado de 14 a 64 años, con los cuatro trimestres de 2024 y tres indicadores descriptivos (la tasa de informalidad por sexo, por sexo y presencia de dependientes, y por sexo y grupo de edad). El trabajo se centra en alguns cuestiones que hacen a la precariedad laboral, ateniendose a la informalidad en sentido legalista (no mide desempleo ni subempleo, ni las formas de precariedad que atraviesan el empleo formal, por cuestiones de alcance y tiempo).  El género se trata en términos binarios, según cómo lo releva la EPH.
+
+# Desarrollo conceptual
+
+### De atributo de un sector a incumplimiento normativo
+
+El concepto de informalidad laboral fue evolucionando a lo largo delos años, en la década de 1980 el término empezó a aplicarse al ámbito laboral y se asoció a condiciones precarias, a la falta de protección social y la ausencia de derechos de quienes trabajaban en establecimientos de baja productividad. Una noción más cercana al enfoque productivista, que definía la informalidad por el tipo de unidad económica. En 1993, la OIT adoptó una definición más amplia, que incluía a los cuentapropistas y a los asalariados de empresas no registradas o no reguladas y se basaba en la falta de acceso a la seguridad social, la ausencia de protección laboral y la precariedad del ingreso. Finalmente, la 21.ª Conferencia Internacional de Estadísticos del Trabajo (CIET, 2023)  fijó el criterio hoy vigente para poder medirla, *un asalariado es informal si no cuenta con contrato laboral, y un empleador o cuentapropista lo es si su establecimiento no está registrado ante la autoridad fiscal*.
+
+Insertos en contextos de mercados de trabajo altamente segmentados, donde coexisten un sector formal, generalmente regulado y de menor crecimiento, y un sector informal con una gran proporción de trabajadores, mayor crecimiento y limitada movilidad hacia el primero. Los autores señalan algunos factores que sostienen esa segmentación: la aplicación débil de la legislación laboral, debido a la limitada capacidad de supervisión de los Estados, la falta de infraestructura e inversión y la inestabilidad económica y política. El INDEC (2025), por su parte, excluye deliberadamente el tamaño del establecimiento como criterio, siendo *la cobertura previsional el indicador de calidad del empleo elegido*, como también lo es en el caso de  Fernández-Franco, Graña, Lastra y Weksler (2022) dónde comparan trece países latinoamericanos con Estados Unidos.
+
+### ¿Precariedad o informalidad?
+
+La bibliografía trata a la precariedad y la informalidad como fenómenos asociados, pero no idénticos. La informalidad suele estar asociada a elevados niveles de precariedad laboral, si embargo esta última es una consecuencia observable de la misma pero no constituyen sinónimos en su definición. EN la Metodología N.º 43 de INDEC, reconocen la existencia de "actividades parcialmente informales", puestos registrados con descuento jubilatorio, donde parte de las horas o tareas remuneradas no está sujeta a los sistemas formales. Durante el cuarto trimestre de 2023 y el tercero de 2024, entre 3,9% y 5,1% de los asalariados formales con recibo declaró que este cubría solo una parte de su sueldo.
+
+La precariedad puede presentarse dentro del empleo formal y admite gradientes, mientras que la informalidad legalista es una condición binaria de registro. Este trabajo mide la informalidad en sentido estricto, la dimensión que la EPH releva con un criterio operativo definido, y no construye una medida amplia de precariedad.
+
+### Marco teórico y evolución reciente
+
+Para la tradición estructuralista latinoamericana, la informalidad se explica por la insuficiente capitalización de las economías de la región, que impide absorber toda la fuerza de trabajo disponible en el sector moderno. Siguiendo esta lectura, cabría esperar que el crecimiento económico y la capitalización reduzcan gradualmente la informalidad de una forma casi natural. La evidencia reciente complica esa expectativa: según el estudio de la CEPAL, durante 2013 y 2022, la década de menor crecimiento promedio del PIB regional de las últimas siete décadas (0,9%), la ocupación total creció 10,0%, pero la informal lo hizo 18,6%, frente a 3,3% de la formal. **La creación reciente de empleo fue mayoritariamente informal**, lo que sugiere una profundización de la segmentación entre un sector formal de bajo crecimiento y un sector informal más dinámico.
+
+### El género como eje de esa segmentación
+
+No todos los grupos fueron alcanzados en igual medida, entre el período que estudian, la ocupación informal femenina creció 22,8% en la región, frente a 15,7% de la masculina. El modelo probit  propuesto por la CEPAL incorpora algunas variables para explicar porque existen grupos más propensos a la informalidad que otros. Entre estas variables se menciona **el sexo y la presencia de dependientes en el hogar** (niños menores de 5 años o personas mayores de 70 inactivas). A forma de explicación introducen la segregación ocupacional, la doble carga de trabajo remunerado y de cuidado, y la discriminación de género en el acceso al empleo formal como ejes de estudio para ver como opera el fénomeno en la región. Para el caso de la Argentina, se estima un efecto marginal de ser mujer de 4,58 puntos porcentuales y un efecto positivo de los dependientes de 1,53 puntos; la interacción es positiva pero reducida: 0,35 puntos (0,81 en el promedio regional).
+
+Pradier (2023) aporta el marco explicativo para interpretar esa doble carga laboral. Desde la economía feminista, ubica la  distribución desigual del trabajo doméstico y de cuidado no remunerado, en el marco de la división sexual del trabajo y demuestra, con datos de la EAHU 2013, que la participación femenina en esas tareas es mayor que la masculina cualquiera sea la extensión de la jornada remunerada. Critica además, que los indicadores habituales del mercado de trabajo, al basarse en la población económicamente activa, dejan afuera ese trabajo. En la EPH de hecho, "ocupado" se define a partir del trabajo que produce bienes o servicios para el mercado lo cual es un aspecto relevante a tener en cuenta. Con la EPH de 2019 documenta una segregación horizontal (concentración femenina en servicio doméstico, enseñanza y salud) y también que la tasa de no registro de las asalariadas es similar a la de los asalariados entre los menores de 30 años y mayor para las mujeres a partir de esa edad.
+
+### Preguntas abiertas e hipótesis
+
+Para nuestro caso en la Argentina reciente quedan abiertas dos preguntas: si la asociación entre **ser mujer y la informalidad** se observa en la EPH de 2024 y si **la presencia de dependientes la modifica** en el sentido que espera Pineda et al. (2024). Se plantean tres hipótesis:
+
+- **HIPOTESIS 1** Las asalariadas tienen una tasa de informalidad mayor que los asalariados.
+- **HIPOTESIS 2** Los dependientes en el hogar aumentan la informalidad de las mujeres más que la de los varones (el signo que espera CEPAL- Pineda et al., 2024). Se pone a prueba esa expectativa.
+- **HIPOTESIS 3** La diferencia entre sexos es mayor a partir de los 30 años que entre los más jóvenes (patrón que describe Pradier, 2023).
+
+## Metodología
+
+- **Fuente:** microdatos de la base individual de la EPH (INDEC). 1º a 4º trimestre de 2024 descargados con el paquete `eph` . Los trimestres se analizan en conjunto y se ponderan con `PONDERA`. Se optó por un corte reciente y acotado, y no por las comparaciones intertemporales que sugiere la consigna, por razones de alcance y de tiempo.
+- **Universo:** asalariados/as ocupados/as (`ESTADO` = 1, `CAT_OCUP` = 3) de 14 a 64 años (59.549 casos de muestra). Los cortes de edad (14 a 29 y 30 a 64) siguen la propuesta de análisis de Pradier (2023, Gráfico 9). Quedan fuera patrones y cuentapropistas, cuya informalidad se mide con otro procedimiento (INDEC, 2025).
+- **Informalidad:** criterio legalista - INDEC. Asalariados y asalariadas a los que le falta descuento jubilatorio por parte del empleador (`PP07H` = 2).
+- **Dependientes:** hogar con al menos un niño o niña menor de 5 años o una persona mayor de 70 años inactiva (`ESTADO` = 3), calculado con todas las personas del hogar en cada trimestre. Mide la presencia de personas que potencialmente requieren cuidados, no quién cuida ni cuántas horas.
+- **Género:** la EPH registra el sexo en dos categorías (`CH04`), por lo que el género se trata en términos binarios.
+- **Indicadores:** Tasas ponderadas de informalidad (%) por sexo (1A), por sexo y dependientes (1B) y por sexo y edad (2), con la brecha mujeres − varones.
+
+**Limitaciones** 
+(i) Son diferencias brutas: sin controles ni intervalos de confianza, a diferencia del probit de Pineda et al. (2024).
+(ii) Al agrupar trimestres, las mismas viviendas pueden repetirse.
+(iii) Cerca del 49% de los ocupados no responde por sí mismo (INDEC, 2025, Cuadro 12).
+(iv) No se conoce la condición de actividad de quienes no completaron el cuestionario individual, lo que puede subestimar a los mayores de 70 inactivos.
+(v) El servicio doméstico "cama adentro" figura como un hogar aparte (`NRO_HOGAR` = 51), por lo que sus dependientes reales no se observan. 
+(vi) "Dependientes en el hogar" no equivale a personas a cargo.
+
+# Resultados y análisis
+
+
+```{r datos}
+anios <- 2024
+trimestres <- 1:4
+
+mis_variables <- c("ANO4", "TRIMESTRE", "CODUSU", "NRO_HOGAR", "COMPONENTE", "PONDERA",
+                   "CH04", "CH06", "ESTADO", "CAT_OCUP", "PP07H")
+
+# Descarga la base y la guarda en la carpeta data/;
+# veces siguientes la lee desde ahí (ruta relativa al proyecto).
+dir.create("data", showWarnings = FALSE)
+archivo <- "data/eph_individual_2024.rds"
+
+if (!file.exists(archivo)) {
+  base_cruda <- get_microdata(anios, trimestres, type = "individual", mis_variables)
+  saveRDS(base_cruda, archivo)
+}
+
+base_cruda <- readRDS(archivo)
+```
+
+```{r variables}
+hogares_dep <- base_cruda %>%
+  group_by(ANO4, TRIMESTRE, CODUSU, NRO_HOGAR) %>%
+  summarise(
+    dependientes = as.numeric(any(CH06 < 5 | (CH06 > 70 & ESTADO == 3), na.rm = TRUE)),
+    .groups = "drop"
+  )
+
+asal_total <- base_cruda %>%
+  filter(ESTADO == 1, CAT_OCUP == 3, CH06 >= 14, CH06 <= 64)
+
+base_asal <- asal_total %>%
+  left_join(hogares_dep, by = c("ANO4", "TRIMESTRE", "CODUSU", "NRO_HOGAR")) %>%
+  filter(PP07H %in% c(1, 2)) %>%
+  mutate(
+    genero = factor(CH04, levels = c(1, 2), labels = c("Varón", "Mujer")),
+    informal = if_else(PP07H == 2, 1, 0),
+    dependientes_f = factor(dependientes, levels = c(0, 1),
+                            labels = c("Sin dependientes", "Con dependientes")),
+    grupo_edad = if_else(CH06 <= 29, "14 a 29 años", "30 a 64 años")
+  )
+```
+
+
+```{r cobertura, results='hide'}
+tibble(
+  asalariados_14_a_64 = nrow(asal_total),
+  con_dato_en_PP07H = nrow(base_asal),
+  porcentaje_sin_dato = round(100 * (1 - nrow(base_asal) / nrow(asal_total)), 1)
+) %>% knitr::kable()
+```
+
+### Indicador 1 - Tasa de informalidad asalariada por sexo
+
+```{r indicador1a}
+ind1a <- base_asal %>%
+  group_by(genero) %>%
+  summarise(
+    tasa_informalidad = round(weighted.mean(informal, PONDERA) * 100, 1),
+    casos_muestra = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(tooltip = paste0("<b>", genero, "</b><br>Tasa de informalidad: ", tasa_informalidad,
+                          "%<br>Casos de muestra: ", format(casos_muestra, big.mark = ".")))
+
+
+t1a_m <- ind1a$tasa_informalidad[ind1a$genero == "Mujer"]
+t1a_v <- ind1a$tasa_informalidad[ind1a$genero == "Varón"]
+```
+
+```{r grafico1a}
+plot_ly(
+  ind1a, x = ~genero, y = ~tasa_informalidad, color = ~genero,
+  colors = c(col_varon, col_mujer), type = "bar", height = alto_grafico,
+  text = ~paste0(tasa_informalidad, "%"), textposition = "outside",
+  textfont = list(size = 18, color = col_texto), cliponaxis = FALSE,
+  hovertext = ~tooltip, hoverinfo = "text"
+) %>%
+  estilo_genero(
+    titulo = "INFORMALIDAD ASALARIADA x SEXO",
+    subtitulo = "Asalariadxs 14 - 64 años, sin descuento jubilatorio<br>",
+    ymax = max(ind1a$tasa_informalidad) * 1.25,
+    leyenda = FALSE
+  )
+```
+
+En el conjunto de asalariados/as de 14 a 64 años, la tasa de informalidad es de `r f(t1a_m)`% para las mujeres y de `r f(t1a_v)`% para los varones. La tasa femenina es `r mayor_menor(t1a_m, t1a_v)` en `r f(abs(t1a_m - t1a_v))` puntos porcentuales, un resultado `r ifelse(t1a_m > t1a_v, "coherente con", "contrario a")` la hipótesis H1. Pineda et al. (2024) estiman para la Argentina un efecto marginal de ser mujer de 4,58 puntos porcentuales; la cifra aquí presentada no es directamente comparable, porque es una diferencia bruta, referida a asalariados/as y a 2024, mientras que la de ese estudio se estima sobre todos los ocupados entre 2013 y 2022 con controles. Al no calcularse intervalos de confianza, se habla de diferencias observadas.
+
+### Indicador 1.B - Tasa de informalidad asalariada por sexo y dependientes en el hogar
+
+```{r indicador1b}
+ind1b <- base_asal %>%
+  group_by(dependientes_f, genero) %>%
+  summarise(
+    tasa_informalidad = round(weighted.mean(informal, PONDERA) * 100, 1),
+    casos_muestra = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(tooltip = paste0("<b>", genero, " - ", dependientes_f, "</b><br>Tasa de informalidad: ",
+                          tasa_informalidad, "%<br>Casos de muestra: ",
+                          format(casos_muestra, big.mark = ".")))
+
+
+# Brecha mujer - varón, en puntos porcentuales
+brecha1b <- ind1b %>%
+  select(dependientes_f, genero, tasa_informalidad) %>%
+  pivot_wider(names_from = genero, values_from = tasa_informalidad) %>%
+  mutate(brecha_pp = round(Mujer - `Varón`, 1))
+
+
+# Valores para el texto
+v1b <- function(dep, sexo) ind1b$tasa_informalidad[ind1b$dependientes_f == dep & ind1b$genero == sexo]
+brecha_sin <- v1b("Sin dependientes", "Mujer") - v1b("Sin dependientes", "Varón")
+brecha_con <- v1b("Con dependientes", "Mujer") - v1b("Con dependientes", "Varón")
+aum_v <- v1b("Con dependientes", "Varón") - v1b("Sin dependientes", "Varón")
+aum_m <- v1b("Con dependientes", "Mujer") - v1b("Sin dependientes", "Mujer")
+```
+
+```{r grafico1b}
+plot_ly(
+  ind1b, x = ~dependientes_f, y = ~tasa_informalidad, color = ~genero,
+  colors = c(col_varon, col_mujer), type = "bar", height = alto_grafico,
+  text = ~paste0(tasa_informalidad, "%"), textposition = "outside",
+  textfont = list(size = 16, color = col_texto), cliponaxis = FALSE,
+  hovertext = ~tooltip, hoverinfo = "text"
+) %>%
+  estilo_genero(
+    titulo = "INFORMALIDAD ASALARIADA x SEXO y DEPENDIENTES",
+    subtitulo = "Asalariadxs 14 - 64 años, sin descuento jubilatorio<br>Dependientes: menores de 5 años o mayores de 70 inactivos",
+    ymax = max(ind1b$tasa_informalidad) * 1.25
+  )
+```
+
+La presencia de dependientes repercute de manera distinta en las tasas de varones y mujeres. En los hogares sin dependientes, las asalariadas tienen una tasa de informalidad de `r f(v1b("Sin dependientes", "Mujer"))`%, frente a `r f(v1b("Sin dependientes", "Varón"))`% de los asalariados: una brecha de `r f(brecha_sin)` puntos porcentuales. En los hogares con dependientes, las tasas son prácticamente iguales (`r f(v1b("Con dependientes", "Mujer"))`% para las mujeres y `r f(v1b("Con dependientes", "Varón"))`% para los varones; brecha de `r f(brecha_con)` puntos). Los dependientes se asocian con más propensión a la informalidad en ambos sexos, pero el aumento es mayor para los varones (`r f(aum_v)` puntos) que para las mujeres (`r f(aum_m)` puntos): el de las mujeres es `r f(abs(aum_v - aum_m))` puntos menor, en sentido contrario al que espera la hipótesis H2. 
+
+El resultado merece una lectura cuidadosa junto con una interpretación que quizás exceda los alcance del trabajo. Por un lado, la dirección es compatible con el estudio de la CEPA, que también estiman para la Argentina un efecto positivo de los dependientes (1,53 puntos); lo que no se verifica es que el aumento sea mayor para el caso de las mujeres. Por otro lado, las cifras de este trabajo son diferencias brutas, mientras que ese estudio controla también por edad y educación. Con las limitaciones existentes, no es posible determinar la causa; se plantean tres explicaciones posibles que este trabajo no puso a prueba: (i) la composición por edad, dado que la informalidad desciende con la edad (ver Indicador 2) y la edad de quienes viven con dependientes puede diferir entre varones y mujeres; (ii) la selección en el empleo, porque solo se observa a quienes están ocupados/as como asalariados/as y no a quienes la carga de cuidado podría mantener fuera del mercado de trabajo (Pradier muestra una menor tasa de empleo femenino, en su Gráfico 5); y (iii) el universo, porque en el estudio de la CEPAL trabajan con todos los ocupados y aquí solo se analiza el empleo asalariado.
+
+### Indicador 2 - Tasa de informalidad asalariada por sexo y grupo de edad
+
+```{r indicador_edad}
+ind_edad <- base_asal %>%
+  group_by(grupo_edad, genero) %>%
+  summarise(
+    tasa_informalidad = round(weighted.mean(informal, PONDERA) * 100, 1),
+    casos_muestra = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(tooltip = paste0("<b>", genero, " - ", grupo_edad, "</b><br>Tasa de informalidad: ",
+                          tasa_informalidad, "%<br>Casos de muestra: ",
+                          format(casos_muestra, big.mark = ".")))
+
+
+brecha_edad <- ind_edad %>%
+  select(grupo_edad, genero, tasa_informalidad) %>%
+  pivot_wider(names_from = genero, values_from = tasa_informalidad) %>%
+  mutate(brecha_pp = round(Mujer - `Varón`, 1))
+
+
+va <- function(grupo, sexo) ind_edad$tasa_informalidad[ind_edad$grupo_edad == grupo & ind_edad$genero == sexo]
+dif14 <- va("14 a 29 años", "Mujer") - va("14 a 29 años", "Varón")
+dif30 <- va("30 a 64 años", "Mujer") - va("30 a 64 años", "Varón")
+```
+
+```{r grafico_edad}
+plot_ly(
+  ind_edad, x = ~grupo_edad, y = ~tasa_informalidad, color = ~genero,
+  colors = c(col_varon, col_mujer), type = "bar", height = alto_grafico,
+  text = ~paste0(tasa_informalidad, "%"), textposition = "outside",
+  textfont = list(size = 16, color = col_texto), cliponaxis = FALSE,
+  hovertext = ~tooltip, hoverinfo = "text"
+) %>%
+  estilo_genero(
+    titulo = "INFORMALIDAD ASALARIADA X SEXO Y EDAD",
+    subtitulo = "Cortes etarios Pradier (2023)",
+    ymax = max(ind_edad$tasa_informalidad) * 1.25
+  )
+```
+
+Entre los **14 y los 29 años**, la tasa de informalidad es de `r f(va("14 a 29 años", "Mujer"))`% para las mujeres y de `r f(va("14 a 29 años", "Varón"))`% para los varones (diferencia de `r f(dif14)` puntos porcentuales). Entre los **30 y los 64 años** es de `r f(va("30 a 64 años", "Mujer"))`% y `r f(va("30 a 64 años", "Varón"))`%, respectivamente (`r f(dif30)` puntos). La diferencia entre sexos es `r ifelse(dif30 > dif14, "mayor", "menor")` a partir de los 30 años que entre los más jóvenes, `r ifelse(dif30 > dif14, "en línea con", "a diferencia de")` el patrón que Pradier (2023) observa para 2019: tasas similares por debajo de los 30 años (en torno al 50%) y mayor no registro femenino después (H3). Es una comparación de patrón y no una réplica: Pradier no especifica cómo define el "no registro", su dato es un promedio anual de 2019 y no presenta intervalos de confianza, de modo que aquí tampoco puede afirmarse que la diferencia entre los más jóvenes se aleje de la paridad. Además, el corte transversal mezcla el efecto de la edad con el de las cohortes. Como este indicador no incluye dependientes, no permite atribuir el patrón a las responsabilidades de cuidado; esa lectura corresponde al marco conceptual y no se pone a prueba acá.
+
+## Conclusiones
+
+Con datos de la EPH de 2024, las asalariadas presentan una tasa de informalidad (37,8%) superior a la de los asalariados (34,2%), una diferencia bruta de 3,6 puntos porcentuales cuyo sentido coincide con el que desde la CEPAL encuentran para la región y para la Argentina, aunque con otro universo, otro período y sin controles (H1). Esa diferencia se concentra en los hogares sin dependientes (4,9 puntos) y desaparece en los hogares con dependientes, donde las tasas son prácticamente iguales (40,3% y 40,4%). Los dependientes se asocian con más informalidad en ambos sexos, pero más en los varones (8,2 puntos) que en las mujeres (3,2), por lo que **H2 no se verifica en el empleo asalariado** particularmente. Quedaría pendiente analizar qué pasa con el total de ocupadxs. Por edad, la diferencia es mayor entre los 30 y los 64 años (5,1 puntos) que entre los 14 y los 29 (2,8), lo que se aproxima al patrón descripto por Pradier (2023) para 2019, con la salvedad de que ella observa tasas similares entre los más jóvenes (H3).
+
+Los resultados describen diferencias observadas, son descriptivos, sin controles ni intervalos de confianza, y los dependientes en el hogar son solo una aproximación de la carga de cuidado. Quedan como líneas abiertas: abrir el resultado de dependientes por edad y por nivel socioeconómico del hogar; estimar el probit de Pineda et al. (2024) con controles e intervalos de confianza; extender el universo a todos los ocupados; seguir en el tiempo a las asalariadas informales; y contrastar su situación con el costo de vida y de cuidado (canasta de crianza, salario mínimo, vital y móvil, e IPC).
+
+# Bibliografía
+- INDEC (2025). *Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH.* Metodología INDEC N.º 43.
+- Pineda, R., Albornoz, S., Aravena, C. y Gálvez, T. (2024). *Empleo informal en América Latina: grupos más propensos.* Serie Macroeconomía del Desarrollo N.º 219 (LC/TS.2024/115). Santiago: CEPAL.
+- Pradier, C. (2023). El trabajo invisible. Sesgos de género en la medición del producto y el análisis del mercado de trabajo. En J. M. Graña (coord.), *Cuentas Nacionales e indicadores socioeconómicos. Metodologías, debates críticos y aplicaciones a la economía argentina* (cap. 14, pp. 385-400). CONUSUR.- Fernández-Franco, S., Graña, J. M., Lastra, F. y Weksler, G. (2022). Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada. *Ensayos de Economía*.
+- INDEC (2011). *Encuesta Permanente de Hogares. Conceptos de condición de actividad, subocupación horaria y categoría ocupacional.*
+- INDEC (2026). *Encuesta Permanente de Hogares. Diseño de registros y estructura para las bases preliminares Hogar y Personas.*
+
