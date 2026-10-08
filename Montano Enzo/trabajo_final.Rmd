@@ -1,6 +1,7 @@
 ---
 title: "Desindustrialización y Especialización Comercial: aproximaciones a los casos de Argentina, Brasil y Perú. (1960 -2018)"
-subtitle: "Trabajo Final - Diplomatura en R aplicada a la economica - FCE - UBA"
+subtitle: "Trabajo Final - Diplomatura en R aplicada a la economia 
+| FCE - UBA |"
 author: "Enzo Montano"
 output:  
   html_document:
@@ -33,24 +34,28 @@ library(knitr)
 
 ```
 
-### Secciones:
+### **Objetivos**:
 
-### **Sección 1: Marco Teorico - La Nueva División Internacional del Trabajo (NDIT)**
+Evidenciar la reconfiguración de la producción industrial de Argentina, Perú y Brasil, bajo la nueva división internacional del trabajo (NDIT) con su ida a Asia Oriental.
 
-- **Contenido**: Abordar como la relocalización de procesos manufactureros hacia Asia Oriental (principalmente China) reconfiguró la producción industrial mundial, a partir de diferencias salariales y costos laborales.
+Tratar años de cambio de gestion gubernamental con interrogantes particulares.
 
-- **Concepto clave**: Hiper - industrializacion Asiatica y Des - industrialización de paises americanos.
+### Introducción
 
-### **Sección 2: Trayectorias de desindustrialización (1960 - 2018)**
+A traves del procesamiento de datos, veremos la evolución de la industria en **Argentina, Brasil y Perú**, entre los años 1960 a 2018, poniendo puntos en algunos años de cambio de conducción del gobierno argentino, para cuestionarnos si eso implica un cambio en la politica economica, independientemente del pais analizado.
 
-En esta sección se analiza la evolución de la industria en **Argentina, Brasil y Perú** entre los años 1960 a 2018, poniendo puntos en los años de cambio de gobierno, para preguntarnos si eso implica un cambio en la politica economica.
-Para aproximarnos a una respuesta evaluamos la participación del sector en el producto como su evolución en términos per cápita.
+Y, por ultimo, si los paises señalados como ejemplos de equilibrio economico tienen armonia economica.
 
-- \*\* Procesamiento:\*\* Datos del Banco Mundial para **Argentina, Brasil y Perú** en los años: **1960, 1976, 1983, 1989, 1999, 2001, 2002, 2015, 2018**.
+### ¿Por donde arrancamos?
 
-- \*\* Indicadores: \*\* VAB Manufacturero (% del PIB), Empleo Industrial (%) y VAB Manufacturero Real Per Cápita en USD constanstes.
+### Hiper - industrialización Asiatica \| Des - industrialización Americana
 
-```{r seccion2-banco-mundial, echo=TRUE, message=FALSE, warning=FALSE}
+En principio, buscaremos aproximarnos a una respuesta, evaluando la **participación del sector industrial** en el PIB nacional, como también su evolución en términos per cápita en años especificos.
+
+- **Fuentes de datos:** Banco Mundial (WDI) para **Argentina, Brasil y Perú** en los años: **1960, 1976, 1983, 1989, 1999, 2001, 2002, 2015, 2018**.
+- **Indicadores**: VAB Manufacturero (% del PIB), Empleo Industrial (%) y VAB Manufacturero Real Per Cápita en USD constantes.
+
+```{r banco-mundial, echo=TRUE, message=FALSE, warning=FALSE}
 
 # Definimos parámetros
 paises <- c("AR", "BR", "PE") 
@@ -142,15 +147,173 @@ ggsave("resultados/grafico_2_vab_per_capita.png", grafico_vab_per_capita, width 
 grafico_vab_per_capita 
 ```
 
-#### **Análisis de los resultados**
+#### **Análisis de los resultados: trayectoria de desindustrialización.**
 
-El contraste entre la participación del VAB manufacturero en el PIB y el VAB industrial per cápita permite caracterizar las diferentes naturalezas de los procesos de desindustrialización: 1.**Desindustrialización por Madurez vs. Regresiva:** Mientras que en las economías desarrolladas la menor participación del empleo industrial suele convivir con incrementos continuos en la productividad e ingreso por habitante (desindustrialización por madurez), los países de América Latina muestran dinámicas dispares.
-2.**El caso argentino:** Inicia un quiebre estructural a partir del golpe de Estado de 1976.
+El contraste entre la participación del VAB manufacturero en el PIB y el VAB industrial per cápita nos permite caracterizar las **diferentes naturalezas de los procesos** de **desindustrialización**:
+
+Según algunos autores [Herrera Bartis (2021) ; Rowthorn (1986)], en las economias desarrolladas la menor participación del empleo industrial, suele convivir con incrementos continuos en la productividad e ingreso por habitante .
+
+Este proceso, pasar de la producción de bienes a los servicios, es llamado **desindustrialización por madurez**, En los países de América Latina esta dinamica es distinta.
+
+**El caso argentino:** Inicia un quiebre estructural a partir del golpe de Estado de 1976.
 La fuerte caída relativa del VAB industrial no responde a una transición hacia servicios de alta productividad, sino a un proceso de **desindustrialización prematura y regresiva**, acompañado por el estancamiento y la pérdida neta de capacidad productiva per cápita.
-3.
-**Brasil y Perú:** Brasil logró consolidar la estructura industrial más diversificada de la región, sufriendo tensiones de reprimarización en décadas recientes.
-Perú, por su parte, mantiene un perfil históricamente primario-extractivo, con niveles de VAB industrial per cápita sensiblemente menores.
-4.**Articulación con la Nueva División Internacional del Trabajo (NDIT):** Este repliegue latinoamericano es, en parte, la contrapartida de la masiva relocalización de capacidades manufactureras hacia Asia Oriental (destacando China), donde los diferenciales salariales, y de costos laborales, reorganizaron la geografía industrial global.
-Acompañado también por desiciones de politica economica que tomaron cada uno de estos paises americanos a lo largo del periodo analizado.
 
-### **Sección 3: Complejidad Economica (CEPII - BACI)**
+**Brasil y Perú:** Brasil logró consolidar una de las estructuras industriales más diversificadas de la región, sufriendo tensiones de reprimarización en décadas recientes, donde entre los años 1999 y 2015 nos indica una meseta en su capacidad industrial por habitante.
+Perú, por su parte, mantiene un perfil históricamente primario-extractivo, con niveles de VAB industrial per cápita sensiblemente menores.
+
+### **Complejidad Economica y Especialización Comercial: ¿que le damos al mundo en terminos comerciales?**
+
+Para caracterizar el perfil de especialización comercial y tecnologica emplearemos la clasificación de **Sanjaya Lall (2000)**, el indice de **Ventajas Comparativas Reveladas (VCR - Balassa, 1965)** y las metricas de **ubicuidad** y **diversidad**.
+
+Utilizaremos la base de datos de CEPII - BACI, para los años que estan disponibles, seleccionando los que son de nuestro interes: 1995, 2001, 2007, 2011, 2015, 2018 y 2024.
+
+```{r baci_codigo, eval=FALSE}
+
+#llamamos librerias
+library(tidyverse)
+library(writexl)
+
+#seleccionamos los años y paises dentro de la base
+paises_cod <- read.csv("bases/country_codes_V202601.csv")
+productos_cod <-read.csv("bases/product_codes_HS92_V202601.csv")
+
+anios_baci <- c(1995,2001,2007,2011,2015,2018,2024)
+paises_seleccionados <- c("ARG", "BRA", "PER")
+
+#armamos funcion para procesar un año
+
+calcular_baci_anio <- function(anio){
+  archivo <- paste0("bases/BACI_HS92_Y", anio, "_V202601.csv")
+  if (!file.exists(archivo)){
+    message(paste("archivo no encontrado:", archivo))
+    return(NULL)
+  }
+
+message(paste("Procesando BACI para el año:", anio))
+  
+baci_raw <- read.csv(archivo)
+
+# unimos paises e integrar exportaciones por país y producto (X_ci) 
+
+comercio <-  baci_raw %>%  
+  left_join(paises_cod, by = c("i" = "country_code")) %>%
+  rename(codigo = country_iso3,
+         producto = k, valor = v) %>% 
+  filter(!is.na(codigo)) %>% 
+  group_by(codigo, producto) %>%  
+  summarise(valor = sum(valor, na.rm = TRUE),
+            .groups = "drop")
+
+#calcumos VCR
+df_vcr <- comercio %>% 
+  group_by(codigo) %>% 
+  mutate(expo_total_pais = sum(valor)) %>% 
+           ungroup() %>% 
+           group_by(producto) %>% 
+           mutate(expo_total_prod_mundo=sum(valor)) %>% 
+           ungroup() %>% 
+           mutate(
+             expo_mundial_total =sum(valor),
+             vcr =
+               (valor/expo_total_pais)/(expo_total_prod_mundo/expo_mundial_total),
+             hay_vcr = ifelse(vcr>1, 1, 0)
+           )
+         
+#ubicuidad
+ubicuidad_prod <- df_vcr %>% 
+  group_by(producto) %>% 
+  summarise(ubicuidad_k = sum(hay_vcr), .groups = "drop")
+
+#resumimos para Argentina, Peru y Brasil
+resumen <- df_vcr %>%  
+  filter(codigo %in% paises_seleccionados, hay_vcr == 1) %>% 
+  left_join(ubicuidad_prod, by = "producto") %>% 
+  group_by(codigo) %>% 
+  summarise( 
+    anio = anio, 
+    diversidad_kc0 = n_distinct(producto),
+    ubicuidad_promedio = mean(ubicuidad_k, na.rm = TRUE),
+    .groups = "drop")
+
+return(resumen)
+}
+
+#evolucion
+
+evolucion_diversidad <- map_dfr(anios_baci,calcular_baci_anio) %>% 
+  mutate(
+    pais = case_when(
+      codigo == "ARG" ~ "Argentina",
+      codigo == "BRA" ~ "Brasil",
+      codigo == "PER" ~ "Perú"
+      )
+  )
+
+#exportamos a excel 
+library(writexl)
+write_xlsx(evolucion_diversidad,"resultados/evolucion_diversidad_1995_2024.xlsx")
+
+#graficos de la evolucion de la diversidad exportadora
+
+grafico_diversidad <- ggplot(
+  evolucion_diversidad, 
+  aes(x=anio, y = diversidad_kc0, 
+      color = pais, group = pais)) +
+  geom_line(size=1.2) +
+  geom_point(size=3) +
+  scale_x_continuous(breaks = anios_baci) +
+  labs(
+    title = "Evolución de la Diversidad Exportadora (1995 - 2024)",
+    subtitle = "cantidad de productos exportados con VCR",
+    x="Año",
+    y= "Diversidad (numero de productos con VCR > 1)",
+    color = "Pais",
+    caption = "Fuente: Elaboración propia en base a BACI - CEPI HS92."
+  ) +
+  theme_minimal()+
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("resultados/grafico_diversidad.png", grafico_diversidad, width = 8, height = 5)
+
+grafico_diversidad
+
+```
+
+#### Analisis de resultados: Complejidad Economica y Especialización Comercial.
+
+Iniciando el analisis por **Argentina**, podemos observar que el procesos de desindustrialización estuvo acompañado por una drástica contracción en la **diversidad de su canasta exportadora**, perdiendo VCR principalmente en manufacturas de tecnologia media y de proceso.
+
+Para el caso de **Brasil** preserva el nivel más elevado de diversidad manufacturera de la región, aunque enfrenta fluctuaciones vinculadas a los ciclos de precios de materias primas y la competencia asiatica.
+
+Por el lado de **Perú**, exhibe una diversidad exportadora acotada y estable, concentrada en bienes primarios de elevada ubicuidad mundial, lo que ratifica la ausencia de dinamismo en la sofisticación tecnologica de sus exportaciones a pesar de su estabilidad macroeconomica.
+
+------------------------------------------------------------------------
+
+## Conclusiones
+
+A traves de este breve trabajo podemos acercarnos a concluir, con evidencia empirica, que los cambios de gestion de gobierno no siempre implican un cambio de gestion economica, como a veces se afirma, al igual que la estabilidad macroeconomica, no implica armonia economica.
+
+El bienestar y armonia del conjunto de un pais, va acompañado de sus herramentales industriales, para generar trabajo y sueldos acordes a un buen vivir.
+
+**Bibliografía Referenciada:**
+
+**Balassa, B. (1965).** Trade liberalisation and “revealed” comparative advantage.*The Manchester School*, 33(2), 99-123.
+
+**Fernández Franco, S., Paola, I., Terranova, L., & Weksler, G. (2025).** La evolución de la Complejidad Económica en Argentina (2000-2023).
+*Documentos de Trabajo del IIEP*, N° 101.
+
+**Fumeo, I., & Terranova, L. (2023).** Complejidad económica de las exportaciones argentinas: situación actual y estrategias a futuro.
+*Documento de Trabajo N° 21*, CEP-XXI.
+
+**García Díaz, F., &a Álvarez, V. (2023).** El desafío exportador de la Argentina: exploración del potencial a corto y mediano plazo.
+*Documento de Proyecto*, CEPAL.
+
+**Graña, J. M., & Terranova, L. (2022).** Neither mechanical nor premature: Deindustrialization and the New International Division of Labour (1970-2019).
+*Revista de Historia Industrial*, 31(86), 11-46.
+
+**Herrera Bartis, G. (2021).** Tres caminos de desindustrialización.
+Un análisis estilizado de los casos del Reino Unido, los Estados Unidos y la Argentina.
+*H-industri\@*, 28, 1-33.
+
+**Lall, S. (2000).** The technological structure and performance of developing country manufactured exports, 1985–1998.
+*Oxford Development Studies*, 28(3), 337-369.
