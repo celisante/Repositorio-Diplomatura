@@ -46,9 +46,9 @@ library(knitr)
 En esta sección se analiza la evolución de la industria en **Argentina, Brasil y Perú** entre los años 1960 a 2018, poniendo puntos en los años de cambio de gobierno, para preguntarnos si eso implica un cambio en la politica economica.
 Para aproximarnos a una respuesta evaluamos la participación del sector en el producto como su evolución en términos per cápita.
 
-- ** Procesamiento:** Datos del Banco Mundial para **Argentina, Brasil y Perú** en los años: **1960, 1976, 1983, 1989, 1999, 2001, 2002, 2015, 2018**.
+- \*\* Procesamiento:\*\* Datos del Banco Mundial para **Argentina, Brasil y Perú** en los años: **1960, 1976, 1983, 1989, 1999, 2001, 2002, 2015, 2018**.
 
-- ** Indicadores: ** VAB Manufacturero (% del PIB), Empleo Industrial (%) y VAB Manufacturero Real Per Cápita en USD constanstes.
+- \*\* Indicadores: \*\* VAB Manufacturero (% del PIB), Empleo Industrial (%) y VAB Manufacturero Real Per Cápita en USD constanstes.
 
 ```{r seccion2-banco-mundial, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -154,5 +154,3 @@ Perú, por su parte, mantiene un perfil históricamente primario-extractivo, con
 Acompañado también por desiciones de politica economica que tomaron cada uno de estos paises americanos a lo largo del periodo analizado.
 
 ### **Sección 3: Complejidad Economica (CEPII - BACI)**
-
-
