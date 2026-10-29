@@ -1,0 +1,1248 @@
+---
+title: "Más cantidad, menos calidad"
+subtitle: "Evolución del mercado laboral y de la informalidad en Argentina"
+author: "Bruno Restelli"
+date: "`r format(Sys.Date(), '10/05/2026')`"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    html-math-method: katex
+    embed-resources: true
+---
+
+```{=html}
+<style>
+p {
+  text-align: justify;
+}
+</style>
+```
+
+# Resumen ejecutivo
+
+El siguiente informe analiza la transformación del mundo laboral argentino durante la última década. El objetivo central es determinar cuantitativamente la demanda de trabajo y las formas ocupacionales que satisfacen, en parte, esa demanda.
+
+Para ello se procesaron y analizaron microdatos de la Encuesta Permanente de Hogares (EPH), siguiendo la hipótesis según la cual el mercado laboral ha atravesado un proceso que podría resumirse como “más cantidad, menos calidad”.
+
+Los resultados, si bien presentan oscilaciones, rupturas y períodos que no pueden analizarse de manera continua debido a modificaciones en las formas de medición, muestran un leve pero sostenido aumento tendencial de las tasas de actividad y ocupación, una demanda de trabajo relativamente constante y un incremento de la informalidad, explicado principalmente por el peso de los cuentapropistas no registrados entre los nuevos ocupados.
+
+# Introducción
+
+El siguiente informe analiza la transformación del mundo laboral argentino durante la última década. El objetivo central es determinar cuantitativamente la demanda de trabajo y las formas ocupacionales que satisfacen, en parte, esa demanda.
+
+Para ello se procesaron y analizaron microdatos de la Encuesta Permanente de Hogares (EPH), siguiendo la hipótesis según la cual el mercado laboral ha atravesado un proceso que podría resumirse como “más cantidad, menos calidad”.
+
+Los resultados, si bien presentan oscilaciones, rupturas y períodos que no pueden analizarse de manera continua debido a modificaciones en las formas de medición, muestran un leve pero sostenido aumento tendencial de las tasas de actividad y ocupación, una demanda de trabajo relativamente constante y un incremento de la informalidad, explicado principalmente por el peso de los cuentapropistas no registrados entre los nuevos ocupados.
+
+# Desarrollo conceptual
+
+El mercado laboral argentino ha experimentado en la última década un leve pero sostenido crecimiento, acompañado por transformaciones cualitativas entre las que el aumento del empleo informal constituye uno de los cambios más significativos y persistentes.
+
+Históricamente, la informalidad laboral fue asociada principalmente con empleos de subsistencia y baja calificación, desarrollados en pequeñas unidades productivas, con limitaciones tecnológicas y condiciones laborales precarias (Fernández-Franco, Graña, Lastra y Weksler, 2022). Sin embargo, el debate académico de fines del siglo XX y principios del XXI incorporó una visión más heterogénea del fenómeno, distinguiendo entre un sector informal tradicional o “atrasado” y otro “moderno”, que puede ofrecer mejores condiciones relativas. De este modo, la informalidad no constituye un bloque homogéneo y puede incluir una “capa alta” donde la inserción es voluntaria y no necesariamente un refugio laboral (Maloney, 2004; Günther & Launov, 2012, citados en Fernández-Franco et al., 2022).
+
+El economista Gary Fields (2009, citado en Fernández-Franco et al., 2022) sintetiza las explicaciones sobre la permanencia en el sector informal en tres hipótesis: empleo involuntario como última opción, preferencia voluntaria por beneficios extrasalariales o una configuración dual en la que coexisten mejores y peores empleos.
+
+Desde una perspectiva productivista, la informalidad se vincula con la estructura heterogénea y fragmentada de las economías latinoamericanas. La coexistencia de sectores con distintos niveles de productividad favorece la persistencia de empleos precarios en unidades de pequeña escala y baja capitalización, mientras que los sectores dinámicos no logran absorber toda la fuerza de trabajo. Esta perspectiva también relaciona la informalidad con procesos de subcontratación y tercerización (Fernández-Franco et al., 2022).
+
+El enfoque legalista, por su parte, centra la atención en las condiciones formales de la relación laboral. Desde esta perspectiva, un trabajador puede desempeñarse en una unidad formal y, aun así, carecer de protección social. En Argentina, esta aproximación se operativiza desde 2003 mediante la medición de los descuentos jubilatorios entre los asalariados. Si bien permite construir una serie homogénea, restringe el universo analizado y no capta otras dimensiones de la informalidad y la precariedad laboral. La nueva medición implementada por el INDEC desde 2023 amplía este enfoque al considerar las categorías ocupacionales y la formalidad de las unidades económicas (INDEC, 2025).
+
+Los estudios comparativos también muestran la persistencia de pequeños establecimientos y trabajos de baja y media calificación en América Latina. La relación entre informalidad y nivel de desarrollo, junto con la heterogeneidad del sector informal y la existencia de empleo precario en ámbitos tradicionalmente formales, cuestionan una interpretación exclusivamente dual del mercado de trabajo (Fernández-Franco et al., 2022).
+
+Este marco conceptual plantea los interrogantes que orientan el análisis: ¿qué modificaciones en el mundo del trabajo se encuentran detrás de la tendencia estable —y por momentos descendente— de la desocupación? ¿Cómo se transformó la informalidad durante la última década? ¿Qué categorías ocupacionales impulsan la ocupación en Argentina y qué vínculo tienen con la informalidad?
+
+```{r codigo, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE, cache=TRUE}
+rm(list = ls())
+
+options(scipen = 999) 
+
+# ============================================================
+# 0. LIBRERÍAS
+# ============================================================
+
+library(tidyverse)
+library(eph)
+library(dplyr)
+library(ggplot2)
+library(paletteer)
+
+# ==============================================================================
+# 1. VARIABLES A DESCARGAR
+# ==============================================================================
+
+mis_variables <- c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH06", "PP3E_TOT", "PP03G", "PP03H","PP03J", "PONDERA", "PONDIH", "ESTADO", "CAT_OCUP", "PP04B_COD", "PP04A", "PP04B1", "PP04C", "PP04C99", "PP07H", "P21", "PONDIIO", "ITF", "INTENSI")
+
+# ==============================================================================
+# 2. DESCARGA BASES (2ºT 2016 a 1ºT 2026)
+# ==============================================================================
+
+# A) BASES
+
+# Año 2016
+base_16_2 <- get_microdata(year = 2016, period = 2, type = "individual", vars = mis_variables)
+base_16_3 <- get_microdata(year = 2016, period = 3, type = "individual", vars = mis_variables)
+base_16_4 <- get_microdata(year = 2016, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2017
+base_17_1 <- get_microdata(year = 2017, period = 1, type = "individual", vars = mis_variables)
+base_17_2 <- get_microdata(year = 2017, period = 2, type = "individual", vars = mis_variables)
+base_17_3 <- get_microdata(year = 2017, period = 3, type = "individual", vars = mis_variables)
+base_17_4 <- get_microdata(year = 2017, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2018
+base_18_1 <- get_microdata(year = 2018, period = 1, type = "individual", vars = mis_variables)
+base_18_2 <- get_microdata(year = 2018, period = 2, type = "individual", vars = mis_variables)
+base_18_3 <- get_microdata(year = 2018, period = 3, type = "individual", vars = mis_variables)
+base_18_4 <- get_microdata(year = 2018, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2019
+base_19_1 <- get_microdata(year = 2019, period = 1, type = "individual", vars = mis_variables)
+base_19_2 <- get_microdata(year = 2019, period = 2, type = "individual", vars = mis_variables)
+base_19_3 <- get_microdata(year = 2019, period = 3, type = "individual", vars = mis_variables)
+base_19_4 <- get_microdata(year = 2019, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2020
+base_20_1 <- get_microdata(year = 2020, period = 1, type = "individual", vars = mis_variables)
+base_20_2 <- get_microdata(year = 2020, period = 2, type = "individual", vars = mis_variables)
+base_20_3 <- get_microdata(year = 2020, period = 3, type = "individual", vars = mis_variables)
+base_20_4 <- get_microdata(year = 2020, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2021
+base_21_1 <- get_microdata(year = 2021, period = 1, type = "individual", vars = mis_variables)
+base_21_2 <- get_microdata(year = 2021, period = 2, type = "individual", vars = mis_variables)
+base_21_3 <- get_microdata(year = 2021, period = 3, type = "individual", vars = mis_variables)
+base_21_4 <- get_microdata(year = 2021, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2022
+base_22_1 <- get_microdata(year = 2022, period = 1, type = "individual", vars = mis_variables)
+base_22_2 <- get_microdata(year = 2022, period = 2, type = "individual", vars = mis_variables)
+base_22_3 <- get_microdata(year = 2022, period = 3, type = "individual", vars = mis_variables)
+base_22_4 <- get_microdata(year = 2022, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2023
+base_23_1 <- get_microdata(year = 2023, period = 1, type = "individual", vars = mis_variables)
+base_23_2 <- get_microdata(year = 2023, period = 2, type = "individual", vars = mis_variables)
+base_23_3 <- get_microdata(year = 2023, period = 3, type = "individual", vars = mis_variables)
+base_23_4 <- get_microdata(year = 2023, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2024
+base_24_1 <- get_microdata(year = 2024, period = 1, type = "individual", vars = mis_variables)
+base_24_2 <- get_microdata(year = 2024, period = 2, type = "individual", vars = mis_variables)
+base_24_3 <- get_microdata(year = 2024, period = 3, type = "individual", vars = mis_variables)
+base_24_4 <- get_microdata(year = 2024, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2025
+base_25_1 <- get_microdata(year = 2025, period = 1, type = "individual", vars = mis_variables)
+base_25_2 <- get_microdata(year = 2025, period = 2, type = "individual", vars = mis_variables)
+base_25_3 <- get_microdata(year = 2025, period = 3, type = "individual", vars = mis_variables)
+base_25_4 <- get_microdata(year = 2025, period = 4, type = "individual", vars = mis_variables)
+
+# Año 2026
+base_26_1 <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables)
+
+
+# B) UNION Y ORDEN DE LAS BASES ###
+
+nombres_bases <- ls(pattern = "^base_[0-9]{2}_[1-4]$")
+
+base_completa <- mget(nombres_bases) %>%
+  bind_rows(.id = "nombre_base")
+
+base_completa <- base_completa %>%
+  mutate(
+    año = 2000 + as.numeric(substr(nombre_base, 6, 7)),
+    trimestre = as.numeric(substr(nombre_base, 9, 9)),
+    periodo = paste0(trimestre, "T", año)
+  ) %>% 
+
+arrange(año, trimestre) %>%
+  
+  select(-nombre_base)
+
+base_completa <- base_completa %>%
+  relocate(periodo, año, trimestre, .before = 1)
+
+
+# ============================================================
+# 3) PROCESAMIENTO DE BASES
+# ============================================================
+
+# A) CATEGORIAS OCUPACIONALES
+
+base_proc <- base_completa %>%
+  rename(
+    codusu = CODUSU,
+    nro_hogar = NRO_HOGAR,
+    componente = COMPONENTE,
+    pondera = PONDERA,
+    pondera_hogar = PONDIH,
+    edad = CH06,
+    cat_ocup = CAT_OCUP,
+    estado = ESTADO,
+    pondera_in = PONDIIO,
+    ingreso_hogar = ITF
+  ) %>% 
+  
+  mutate(
+    
+    ocupado = if_else(
+      estado == 1,
+      1,
+      0),
+    
+    desocupado = if_else(
+      estado == 2,
+      1,
+      0),
+    
+    activo = if_else(
+      estado %in% c(1, 2),
+      1,
+      0),
+    
+    subocupado = if_else(
+      ocupado == 1 &
+        PP3E_TOT < 35 &
+        PP03G == 1 &
+        PP03H == 1,
+      1,
+      0),
+    
+    ocupado_demandante = if_else(
+      ocupado == 1 &
+        PP03J == 1,
+      1,
+      0
+    ),
+    asalariado = if_else(
+      ocupado == 1 &
+        cat_ocup == 3,
+      1,
+      0),
+    
+    no_asal = if_else(
+      ocupado == 1 &
+        cat_ocup %in% c(1, 2, 4),
+      1,
+      0),
+    
+    asareg = if_else(
+      ocupado == 1 &
+        cat_ocup == 3 &
+        PP07H == 1,
+      1,
+      0),
+    
+    asanreg = if_else(
+      ocupado == 1 &
+        cat_ocup == 3 &
+        PP07H == 2,
+      1,
+      0),
+    
+    # 1 = informal / no registrado
+    informal = if_else(
+      asanreg == 1,
+      1,
+      0),
+    
+    cuenta_prop = if_else(
+      ocupado == 1 &
+        cat_ocup == 2,
+      1,
+      0),
+    
+    patron = if_else(
+      ocupado == 1 &
+        cat_ocup == 1,
+      1,
+      0),
+    fam_no_remu = if_else(
+      ocupado == 1 &
+        cat_ocup == 4,
+      1,
+      0),
+    
+    serdom = if_else(
+      ocupado == 1 &
+        PP04B1 == 1,
+      1,
+      0)
+  )
+
+
+# B) TASAS LABORALES
+
+
+tasas_laborales <- base_proc %>%
+  group_by(año, trimestre) %>%
+  summarise(
+    
+    periodo = first(periodo),
+    
+    PEA = sum(activo * pondera, na.rm = TRUE),
+    
+    ocupados = sum(ocupado * pondera, na.rm = TRUE),
+    
+    desocupados = sum(desocupado * pondera, na.rm = TRUE),
+    
+    ocupados_demandantes = sum(
+      ocupado_demandante * pondera,
+      na.rm = TRUE
+    ),
+    
+    asalariados = sum(
+      (ocupado == 1 & cat_ocup == 3) * pondera,
+      na.rm = TRUE
+    ),
+    
+    asalariados_no_registrados = sum(
+      informal * pondera,
+      na.rm = TRUE
+    ),
+    
+    tasa_actividad =
+      PEA / sum(pondera, na.rm = TRUE) * 100,
+    
+    tasa_ocupacion =
+      ocupados / sum(pondera, na.rm = TRUE) * 100,
+    
+    tasa_desocupacion =
+      desocupados / PEA * 100,
+    
+    tasa_ocupados_demandantes =
+      ocupados_demandantes / PEA * 100,
+    
+    tasa_demandantes =
+      (desocupados + ocupados_demandantes) / PEA * 100,
+    
+    tasa_informalidad =
+      asalariados_no_registrados / asalariados * 100,
+    
+    .groups = "drop"
+  )
+
+tasas_laborales <- tasas_laborales %>%
+  relocate(periodo, .before = 1)
+
+
+tasas_laborales <- tasas_laborales %>% 
+  arrange(año, trimestre)%>%
+  mutate(
+    across(
+      -periodo,
+      ~ round(.x , 1)
+    )
+  )
+
+### SE AGREGAN DATOS PROCESADOS DEL INFORME INDEC EPH 2T 2026 (microdatos no publicados aun) ###
+
+tasas_laborales <- tasas_laborales %>%
+  add_row(
+    periodo = "2T2026",
+    año = 2026,
+    trimestre = 2,
+    tasa_actividad = 48.9,
+    tasa_ocupacion = 45.0,
+    tasa_desocupacion = 7.9,
+    tasa_ocupados_demandantes = 16.9,
+    tasa_demandantes = 24.8,
+    tasa_informalidad = 37.9
+  )
+
+
+# C) NUEVOS ASALARIADOS SEGUN CONDICION DE REGISTRO 
+
+
+condicion_nuevos_asalariados <- tasas_laborales %>%
+  filter(
+    periodo %in% c("2T2016", "1T2026")
+  ) %>%
+  mutate(
+    asalariados_registrados =
+      asalariados - asalariados_no_registrados
+  ) %>%
+  select(
+    periodo,
+    asalariados,
+    asalariados_registrados,
+    asalariados_no_registrados
+  ) %>%
+  summarise(
+    aumento_total =
+      asalariados[periodo == "1T2026"] -
+      asalariados[periodo == "2T2016"],
+    
+    aumento_registrados =
+      asalariados_registrados[periodo == "1T2026"] -
+      asalariados_registrados[periodo == "2T2016"],
+    
+    aumento_no_registrados =
+      asalariados_no_registrados[periodo == "1T2026"] -
+      asalariados_no_registrados[periodo == "2T2016"]
+  ) %>%
+  mutate(
+    porcentaje_registrados =
+      aumento_registrados / aumento_total * 100,
+    
+    porcentaje_no_registrados =
+      aumento_no_registrados / aumento_total * 100
+  )
+
+view(condicion_nuevos_asalariados)
+
+
+# D) NUEVA TASA DE INFORMALIDAD 4T 2023 - 2T 2026 #
+
+# NUEVAS VARIABLES
+
+mis_variables_informalidad <- c(
+  "CODUSU",
+  "NRO_HOGAR",
+  "COMPONENTE",
+  "CH06",
+  "PONDERA",
+  "ESTADO",
+  "EMPLEO",
+  "CAT_OCUP"
+)
+
+# NUEVAS BASES
+
+base_23_4_inf <- get_microdata(year = 2023, period = 4, type = "individual", vars = mis_variables_informalidad)
+
+base_24_1_inf <- get_microdata(year = 2024, period = 1, type = "individual", vars = mis_variables_informalidad)
+base_24_2_inf <- get_microdata(year = 2024, period = 2, type = "individual", vars = mis_variables_informalidad)
+base_24_3_inf <- get_microdata(year = 2024, period = 3, type = "individual", vars = mis_variables_informalidad)
+base_24_4_inf <- get_microdata(year = 2024, period = 4, type = "individual", vars = mis_variables_informalidad)
+
+base_25_1_inf <- get_microdata(year = 2025, period = 1, type = "individual", vars = mis_variables_informalidad)
+base_25_2_inf <- get_microdata(year = 2025, period = 2, type = "individual", vars = mis_variables_informalidad)
+base_25_3_inf <- get_microdata(year = 2025, period = 3, type = "individual", vars = mis_variables_informalidad)
+base_25_4_inf <- get_microdata(year = 2025, period = 4, type = "individual", vars = mis_variables_informalidad)
+
+base_26_1_inf <- get_microdata(year = 2026, period = 1, type = "individual", vars = mis_variables_informalidad)
+
+# PROCESAMIENTO NUEVAS BASES Y VARIABLES
+
+nombres_bases_inf <- ls(pattern = "^base_[0-9]{2}_[1-4]_inf$")
+
+base_informalidad <- mget(nombres_bases_inf) %>%
+  bind_rows(.id = "nombre_base")
+
+base_informalidad <- base_informalidad %>%
+  mutate(
+    año = 2000 + as.numeric(substr(nombre_base, 6, 7)),
+    trimestre = as.numeric(substr(nombre_base, 9, 9)),
+    periodo = paste0(trimestre, "T", año)
+  ) %>%
+  arrange(año, trimestre) %>%
+  select(-nombre_base)
+
+base_informalidad <- base_informalidad %>%
+  relocate(periodo, año, trimestre, .before = 1)
+
+
+# CALCULO NUEVA TASA INFORMALIDAD
+
+tasa_informalidad_nueva <- base_informalidad %>%
+  filter(
+    ESTADO == 1,
+    EMPLEO %in% c(1, 2)
+  ) %>%
+  group_by(año, trimestre) %>%
+  summarise(
+    formales = sum(PONDERA[EMPLEO == 1], na.rm = TRUE),
+    informales = sum(PONDERA[EMPLEO == 2], na.rm = TRUE),
+    ocupados_validos = sum(PONDERA, na.rm = TRUE),
+    
+    tasa_informalidad_nueva = informales / ocupados_validos * 100,
+    
+    .groups = "drop"
+  ) %>%
+  mutate(
+    tasa_informalidad_nueva = round(tasa_informalidad_nueva, 1)
+  ) %>%
+  arrange(año, trimestre)
+
+
+tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
+  mutate(
+    periodo = paste0(trimestre, "T", año)
+  ) %>%
+  relocate(periodo, .before = 1)
+
+
+
+tasa_informalidad_nueva <- tasa_informalidad_nueva %>%
+  add_row(
+    año = 2026,
+    trimestre = 2,
+    periodo = "2T2026",
+    tasa_informalidad_nueva = 45.0
+  ) %>%
+  arrange(año, trimestre)
+
+# E) COMPARACION DE LAS MEDICIONES DE INFORMALIDAD #
+
+comparacion_informalidad <- tasas_laborales %>%
+  select(
+    periodo,
+    año,
+    trimestre,
+    tasa_informalidad
+  ) %>%
+  inner_join(
+    tasa_informalidad_nueva %>%
+      select(
+        año,
+        trimestre,
+        tasa_informalidad_nueva
+      ),
+    by = c("año", "trimestre")
+  ) %>%
+  mutate(
+    diferencia_informalidad = tasa_informalidad_nueva - tasa_informalidad
+    ) %>% 
+  arrange(año, trimestre)
+
+
+  comparacion_informalidad_grafico <- comparacion_informalidad %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number(),
+    posicion_etiqueta =
+      (tasa_informalidad + tasa_informalidad_nueva) / 2
+  )
+
+  # F) CONTRIBUCION DE CADA CATEGORIA A LA  NUEVA INFORMALIDAD PAR LOS NUEVOS OCUPADOS DEL PERIODO 4T 2023 - 1T 2026 #  
+   
+  informalidad_categoria <- base_informalidad %>%
+    filter(
+      ESTADO == 1,
+      EMPLEO %in% c(1, 2)
+    ) %>%
+    mutate(
+      categoria_ocupacional = factor(
+        CAT_OCUP,
+        levels = c(1, 2, 3, 4),
+        labels = c(
+          "Patrón",
+          "Cuenta propia",
+          "Obrero o empleado",
+          "Trabajador familiar sin remuneración"
+        )
+      )
+    ) %>%
+    group_by(año, trimestre, categoria_ocupacional) %>%
+    summarise(
+      ocupados = sum(PONDERA, na.rm = TRUE),
+      informales = sum(
+        PONDERA[EMPLEO == 2],
+        na.rm = TRUE
+      ),
+      .groups = "drop"
+    ) %>%
+    group_by(año, trimestre) %>%
+    mutate(
+      ocupados_totales = sum(ocupados),
+      
+      # Peso de cada categoría en el empleo
+      peso_categoria =
+        ocupados / ocupados_totales * 100,
+      
+      # Aporte de cada categoría a la informalidad total
+      contribucion_informalidad =
+        informales / ocupados_totales * 100,
+      
+      # Tasa de informalidad dentro de cada categoría
+      tasa_informalidad_categoria =
+        informales / ocupados * 100
+    ) %>%
+    ungroup()
+  
+  cambio_categoria <- informalidad_categoria %>%
+    filter(
+      (año == 2023 & trimestre == 4) |
+        (año == 2026 & trimestre == 1)
+    ) %>%
+    select(
+      año,
+      trimestre,
+      categoria_ocupacional,
+      peso_categoria,
+      tasa_informalidad_categoria,
+      contribucion_informalidad
+    ) %>%
+    pivot_wider(
+      names_from = c(año, trimestre),
+      values_from = c(
+        peso_categoria,
+        tasa_informalidad_categoria,
+        contribucion_informalidad
+      )
+    ) %>%
+    mutate(
+      cambio_contribucion =
+        contribucion_informalidad_2026_1 -
+        contribucion_informalidad_2023_4,
+      
+      cambio_tasa_categoria =
+        tasa_informalidad_categoria_2026_1 -
+        tasa_informalidad_categoria_2023_4,
+      
+      cambio_peso_categoria =
+        peso_categoria_2026_1 -
+        peso_categoria_2023_4
+    ) %>%
+    arrange(desc(cambio_contribucion))
+  
+  
+ # ============================================================
+# 4) GRAFICOS
+# ============================================================
+
+# A) GRAFICO TASAS 2016-2026 ACTIVIDAD, OCUPACION E INFORMALIDAD #
+
+tasas_laborales_grafico <- tasas_laborales %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number()
+  )
+
+# Datos para las etiquetas: solo primer y último punto
+etiquetas_tasas <- tasas_laborales_grafico %>%
+  filter(
+    periodo_num == min(periodo_num) |
+    periodo_num == max(periodo_num)
+  )
+
+grafico_tasas <- ggplot(
+  tasas_laborales_grafico,
+  aes(x = periodo_num)
+) +
+  
+  # Líneas verticales de cada período
+  geom_vline(
+    xintercept = tasas_laborales_grafico$periodo_num,
+    color = "grey90",
+    linewidth = 0.4
+  ) +
+  
+  # Tasa de actividad
+  geom_line(
+    aes(
+      y = tasa_actividad,
+      color = "Tasa de actividad",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de ocupación
+  geom_line(
+    aes(
+      y = tasa_ocupacion,
+      color = "Tasa de empleo",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de informalidad
+  geom_line(
+    aes(
+      y = tasa_informalidad,
+      color = "Tasa de informalidad",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Puntos
+  geom_point(
+    aes(y = tasa_actividad, color = "Tasa de actividad"),
+    size = 1.5
+  ) +
+  
+  geom_point(
+    aes(y = tasa_ocupacion, color = "Tasa de empleo"),
+    size = 1.5
+  ) +
+  
+  geom_point(
+    aes(y = tasa_informalidad, color = "Tasa de informalidad"),
+    size = 1.5
+  ) +
+  
+  # Etiquetas: primer y último punto
+  geom_text(
+    data = etiquetas_tasas,
+    aes(
+      y = tasa_actividad,
+      label = paste0(round(tasa_actividad, 1), "%"),
+      color = "Tasa de actividad"
+    ),
+    vjust = -0.8,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  
+  geom_text(
+    data = etiquetas_tasas,
+    aes(
+      y = tasa_ocupacion,
+      label = paste0(round(tasa_ocupacion, 1), "%"),
+      color = "Tasa de empleo"
+    ),
+    vjust = -0.8,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  
+  geom_text(
+    data = etiquetas_tasas,
+    aes(
+      y = tasa_informalidad,
+      label = paste0(round(tasa_informalidad, 1), "%"),
+      color = "Tasa de informalidad"
+    ),
+    vjust = -0.8,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  
+  scale_x_continuous(
+    breaks = tasas_laborales_grafico$periodo_num,
+    labels = tasas_laborales_grafico$periodo
+  ) +
+  
+  scale_y_continuous(
+    limits = c(20, 60),
+    breaks = seq(20, 60, 5),
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  labs(
+    title = "Evolución conjunta de las tasas de actividad, empleo e informalidad",
+    subtitle = "2T2016–2T2026",
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  
+  theme_classic() +
+  
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_tasas
+
+# B) GRAFICO DE TASAS DE DESOCUPACION, OCUPADOS DEMANDANTES Y DEMANDA DE TRABAJO #
+
+tasas_laborales_grafico <- tasas_laborales %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number()
+  )
+
+# Datos para las etiquetas: solo primer y último punto
+etiquetas_demanda <- tasas_laborales_grafico %>%
+  filter(
+    periodo_num == min(periodo_num) |
+    periodo_num == max(periodo_num)
+  )
+
+grafico_tasas_demanda <- ggplot(
+  tasas_laborales_grafico,
+  aes(x = periodo_num)
+) +
+  
+  # Líneas verticales de cada período
+  geom_vline(
+    xintercept = tasas_laborales_grafico$periodo_num,
+    color = "grey90",
+    linewidth = 0.4
+  ) +
+  
+  # Tasa de desocupación
+  geom_line(
+    aes(
+      y = tasa_desocupacion,
+      color = "Desocupados",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de ocupados demandantes
+  geom_line(
+    aes(
+      y = tasa_ocupados_demandantes,
+      color = "Ocupados demandantes",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Tasa de demandantes
+  geom_line(
+    aes(
+      y = tasa_demandantes,
+      color = "Demandantes",
+      group = 1
+    ),
+    linewidth = 0.8
+  ) +
+  
+  # Puntos
+  geom_point(
+    aes(
+      y = tasa_desocupacion,
+      color = "Desocupados"
+    ),
+    size = 1.5
+  ) +
+  
+  geom_point(
+    aes(
+      y = tasa_ocupados_demandantes,
+      color = "Ocupados demandantes"
+    ),
+    size = 1.5
+  ) +
+  
+  geom_point(
+    aes(
+      y = tasa_demandantes,
+      color = "Demandantes"
+    ),
+    size = 1.5
+  ) +
+  
+  # Etiquetas: primer y último punto
+  geom_text(
+    data = etiquetas_demanda,
+    aes(
+      y = tasa_desocupacion,
+      label = paste0(round(tasa_desocupacion, 1), "%"),
+      color = "Desocupados"
+    ),
+    vjust = -0.8,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  
+  geom_text(
+    data = etiquetas_demanda,
+    aes(
+      y = tasa_ocupados_demandantes,
+      label = paste0(round(tasa_ocupados_demandantes, 1), "%"),
+      color = "Ocupados demandantes"
+    ),
+    vjust = -0.8,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  
+  geom_text(
+    data = etiquetas_demanda,
+    aes(
+      y = tasa_demandantes,
+      label = paste0(round(tasa_demandantes, 1), "%"),
+      color = "Demandantes"
+    ),
+    vjust = -0.8,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  
+  scale_x_continuous(
+    breaks = tasas_laborales_grafico$periodo_num,
+    labels = tasas_laborales_grafico$periodo
+  ) +
+  
+  scale_y_continuous(
+    limits = c(0, 30),
+    breaks = seq(0, 30, 5),
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  labs(
+    title = "Evolución de las tasas de desocupación y demanda de empleo",
+    subtitle = "2T2016–2T2026",
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  
+  theme_classic() +
+  
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_tasas_demanda
+
+
+# C) GRAFICO CONDICION DE REGISTRO DE LOS NUEVOS ASALARIADOS 2T2016-1T2026 #
+
+grafico_condicion_nuevos_asalariados <- condicion_nuevos_asalariados %>%
+  pivot_longer(
+    cols = c(
+      porcentaje_registrados,
+      porcentaje_no_registrados
+    ),
+    names_to = "tipo",
+    values_to = "porcentaje"
+  ) %>%
+  mutate(
+    tipo = recode(
+      tipo,
+      porcentaje_registrados = "Registrados",
+      porcentaje_no_registrados = "No registrados"
+    ),
+    tipo = factor(
+      tipo,
+      levels = c("Registrados", "No registrados")
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = tipo,
+      y = porcentaje
+    )
+  ) +
+  geom_col(
+    fill = "#9DD9E8",
+    width = 0.6
+  ) +
+  geom_text(
+    aes(
+      label = paste0(round(porcentaje, 1), "%"),
+      vjust = -0.5
+    ),
+    fontface = "bold",
+    size = 4
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20),
+    labels = function(x) paste0(x, "%"),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Condición de los nuevos asalariados",
+    subtitle = "Participación en el aumento neto entre 2T2016 y 1T2026",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_condicion_nuevos_asalariados
+
+
+# D) GRAFICO COMPARACION DE LAS MEDICIONES DE INFORMALIDAD 4T2023-2T2026
+
+comparacion_informalidad_grafico <- comparacion_informalidad %>%
+  arrange(año, trimestre) %>%
+  mutate(
+    periodo_num = row_number(),
+    posicion_etiqueta =
+      (tasa_informalidad + tasa_informalidad_nueva) / 2
+  )
+
+grafico_comparacion_informalidad <- ggplot(
+  comparacion_informalidad_grafico,
+  aes(x = periodo_num)
+) +
+  
+  # Líneas verticales de cada período
+  geom_vline(
+    xintercept = comparacion_informalidad_grafico$periodo_num,
+    color = "grey90",
+    linewidth = 0.4
+  ) +
+  
+  # Tasa de informalidad original
+  geom_line(
+    aes(
+      y = tasa_informalidad,
+      color = "Tasa de informalidad"
+    ),
+    group = 1,
+    linewidth = 0.8
+  ) +
+  
+  geom_point(
+    aes(
+      y = tasa_informalidad,
+      color = "Tasa de informalidad"
+    ),
+    size = 1.5
+  ) +
+  
+  # Nueva tasa de informalidad
+  geom_line(
+    aes(
+      y = tasa_informalidad_nueva,
+      color = "Nueva tasa de informalidad"
+    ),
+    group = 1,
+    linewidth = 0.8
+  ) +
+  
+  geom_point(
+    aes(
+      y = tasa_informalidad_nueva,
+      color = "Nueva tasa de informalidad"
+    ),
+    size = 1.5
+  ) +
+  
+  # Diferencia entre ambas tasas
+  geom_text(
+    aes(
+      y = posicion_etiqueta,
+      label = paste0(
+        ifelse(diferencia_informalidad > 0, "+", ""),
+        round(diferencia_informalidad, 1),
+        " pp"
+      )
+    ),
+    size = 3,
+    fontface = "bold"
+  ) +
+  
+  # Eje X
+  scale_x_continuous(
+    breaks = comparacion_informalidad_grafico$periodo_num,
+    labels = comparacion_informalidad_grafico$periodo
+  ) +
+  
+  # Eje Y
+  scale_y_continuous(
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  labs(
+    title = "Comparación de las tasas de informalidad",
+    subtitle = "4T2023–2T2026",
+    x = NULL,
+    y = NULL,
+    color = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  
+  theme_classic() +
+  
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    ),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+grafico_comparacion_informalidad
+
+
+# E) CONTRIBUCION DE LAS CATEGORIAS OCUPACIONALS EN EL AUMENTO DE LA INFORMALIDAD EN NUEVOS OCUPADOS 4T2023-1T2026 #
+
+grafico_cambio_contribucion <- cambio_categoria %>%
+  filter(
+    categoria_ocupacional != "Trabajador familiar sin remuneración"
+  ) %>%
+  mutate(
+    categoria_ocupacional = forcats::fct_reorder(
+      categoria_ocupacional,
+      cambio_contribucion,
+      .desc = TRUE
+    )
+  ) %>%
+  ggplot(
+    aes(
+      x = categoria_ocupacional,
+      y = cambio_contribucion
+    )
+  ) +
+  geom_col(
+    fill = "#9DD9E8",
+    width = 0.65
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linewidth = 0.5
+  ) +
+  geom_text(
+    aes(
+      label = paste0(
+        ifelse(cambio_contribucion > 0, "+", ""),
+        round(cambio_contribucion, 2),
+        " pp"
+      ),
+      vjust = ifelse(
+        cambio_contribucion >= 0,
+        -0.5,
+        1.5
+      )
+    ),
+    fontface = "bold",
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 2.0),
+    breaks = seq(0, 2, 0.5),
+    labels = function(x) paste0(x, " pp"),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Contribución de cada categoría al aumento de la informalidad",
+    subtitle = "Cambio entre 4T2023 y 1T2026",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC."
+  ) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(
+      angle = 20,
+      hjust = 1
+    ),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+grafico_cambio_contribucion
+```
+
+# Metodología 
+
+Para el desarrollo del informe se utilizaron los microdatos de la Encuesta Permanente de Hogares (EPH) provistos por el Instituto Nacional de Estadística y Censos (INDEC). Se descargaron las bases trimestrales correspondientes al período comprendido entre el segundo trimestre de 2016 y el primer trimestre de 2026. A estas se incorporaron los datos publicados por el INDEC para el segundo trimestre de 2026, con el objetivo de actualizar las series.
+
+De este modo, se obtuvieron las tasas de actividad, ocupación, desocupación, ocupados demandantes e informalidad laboral, tanto en su definición tradicional como en la nueva medición. Esta actualización no pudo replicarse en los análisis desagregados por categoría ocupacional y condición de registro, debido a que requieren el procesamiento de los microdatos más recientes.
+
+Para la informalidad laboral se utilizaron dos aproximaciones. La primera corresponde a la medición tradicional entre trabajadores asalariados, calculada como la proporción de asalariados no registrados sobre el total de asalariados. Se mantuvo para todo el período con el objetivo de disponer de una serie homogénea.
+
+La segunda corresponde a la nueva medición implementada por el INDEC a partir del cuarto trimestre de 2023. Esta permite identificar la formalidad o informalidad de las unidades económicas y, por lo tanto, incorporar al análisis el trabajo independiente y las condiciones de las unidades en las que se desempeñan asalariados y trabajadores familiares sin remuneración.
+
+Para identificar la condición de registro de las unidades económicas se utilizaron distintas variables según la categoría ocupacional. En los trabajadores independientes se consideró la realización de aportes correspondientes al propio trabajo. Para asalariados y trabajadores familiares sin remuneración se utilizaron la posibilidad de emitir facturas y la existencia de un contador u oficina contable, empleándose esta última como criterio de rescate cuando la información principal resultaba insuficiente (INDEC, 2025).
+
+En la presentación de las tasas de actividad, ocupación e informalidad tradicional se optó por incluirlas en un mismo gráfico para facilitar la observación de su evolución temporal, aun cuando se calculan sobre denominadores diferentes. Por ello, su comparación debe interpretarse considerando esta característica metodológica.
+
+Para analizar al subgrupo de la PEA que se encuentra buscando trabajo se construyó una tasa de demanda de empleo mediante la suma de desocupados y ocupados demandantes. De esta manera se buscó incluir a quienes ya poseen un empleo pero demandan otro, sin incorporar a los ocupados no demandantes disponibles.
+
+# Resultados y análisis
+
+## Evolución de las tasas de actividad, empleo e informalidad
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+    
+grafico_tasas
+```
+
+Para el período 2T2016–2T2026, la tasa de actividad presenta, punta a punta, un aumento de 2,9 puntos porcentuales (p.p.), al pasar del 46,0% al 48,9%, equivalente a un crecimiento relativo del 6,3%. La tasa de empleo pasó del 41,7% al 45,0%, con un incremento de 3,3 p.p. y un crecimiento relativo del 7,9%. El crecimiento del empleo resulta, por lo tanto, superior al de la actividad, en relación con la reducción de la desocupación analizada en el apartado siguiente.
+
+Excluyendo el período comprendido entre el 1T2020 y el 1T2021, caracterizado por las mayores restricciones asociadas a la pandemia, se observa una tendencia general de crecimiento de ambas variables. Durante la presidencia de Mauricio Macri (2T2016–4T2019) y el período iniciado en 4T2023, las líneas tienden a separarse, reflejando un incremento de la desocupación. En cambio, durante el período posterior a la pandemia correspondiente a la presidencia de Alberto Fernández, la tendencia es inversa, con una mayor aproximación entre ambas tasas.
+
+La tasa de informalidad incluida en el gráfico se calcula exclusivamente sobre los trabajadores asalariados. Aun tratándose de un subconjunto de la población ocupada, su evolución resulta significativa: pasa del 33,4% al 37,9%, un incremento de 4,5 p.p. y un crecimiento relativo superior al 13%. El último dato constituye además el máximo de la serie: el 37,9% del 2T2026 supera en 0,1 p.p. el máximo anterior, de 37,8%, correspondiente al 2T2022.
+
+## Evolución de la desocupación y la demanda de empleo
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_tasas_demanda
+```
+
+En la década analizada, la tasa de desocupación pasó del 9,3% al 7,9%, una reducción de 1,4 p.p. Esta disminución es compensada en gran parte por el incremento de los ocupados demandantes, cuya tasa aumenta 1,2 p.p., al pasar del 15,7% al 16,9%. Al integrar ambas tasas, la demanda de empleo se mantiene prácticamente constante entre las puntas del período, con una reducción de apenas 0,2 p.p.
+
+Sin embargo, se registraron fluctuaciones importantes. En el último año del gobierno de Mauricio Macri, la demanda de empleo trepó hasta el 29%, mientras que en el último año del gobierno de Alberto Fernández se redujo al 20,9%, evidenciando variaciones significativas dentro del período.
+
+## Condición de registro de los nuevos asalariados
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_condicion_nuevos_asalariados
+```
+
+Analizada la evolución de las tasas de actividad, empleo y demanda de trabajo, se estudiaron las condiciones de registro de los nuevos asalariados, entendidos como aquellos puestos incorporados hasta el 1T2026 que no estaban presentes en el 4T2023.
+
+Los resultados muestran que, mientras al inicio de este período los trabajadores informales constituían el 33,4% de los asalariados —uno de cada tres—, el 72,8% de quienes se incorporaron como asalariados lo hizo sin registro. Esto evidencia un cambio en la composición de los nuevos puestos asalariados respecto de la estructura histórica del empleo en Argentina.
+
+## Comparación de las mediciones de informalidad
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_comparacion_informalidad
+```
+
+La incorporación de la nueva medición de informalidad desde el cuarto trimestre de 2023 permite comparar la tasa tradicional con una definición que incorpora nuevas variables de detección.
+
+La comparación muestra que la nueva medición se ubica inicialmente en 5,8 p.p. por encima de la tradicional, alcanzando el 41,5%. La brecha se amplía hasta 7,1 p.p. en el último dato disponible para esta comparación (1T 2026), cuando la nueva medición alcanza el 45%. Esto muestra que la informalidad presenta un crecimiento significativo también fuera del universo de asalariados analizado mediante los aportes jubilatorios.
+
+## Contribución de las categorías ocupacionales al aumento de la informalidad
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+grafico_cambio_contribucion
+```
+
+Entre el 4T2023 y el 1T2026, la nueva medición de informalidad aumenta 3,5 p.p., al pasar del 41,5% al 45,0%. Para identificar la contribución de las distintas categorías ocupacionales —patrón, cuentapropista, obrero o empleado y trabajador familiar sin remuneración— se analizó el aporte de cada una al incremento. La última categoría fue excluida por su escasa significación estadística.
+
+De los 3,5 p.p. de crecimiento, prácticamente la mitad (1,71 p.p., equivalente al 48,9%) se explica por el peso ganado por el cuentapropismo dentro de los informales, categoría que históricamente ocupó un lugar secundario respecto de los empleados y obreros.
+
+El análisis mediante clusters realizado por Fernández-Franco et al. (2022) aporta un elemento relevante para interpretar este cambio. En Argentina, el trabajo por cuenta propia presenta, independientemente del nivel de calificación, un ingreso relativo inferior al de los trabajadores asalariados con igual nivel de calificación. Por lo tanto, las diferencias de ingresos no parecen constituir por sí solas una explicación suficiente del pasaje entre categorías, lo que plantea la necesidad de considerar otros factores.
+
+# Síntesis de resultados y conclusiones
+
+A partir del análisis de los datos y del aporte bibliográfico, se sugieren las siguientes líneas de interpretación:
+
+- La proporción de población que se incorpora a la actividad económica crece de manera sostenida y, dentro de este grupo, la mayoría se incorpora como ocupada, en porcentajes similares a los registrados al inicio del período.
+
+- La demanda de empleo mantiene una tendencia constante. Si bien presenta fluctuaciones en momentos puntuales, estas se inscriben en ciclos relativamente cortos y regresan posteriormente hacia los valores centrales.
+
+- Los cambios sociales y tecnológicos en el mundo laboral podrían haber contribuido a acortar los períodos de aumento de las tasas vinculadas con la demanda de trabajo, permitiendo que la población acceda a un empleo aun en períodos recesivos o de transformación del mercado laboral. Esto podría contribuir a explicar por qué los máximos de las ondas de desocupación presentan menor intensidad respecto del período previo: los registrados durante el gobierno de Mauricio Macri respecto de los observados durante la Convertibilidad, y los correspondientes al gobierno de Javier Milei respecto de los registrados durante el gobierno de Mauricio Macri.
+
+- Los nuevos ocupados incorporados entre el 4T2023 y el 1T2026 presentan una relación inversa respecto de la proporción de trabajadores registrados y no registrados que caracterizaba al mercado laboral argentino hasta inicios de 2016: frente a una relación histórica de 70/30 entre formales e informales, los nuevos ocupados se incorporan en una proporción de 30/70.
+
+- La mitad del aumento de la densidad de los trabajadores informales se explica por el crecimiento del trabajo por cuenta propia. Entre los factores que podrían motivar el aumento relativo de esta categoría como ocupación principal no se encontraría la mejora del ingreso respecto de la condición de asalariado.
+
+**Algunas preguntas que deja abiertas este informe:**
+
+- ¿A qué factores responde el aumento sostenido de las tasas de actividad y ocupación? ¿Qué papel desempeñan las variables culturales y económicas?
+
+- ¿Existe una relación entre el lugar ocupado por Argentina en el marco de la Nueva División Internacional del Trabajo y el aumento de la informalidad?
+
+- ¿Qué razones explican el aumento del peso relativo del trabajo por cuenta propia, en detrimento de otras categorías, desde 2024 hasta el presente?
+
+# Referencias {-}
+
+Instituto Nacional de Estadística y Censos. (2025). *Encuesta Permanente de Hogares: Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH* (Metodología INDEC N° 43). https://www.indec.gob.ar/ftp/cuadros/sociedad/metodologia_informalidad_laboral.pdf
+
+Fernández-Franco, S., Graña, J.M., Lastra, F., & Weksler, G. (2022). *Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada.* Ensayos de Economía, 32(61), 124-151. https://doi.org/10.15446/ede.v32n61.100343
+
+Instituto Nacional de Estadística y Censos (INDEC). (2026). Encuesta Permanente de Hogares (EPH): microdatos y documentos, 2016–2026. Buenos Aires: INDEC. 
+
+Instituto Nacional de Estadística y Censos (INDEC). (2026). *Mercado de trabajo. Tasas e indicadores socioeconómicos*. Segundo trimestre de 2026. Buenos Aires: INDEC. 
+
+Di Grande, L. (2026, 13 de julio). *Aumentó 900% la cantidad de repartidores de plataforma en los últimos 6 años*. Infobae.

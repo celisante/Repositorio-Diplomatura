@@ -1,2 +1,3 @@
 # Repositorio-Diplomatura
-Este repositorio es para practicar Git.
+Enviado 21-09-2026, agradezco confirmación
+mail: aledesma.unlp@gmail.com

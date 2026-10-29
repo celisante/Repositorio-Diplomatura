@@ -1,0 +1,361 @@
+---
+title: "Las particularidades de la desindustrialización argentina"
+subtitle: "Alcance, composición exportadora y calidad del empleo industrial"
+author: "[Fernando E. Durán]"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 9, fig.height = 5.5, fig.align = "center")
+```
+
+```{r librerias}
+#Cargamos las librerías
+library(tidyverse)
+library(eph)
+#Pasamos de notación científica a decimal
+options(scipen = 999)
+
+#Definimos los colores de cada país, que usamos en varios gráficos (Argentina en celeste)
+colores_paises <- c("ARG" = "#3A87C9", "KOR" = "#C0504D", "USA" = "#7F7F7F")
+```
+
+# Resumen ejecutivo
+
+Este informe examina las particularidades del proceso de desindustrialización argentino a partir de dos lecturas discutidas en la cursada. Herrera Bartis (2021) interpreta el caso argentino como una desindustrialización "fallida" o "negativa", la pérdida de peso de la industria no respondió a la madurez de la economía ni a una re-especialización exitosa, sino que se acompañó del estancamiento del producto, la primarización del entramado productivo y el deterioro del mercado de trabajo. Graña y Terranova (2022), en cambio, sostienen que la desindustrialización posterior a 1970 no es un fenómeno mecánico ni "prematuro", sino la expresión de la nueva división internacional del trabajo (NDIT), en la que la relocalización de la producción hacia el Este asiático, motivada por menores costos salariales, desindustrializó a otras regiones.
+
+Para contrastar ambas lecturas se construyen tres indicadores que comparan a la Argentina con Corea del Sur y Estados Unidos, el alcance del proceso, medido por el empleo y el valor agregado industrial; la composición tecnológica de las exportaciones, según la clasificación de Lall; y la informalidad de los asalariados industriales, a partir de la EPH. Los resultados indican que la pérdida de peso del empleo industrial argentino no fue mayor que la de Estados Unidos, y que la particularidad del caso aparece en el producto, el valor agregado industrial total supera holgadamente el nivel de 1974, pero el per cápita no lo recupera. Las exportaciones siguen concentradas en productos primarios y manufacturas basadas en recursos naturales. La informalidad industrial es menor que el promedio, pero dentro de cada tamaño de establecimiento es similar a la del resto de la economía y muy elevada en los establecimientos pequeños.
+
+# 1. Introducción
+
+La desindustrialización, entendida en sentido estricto como la caída de la participación del empleo manufacturero en el empleo total, es un fenómeno compartido por gran parte de las economías desde la década de 1970. Sin embargo, detrás de esa tendencia común hay trayectorias muy distintas, algunos países perdieron empleo industrial en el marco de un crecimiento sostenido, mientras que otros lo hicieron en un contexto de estancamiento, crisis y deterioro de sus mercados de trabajo. La Argentina suele ubicarse en este segundo grupo, y su caso es frecuentemente caracterizado como una desindustrialización "prematura", ya que comenzó con niveles de ingreso por habitante muy inferiores a los de los países centrales.
+
+Este trabajo se pregunta qué particularidades presenta el caso argentino. En concreto, busca evaluar si su trayectoria se comprende mejor como un proceso "fallido", en los términos de la taxonomía de Rowthorn retomada por Herrera Bartis (2021), o como la expresión de la posición del país en la nueva división internacional del trabajo, como proponen Graña y Terranova (2022). Ambas lecturas no son necesariamente excluyentes, pero ponen el acento en dimensiones distintas, la primera en las consecuencias internas del proceso (producto, estructura sectorial, empleo) y la segunda en sus determinantes globales.
+
+El procesamiento empírico se organiza en tres ejes. El primero analiza el alcance de la desindustrialización a partir del empleo y el producto industrial. El segundo aborda la composición de las exportaciones según su intensidad tecnológica, como aproximación a la primarización señalada por la literatura. El tercero examina la calidad del empleo, a través de la informalidad de los asalariados industriales. La Argentina se compara con Estados Unidos, caso de desindustrialización "por madurez" según Herrera Bartis, y con Corea del Sur, representante de la industrialización del Este asiático que, según Graña y Terranova, desplazó la producción manufacturera desde otras regiones.
+
+# 2. Desarrollo conceptual
+
+## 2.1. Tres caminos de desindustrialización
+
+El término desindustrialización se difundió en los años setenta para describir la caída del empleo industrial en Estados Unidos y el Reino Unido, y el debate enfrentó desde el inicio a quienes lo consideraban un subproducto normal de la madurez económica con quienes lo veían como síntoma de problemas estructurales (Herrera Bartis, 2021).
+
+Herrera Bartis retoma la taxonomía de Robert Rowthorn (Rowthorn, 1986; Rowthorn y Wells, 1987), que distingue tres caminos. La desindustrialización por madurez resulta del mayor crecimiento de la productividad industrial respecto de los servicios, el empleo manufacturero pierde peso sin que se estanquen el producto industrial ni el crecimiento agregado. La desindustrialización por re-especialización ocurre cuando otro sector, por ejemplo los servicios transables de alta productividad, gana competitividad y reemplaza a la industria como fuente de crecimiento y de divisas. Finalmente, la desindustrialización fallida o negativa implica que la caída del empleo industrial se acompaña de estancamiento o contracción del producto, aumento del desempleo o del empleo precario y problemas en las cuentas externas.
+
+A partir de este esquema, el autor caracteriza a Estados Unidos como un caso de madurez, al Reino Unido como uno de re-especialización hacia los servicios financieros y a la Argentina como un caso arquetípico de desindustrialización fallida. Su diagnóstico sobre la Argentina se apoya en varios rasgos. La caída del empleo industrial comenzó a mediados de los años sesenta, con un ingreso per cápita muy inferior al de los otros dos países. Tras un auge entre 1963 y 1974, el valor agregado industrial per cápita se contrajo cerca de un 45% hasta 1990. La industria se "primarizó", con pérdida de peso de las ramas intensivas en ingeniería y avance de la elaboración de alimentos. Y el empleo expulsado se desplazó hacia servicios de productividad decreciente, en un marco de informalidad creciente.
+
+## 2.2. La crítica desde la nueva división internacional del trabajo
+
+Graña y Terranova (2022) discuten dos supuestos de esta literatura. En primer lugar, cuestionan que la desindustrialización sea un proceso "natural" o "mecánico", idea que según los autores también está implícita en la etiqueta de "prematura", ya que supone la existencia de un momento correcto para desindustrializarse. En segundo lugar, critican el uso del ingreso per cápita para clasificar los tipos de desindustrialización, porque el nivel de ingreso al que comienza el proceso cae a lo largo del tiempo, con ese criterio, incluso Corea del Sur debería considerarse un caso prematuro.
+
+Su explicación alternativa es que, desde los años setenta, la revolución de las telecomunicaciones y la automatización permitieron relocalizar las fases más simples de la producción manufacturera hacia países de bajos salarios, principalmente del Este asiático. Así, la desindustrialización de los países desarrollados y latinoamericanos fue la contracara de la industrialización asiática, en palabras de los autores, "unos países desindustrializan a otros". Con datos de un amplio conjunto de países, muestran que entre 1970 y 1985 los salarios manufactureros de Corea del Sur y Taiwán equivalían a poco más de la mitad de los latinoamericanos, lo que habría orientado la relocalización hacia Asia y no hacia América Latina. Desde esta perspectiva, las políticas de apertura no serían la causa principal de la desindustrialización latinoamericana.
+
+Un punto de tensión directa entre ambos textos es el carácter "negativo" del proceso argentino. Graña y Terranova señalan que todos los países de su muestra, incluida la Argentina, presentan tendencias positivas en el valor agregado manufacturero a precios constantes, por lo que ninguno podría calificarse como una desindustrialización negativa. Herrera Bartis, en cambio, mide el producto industrial en términos per cápita y encuentra una contracción profunda y prolongada.
+
+## 2.3. Preguntas abiertas
+
+Esta discusión deja abiertas algunas preguntas que justifican el ejercicio empírico. ¿El diagnóstico de desindustrialización "negativa" depende de la medida utilizada para el producto industrial? ¿La primarización que Herrera Bartis observa en la composición del empleo industrial se verifica también en la inserción exportadora, y persiste en el período reciente, que ninguno de los dos textos cubre en detalle? ¿Qué rasgos presenta hoy el empleo industrial en términos de calidad, dado que la literatura asocia la desindustrialización fallida al avance de la informalidad?
+
+# 3. Metodología
+
+El procesamiento se realizó en R con bases utilizadas en la cursada. Para los tres primeros indicadores se comparan la Argentina, Corea del Sur y Estados Unidos, países disponibles en todas las fuentes y relevantes para la discusión conceptual. Los períodos varían según el indicador, en función de la cobertura de cada fuente, en todos los casos se utiliza la serie más larga disponible, con el mismo período para los tres países.
+
+El empleo industrial proviene de la base construida por Graña y Terranova (2022), que reúne ocupados en la industria y en el total de la economía. Para los tres países seleccionados, la serie es completa entre 1970 y 2019. La serie argentina presenta un salto atípico en 1990, revertido al año siguiente, que probablemente responde a un problema de la fuente; se mantiene con una nota aclaratoria. Como contexto, se calcula la participación de cada región en el empleo industrial del conjunto de la muestra entre 1978 y 2018, excluyendo 1999 por falta de datos para China, siguiendo el criterio de los autores. Ese total corresponde a los países de la base y no al empleo industrial mundial.
+
+El valor agregado industrial y la población provienen de la base de cuentas nacionales de las Naciones Unidas (UN SNAAMA), para 1970-2024. Se verificó que la serie esté a precios constantes, la caída del valor agregado argentino en 2002 ronda el 9%, consistente con la contracción real de ese año. Para la Argentina se construyen índices del valor agregado industrial total y per cápita con base 1974 = 100, año que Herrera Bartis identifica como el pico de la actividad industrial previo al quiebre de 1976.
+
+La composición de las exportaciones se analiza con la base de Fundar, que clasifica los productos según la taxonomía de Lall (2000), para 1970-2023. Las cinco categorías originales se agruparon en tres bloques, productos primarios y manufacturas basadas en recursos naturales; manufacturas de baja tecnología; y manufacturas de media y alta tecnología. Se prefirió esta clasificación a la de secciones de la CUCI porque buena parte de la agroindustria argentina (harinas, aceites y otros alimentos elaborados) no se ubica en las secciones manufactureras, lo que subestimaría su peso.
+
+La informalidad se mide con los microdatos de la Encuesta Permanente de Hogares (EPH-INDEC) del segundo trimestre de 2025, como la proporción de asalariados sin descuento jubilatorio. Esta definición coincide con la que utiliza Herrera Bartis a partir de Jiménez (2013). Se calcula por rama de actividad y, como variante, se compara la informalidad de la industria con la del resto de la economía según el tamaño del establecimiento. Los pocos códigos de actividad registrados a dos dígitos se llevaron a cuatro para clasificarlos correctamente.
+
+Las principales limitaciones son tres. Las series de empleo industrial llegan a 2019, por lo que no captan la evolución más reciente. La EPH cubre solo 31 aglomerados urbanos y ofrece un corte de un único trimestre, no una serie; de todos modos, la celda más pequeña del análisis (la industria en establecimientos de hasta cinco trabajadores) reúne 200 casos. Por último, los indicadores son descriptivos y no permiten identificar relaciones causales.
+
+# 4. Resultados y análisis
+
+## 4.1. El alcance de la desindustrialización: empleo y producto
+
+```{r empleo-industrial}
+#Cargamos la base de empleo industrial utilizada en el curso
+empleo_industrial <- read_csv("Bases/empleo_industrial.csv")
+
+#Renombramos variables y calculamos la participación del empleo industrial
+empleo_industrial <- empleo_industrial %>%
+  rename(Ocupados_industria = Ocup_INDUSTRIA,
+         Ocupados_total = Ocup_TOTAL_ECONOMIA,
+         Año = Anio) %>%
+  mutate(Participacion_empleo_industrial = Ocupados_industria / Ocupados_total * 100)
+
+#Seleccionamos los tres países y el período 1970-2019
+empleo_paises <- empleo_industrial %>%
+  filter(País %in% c("ARG", "KOR", "USA"), Año >= 1970, Año <= 2019)
+
+#Graficamos
+ggplot(empleo_paises, aes(x = Año, y = Participacion_empleo_industrial, color = País)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = colores_paises,
+                     labels = c("ARG" = "Argentina", "KOR" = "Corea del Sur", "USA" = "Estados Unidos")) +
+  scale_x_continuous(breaks = seq(1970, 2019, by = 5)) +
+  labs(title = "Gráfico 1. Participación del empleo industrial en el empleo total",
+       subtitle = "Argentina, Corea del Sur y Estados Unidos (1970-2019)",
+       x = "Año", y = "% del empleo total", color = "País",
+       caption = "Nota: el salto de Argentina en 1990 (+14% de ocupados industriales en un año, revertido en 1991) probablemente\nresponde a un problema de la fuente y no a un cambio real.\nFuente: elaboración propia en base a Graña y Terranova (2022).") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Entre 1970 y 2019, la participación del empleo industrial argentino pasó de cerca del 20% a alrededor del 10,5% del empleo total. Estados Unidos recorre una trayectoria descendente (de alrededor del 23% a cerca del 8,5%), mientras que Corea del Sur dibuja la "U invertida" de los países que se industrializaron tardíamente: alcanza un máximo cercano al 36% hacia 1991 y luego desciende. En la Argentina, la caída más pronunciada se da entre mediados de los setenta y mediados de los noventa; entre 2003 y 2011 la participación se estabiliza en torno al 13%, y luego vuelve a descender. Un primer resultado llamativo es que, medida por el empleo, la desindustrialización argentina no fue más intensa que la estadounidense, su particularidad debe buscarse en otras dimensiones. La serie comienza cuando la desindustrialización argentina ya estaba en curso, según Herrera Bartis (2021), la participación del empleo industrial empezó a caer a mediados de los años sesenta.
+
+```{r empleo-regional}
+#Eliminamos 1999 (no hay datos para China) y filtramos el período 1978-2018
+#Sumamos los ocupados industriales por región y calculamos la participación de cada una
+empleo_regional <- empleo_industrial %>%
+  filter(Año >= 1978, Año <= 2018, Año != 1999) %>%
+  group_by(Año, Regiones.economicas) %>%
+  summarise(ocupados = sum(Ocupados_industria, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Año) %>%
+  mutate(participacion = ocupados / sum(ocupados) * 100) %>%
+  ungroup()
+
+#Graficamos con columnas apiladas
+ggplot(empleo_regional, aes(x = Año, y = participacion, fill = Regiones.economicas)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set2",
+                    labels = c("Developed" = "Desarrollados",
+                               "East Asia" = "Este asiático",
+                               "Latin American" = "América Latina")) +
+  scale_x_continuous(breaks = seq(1978, 2018, by = 4)) +
+  labs(title = "Gráfico 2. Distribución regional del empleo industrial de la muestra",
+       subtitle = "Participación de cada región en el total de ocupados industriales de la base (1978-2018)",
+       x = "Año", y = "Participación (%)", fill = "Región",
+       caption = "Nota: se excluye 1999 por falta de datos para China.\nFuente: elaboración propia en base a Graña y Terranova (2022).") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+El Gráfico 2 aporta el contexto que enfatizan Graña y Terranova. El Este asiático pasa de concentrar alrededor del 62% del empleo industrial de la muestra en 1978 a cerca del 80% en 2018, mientras los países desarrollados caen de alrededor del 30% a cerca del 12%. América Latina, en cambio, mantiene una participación estable, en torno al 8%, dentro de la muestra, la relocalización desplazó sobre todo a los países centrales. Desde esta perspectiva, la desindustrialización argentina no es un fenómeno aislado, sino parte de una reorganización global de la producción manufacturera.
+
+```{r va-industrial}
+#Cargamos la base de valor agregado y nos quedamos con Argentina
+valor_agregado <- read_csv("Bases/valor_agregado.csv") %>%
+  rename(País = `Country/Area`, Año = Year, VA_industria = `Manufacturing (ISIC D)`) %>%
+  filter(País == "Argentina") %>%
+  mutate(VA_industria = as.numeric(VA_industria)) %>%
+  select(País, Año, VA_industria)
+
+#Cargamos la base de población y nos quedamos con Argentina
+poblacion <- read_csv("Bases/poblacion.csv") %>%
+  rename(País = `Country/Area`, Año = Year, Poblacion = Population) %>%
+  filter(País == "Argentina") %>%
+  select(País, Año, Poblacion)
+
+#Unimos las bases, calculamos el VA per cápita y los índices base 1974 = 100
+va_arg <- valor_agregado %>%
+  left_join(poblacion, by = c("País", "Año")) %>%
+  mutate(VA_pc = VA_industria / Poblacion,
+         indice_total = VA_industria / VA_industria[Año == 1974] * 100,
+         indice_pc = VA_pc / VA_pc[Año == 1974] * 100)
+```
+
+El Gráfico 3 es la visualización central del informe. Compara, para la Argentina, la evolución del valor agregado industrial total y per cápita, con base en 1974.
+
+```{r grafico-personalizado, fig.height = 6}
+ggplot(va_arg, aes(x = Año)) +
+  #Sombreamos la dictadura y la convertibilidad
+  annotate("rect", xmin = 1976, xmax = 1983, ymin = -Inf, ymax = Inf, fill = "grey75", alpha = 0.35) +
+  annotate("rect", xmin = 1991, xmax = 2001, ymin = -Inf, ymax = Inf, fill = "grey85", alpha = 0.5) +
+  annotate("text", x = 1979.5, y = Inf, label = "Dictadura", vjust = 1.5, size = 3.2) +
+  annotate("text", x = 1996, y = Inf, label = "Convertibilidad", vjust = 1.5, size = 3.2) +
+  #Línea de referencia en 100 (nivel de 1974)
+  geom_hline(yintercept = 100, linetype = "dashed", color = "grey40") +
+  #Una línea para cada índice
+  geom_line(aes(y = indice_total, color = "VA industrial total"), linewidth = 1.1) +
+  geom_line(aes(y = indice_pc, color = "VA industrial per cápita"), linewidth = 1.1) +
+  scale_color_manual(values = c("VA industrial total" = "#3A87C9",
+                                "VA industrial per cápita" = "#1B2A49")) +
+  scale_x_continuous(breaks = seq(1970, 2024, by = 5)) +
+  labs(title = "Gráfico 3. ¿Desindustrialización negativa? Depende de cómo se mida",
+       subtitle = "Argentina: valor agregado industrial total y per cápita a precios constantes (índice 1974 = 100)",
+       x = "Año", y = "Índice (1974 = 100)", color = NULL,
+       caption = "Nota: 1974 marca el pico industrial previo al quiebre de 1976 (Herrera Bartis, 2021).\nFuente: elaboración propia en base a UN National Accounts (SNAAMA).") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Tomando 1974 como base, el valor agregado industrial total cae hasta alrededor de 80 en 1990, se recupera durante la convertibilidad, vuelve a caer con la crisis de 2002 y alcanza un máximo cercano a 177 en 2011; al final de la serie (2024) se ubica en torno a 145, muy por encima del nivel de 1974. El per cápita, en cambio, toca un mínimo cercano a 62 en 1990 y otro similar en 2002, y en 2024 se ubica en torno a 81, solo superó el nivel de 1974 brevemente, alrededor de 2011.
+
+La distancia entre ambas curvas se explica porque el producto industrial creció más lento que la población. Este resultado permite conciliar los dos diagnósticos. Graña y Terranova tienen razón en que el producto industrial no cayó en términos absolutos en el largo plazo. Pero la medida per cápita muestra, como sostiene Herrera Bartis, un deterioro profundo y prolongado, la caída se inicia con la dictadura, continúa durante la década de 1980 y toca fondo con la hiperinflación, con una pérdida cercana al 38% entre 1974 y 1990, del mismo orden que la que estima ese autor. La recuperación de la posconvertibilidad apenas superó el nivel de 1974 hacia 2011, y se revirtió después. El carácter "negativo" del proceso depende, entonces, de la vara con la que se mida.
+
+## 4.2. La composición: exportaciones según intensidad tecnológica
+
+```{r exportaciones-lall}
+#Cargamos la base de exportaciones de Fundar
+expo_mundiales <- read_csv("Bases/expo_mundiales.csv")
+
+#Filtramos los tres países y agrupamos las cinco categorías de Lall en tres bloques
+lall_3_grupos <- expo_mundiales %>%
+  filter(geonombreFundar %in% c("Argentina", "Corea del Sur", "Estados Unidos"),
+         anio >= 1970, anio <= 2023) %>%
+  mutate(grupo_tec = case_when(
+    lall_desc_full %in% c("Productos primarios",
+                          "Manufacturas basadas en recursos naturales") ~ "Primarios y recursos naturales",
+    lall_desc_full == "Manufacturas de baja tecnología" ~ "Baja tecnología",
+    lall_desc_full %in% c("Manufacturas de media tecnología",
+                          "Manufacturas de alta tecnología") ~ "Media y alta tecnología"))
+
+#Sumamos las exportaciones de cada bloque y calculamos su participación en el total de cada país
+lall_3_grupos <- lall_3_grupos %>%
+  group_by(geonombreFundar, anio, grupo_tec) %>%
+  summarise(exportaciones = sum(exportaciones, na.rm = TRUE), .groups = "drop") %>%
+  group_by(geonombreFundar, anio) %>%
+  mutate(participacion = exportaciones / sum(exportaciones) * 100) %>%
+  ungroup()
+
+#Ordenamos los bloques según contenido tecnológico
+lall_3_grupos <- lall_3_grupos %>%
+  mutate(grupo_tec = factor(grupo_tec, levels = c("Primarios y recursos naturales",
+                                                  "Baja tecnología",
+                                                  "Media y alta tecnología")))
+
+#Graficamos: un panel por bloque y una línea por país
+ggplot(lall_3_grupos, aes(x = anio, y = participacion, color = geonombreFundar)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~ grupo_tec) +
+  scale_color_manual(values = c("Argentina" = "#3A87C9",
+                                "Corea del Sur" = "#C0504D",
+                                "Estados Unidos" = "#7F7F7F")) +
+  scale_y_continuous(limits = c(0, NA)) +
+  labs(title = "Gráfico 4. Exportaciones según intensidad tecnológica (clasificación de Lall)",
+       subtitle = "Participación en el total exportado de cada país (1970-2023)",
+       x = "Año", y = "% del total exportado", color = "País",
+       caption = "Fuente: elaboración propia en base a Fundar.") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Los productos primarios y las manufacturas basadas en recursos naturales representaban cerca del 89% de las exportaciones argentinas en 1970 y alrededor del 77% en 2023. En la Argentina, las manufacturas de media y alta tecnología ganaron peso hasta superar el 25% hacia 2011-2013, en la etapa de crecimiento industrial de la posconvertibilidad, pero retrocedieron después, a alrededor del 21% en 2023, frente a cerca del 68% en Corea del Sur y del 53% en Estados Unidos. Corea del Sur recorrió el camino inverso al argentino, sus exportaciones pasaron de estar dominadas por la baja tecnología a concentrarse en bienes de media y alta tecnología.
+
+Estos resultados extienden al período reciente la primarización que Herrera Bartis observa en la composición del empleo industrial hasta 2010. La inserción exportadora argentina sigue apoyada en bienes de base primaria, a diferencia de Corea del Sur, cuya estructura exportadora se desplazó hacia bienes de mayor contenido tecnológico. Esto es consistente con el argumento de Graña y Terranova, en la NDIT, la Argentina no logró insertarse como plataforma de exportación manufacturera y conservó su perfil de exportador de materias primas y sus derivados.
+
+## 4.3. La calidad del empleo: informalidad asalariada
+
+```{r eph}
+#Cargamos los microdatos de la EPH (2° trimestre de 2025)
+eph <- get_microdata(year = 2025, period = 2, type = "individual")
+
+#Nos quedamos con los asalariados (ocupados, categoría obrero o empleado)
+#y creamos las variables de informalidad, rama y tamaño del establecimiento
+asalariados <- eph %>%
+  filter(ESTADO == 1, CAT_OCUP == 3) %>%
+  mutate(
+    #Informal = sin descuento jubilatorio
+    informal = if_else(PP07H == 2, 1, 0, missing = 0),
+    #Pasamos el código de rama a número y corregimos los códigos a 2 dígitos
+    cod_rama = as.numeric(PP04B_COD),
+    cod_rama = if_else(cod_rama < 100, cod_rama * 100, cod_rama),
+    rama = case_when(
+      cod_rama >= 100  & cod_rama < 1000 ~ "Primarias",
+      cod_rama >= 1000 & cod_rama < 3400 ~ "Industria",
+      cod_rama == 4000                   ~ "Construcción",
+      cod_rama >= 4500 & cod_rama < 4900 ~ "Comercio",
+      cod_rama >= 4900 & cod_rama < 5400 ~ "Transporte",
+      cod_rama >= 5500 & cod_rama < 5700 ~ "Hoteles y restaurantes",
+      cod_rama >= 6200 & cod_rama < 7500 ~ "Serv. financieros y empresariales",
+      cod_rama >= 8300 & cod_rama < 8500 ~ "Administración pública",
+      cod_rama >= 8500 & cod_rama < 8600 ~ "Educación",
+      cod_rama >= 8600 & cod_rama < 8900 ~ "Salud",
+      cod_rama == 9700                   ~ "Servicio doméstico"),
+    tamest = case_when(
+      PP04C %in% 1:5  | (PP04C == 99 & PP04C99 == 1) ~ "Hasta 5",
+      PP04C %in% 6:8  | (PP04C == 99 & PP04C99 == 2) ~ "6 a 40",
+      PP04C %in% 9:12 | (PP04C == 99 & PP04C99 == 3) ~ "Más de 40",
+      PP04B1 == 1 ~ "Hasta 5"))
+
+#Tasa de informalidad del total de asalariados
+tasa_total <- asalariados %>%
+  summarise(tasa_informalidad = sum(informal * PONDERA) / sum(PONDERA) * 100)
+
+#Tasa de informalidad por rama
+inf_rama <- asalariados %>%
+  filter(!is.na(rama)) %>%
+  group_by(rama) %>%
+  summarise(informalidad = sum(informal * PONDERA) / sum(PONDERA) * 100,
+            casos = n())
+
+#Graficamos, resaltando la industria
+ggplot(inf_rama, aes(x = reorder(rama, informalidad), y = informalidad,
+                     fill = rama == "Industria")) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = paste0(round(informalidad, 1), "%")),
+            position = position_stack(vjust = 0.5), size = 3.2) +
+  scale_fill_manual(values = c("grey70", "#3A87C9")) +
+  coord_flip() +
+  labs(title = "Gráfico 5. Informalidad asalariada por rama de actividad",
+       subtitle = "Asalariados sin descuento jubilatorio como % del total de la rama. 2° trimestre de 2025",
+       x = "Rama de actividad", y = "% de asalariados no registrados",
+       caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC.") +
+  theme_minimal()
+```
+
+En el segundo trimestre de 2025, el 37,7% de los asalariados urbanos no estaba registrado. En la industria, la tasa fue del 29,3%, lo que la ubica en el sexto lugar entre las once ramas consideradas, ordenadas de mayor a menor informalidad, y por debajo del promedio. Las tasas más altas corresponden al servicio doméstico (78%), la construcción (72,8%), hoteles y restaurantes (59,2%) y el comercio (45,5%). El dato es consistente con la lectura de Herrera Bartis, que asocia el avance de la informalidad al desplazamiento del empleo desde la industria hacia servicios de baja productividad.
+
+```{r informalidad-tamano}
+#Clasificamos a los asalariados en industria y resto de la economía
+#y calculamos la informalidad por tamaño del establecimiento
+inf_tamano <- asalariados %>%
+  filter(!is.na(tamest)) %>%
+  mutate(grupo = if_else(rama == "Industria" & !is.na(rama),
+                         "Industria manufacturera", "Resto de la economía")) %>%
+  group_by(grupo, tamest) %>%
+  summarise(informalidad = sum(informal * PONDERA) / sum(PONDERA) * 100,
+            casos = n(), .groups = "drop") %>%
+  mutate(tamest = factor(tamest, levels = c("Hasta 5", "6 a 40", "Más de 40")))
+
+#Graficamos con barras una al lado de la otra
+ggplot(inf_tamano, aes(x = tamest, y = informalidad, fill = grupo)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = paste0(round(informalidad, 1), "%")),
+            position = position_dodge(width = 0.9), vjust = -0.5, size = 3.2) +
+  scale_fill_manual(values = c("Industria manufacturera" = "#3A87C9",
+                               "Resto de la economía" = "grey65")) +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title = "Gráfico 6. Informalidad asalariada según tamaño del establecimiento",
+       subtitle = "Industria manufacturera y resto de la economía. 2° trimestre de 2025",
+       x = "Trabajadores en el establecimiento", y = "% de asalariados no registrados",
+       fill = NULL,
+       caption = "Fuente: elaboración propia en base a microdatos de la EPH-INDEC.") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+El Gráfico 6 muestra que el promedio industrial esconde una fuerte heterogeneidad. En los establecimientos industriales de hasta cinco trabajadores, la informalidad alcanza el 72,1%, mientras que en los de más de cuarenta es del 6,6%. Además, dentro de cada tamaño la informalidad industrial es muy similar a la del resto de la economía (75,4%, 31,3% y 11,7%, respectivamente). Como las tasas por tamaño son parecidas, la menor informalidad industrial que muestra el Gráfico 5 se explica, sobre todo, porque la industria concentra una mayor proporción de su empleo en establecimientos grandes. La industria que sobrevivió a la desindustrialización combina un núcleo de establecimientos grandes, mayormente registrados, con un segmento de talleres pequeños donde la informalidad es la norma.
+
+# 5. Conclusiones
+
+En cuanto al alcance, la participación del empleo industrial cayó de forma sostenida entre 1970 y 2019, pero no más que en Estados Unidos, y sin el recorrido de industrialización y posterior desindustrialización de Corea del Sur. La principal particularidad aparece en el producto, el diagnóstico de desindustrialización "negativa" depende de la medida utilizada. En términos absolutos, el valor agregado industrial no muestra un derrumbe de largo plazo, como señalan Graña y Terranova, en términos per cápita, en cambio, se observa el deterioro profundo que destaca Herrera Bartis, que la posconvertibilidad apenas logró revertir.
+
+En cuanto a la composición, las exportaciones argentinas siguen concentradas en productos primarios y manufacturas basadas en recursos naturales, y el avance de la media y alta tecnología durante la posconvertibilidad no se sostuvo. Esto extiende al período reciente la primarización documentada para el empleo industrial. En cuanto al empleo, la informalidad industrial es menor que el promedio de la economía, pero ello responde al peso de los establecimientos grandes, en los pequeños, la informalidad industrial es tan elevada como en el resto de la economía, lo que revela una estructura industrial heterogénea.
+
+Las dos lecturas resultan complementarias, la perspectiva de la NDIT ayuda a entender por qué la Argentina no se convirtió en plataforma exportadora de manufacturas, y la taxonomía de Rowthorn permite describir las consecuencias internas del proceso. Los datos muestran, además, que tras el máximo de 2011 el producto industrial se estancó y la participación del empleo industrial volvió a caer. Queda abierta la actualización de las series de empleo posteriores a 2019, para evaluar si esa tendencia se profundizó en los años más recientes.
+
+# Referencias
+
+Graña, J. M. y Terranova, L. (2022). Ni mecánica ni prematura: la desindustrialización y la nueva división internacional del trabajo (1970-2019). 
+
+Herrera Bartis, G. (2021). Tres caminos de desindustrialización. Un análisis estilizado de los casos del Reino Unido, los Estados Unidos y la Argentina.
+
+Jiménez, M. (2013). La informalidad laboral en el sector formal. Un análisis preliminar.
+
+Lall, S. (2000). The technological structure and performance of developing country manufactured exports.
+
+Rowthorn, R. (1986). De-industrialization in Britain. En R. Martin y R. Rowthorn.
+
+Rowthorn, R. y Wells, J. (1987). De-industralization and Foreing Trade. Cambridge: Cambridge University Press.
+
+

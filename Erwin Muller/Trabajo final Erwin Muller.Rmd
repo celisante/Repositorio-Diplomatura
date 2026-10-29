@@ -1,0 +1,563 @@
+---
+title: "Trabajo final Erwin Muller"
+output: html_document
+date: "2026-09-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+## Resumen Ejecutivo
+
+El presente trabajo analiza las condiciones de inserción laboral en Gran Resistencia y las compara con las observadas en los demás aglomerados urbanos del Nordeste Argentino —Corrientes, Formosa y Posadas— a partir de los microdatos de la Encuesta Permanente de Hogares (EPH) correspondientes a los cuartos trimestres de 2016, 2020 y 2025. El análisis considera tres dimensiones: informalidad laboral desde un criterio legalista, estabilidad de la ocupación y subocupación por insuficiencia horaria, incorporando el nivel educativo como principal variable de desagregación y la condición de pobreza del hogar de manera complementaria. Los resultados muestran trayectorias diferenciadas entre los indicadores y los períodos analizados. Asimismo, se observan diferencias relevantes según nivel educativo y condición de pobreza. En conjunto, los resultados muestran que las condiciones de inserción laboral presentan heterogeneidades temporales, territoriales y sociales, y respaldan la conveniencia de abordarlas desde una perspectiva multidimensional.
+
+## Introducción
+
+El analisis del mercado de trabajo no puede limitarse únicamente a distinguir entre población ocupada y desocupada, ya que dentro de la población ocupada existen diferentes condiciones de inserción laboral.
+La participacion en el mercado de trabajo puede desarrollarse bajo distintas situaciones de registración, estabilidad y suficiencia horaria, dimensiones que permiten aproximarse a las heteregeneidades existentes en la calidad de las inserciones laborales. 
+
+En este marco, la informalidad y la precariedad laboral constituyen dimensiones relevantes para analizar las condiciones de insercion de la población ocupada. La informalidad puede abordarse desde una perspectiva legalista, centrada en la registracion laboral y el acceso a mecanismos de protección social, mientras que la precariedad remite a un fenomeno mas amplio y multidimensional, que puede expresarse, entre otros aspectos, en la inestabilidad o falta de continuidad de la ocupación y en la insuficiencia de horas de trabajo. Si bien ambos conceptos se encuentran relacionados, no resultan equivalentes, por lo que su consideración conjunta permite caracterizar distintas formas de inserción laboral.
+
+A partir de estas consideraciones, el trabajo se propone analizar las condiciones de inserción laboral en Gran Resistencia y compararlas con las observadas en los demás aglomerados urbanos del Nordeste Argentino revelados por la Encuesta Permanente de Hogares (EPH): Corrientes, Formosa y Posadas. Asimismo, se incopora el nivel educaivo como principal variable de desagregación sociolaboral, com el propósito de observar si las condiciones de inserción presentan diferencias según educación. De manera complementaria, se considera que la condición de pobreza del hogar como una dimensión socioeconómica que permita explorar su relación con las condiciones laborales analizadas.
+
+EL análisis se realizará a partir de tres cortes temporales correspondientes a los cuartos trimestres de 2016,2020 y 2025. La selección de estos períodos permite comparar tres momentos diferenciados del mercado de trabajo:2016 como punto inicial del período analizado, 2020 como una conyutura excelcional atravesada por la pandemia COVID-19 y 2025 como período reciente. La utilización del mismo trimestre en los tres años permite, además, reducir las diferencias asociadas a la estacionalidad. Dado que se consideran tres cortes temporales no equidistantes, el análisis se orientara a comparar los cambios observados entre estos momentos , sin interpretarlos como una tendencia continua ni atribuirles relaciones causales.
+
+### Pregunta general
+¿Cómo evolucionaron las condiciones de inserción laboral de la población ocupada de Gran Resistencia y de los demas aglomerados urbanos del NEA en los cuartos trimestres de 2016, 2020 y 2025?
+
+### Preguntas específicas
+
+1. ¿Cómo evolucionó la informalidad laboral entre la población asalariada de Gran Resistencia y de los demás aglomerados urbanos del NEA en los períodos analizados?
+
+2. ¿Qué diferencias se observan en las condiciones de precariedad laboral, considerando la estabilidad de la ocupación y la insuficiencia horaria, entre los períodos analizados?
+
+3. ¿Qué diferencias presentan las condiciones de inserción laboral según el nivel educativo de la población ocupada de Gran Resistencia y de los demás aglomerados urbanos del NEA?
+
+### Objetivo general
+
+Analizar la evolución de las condiciones de inserción laboral de la población ocupada de Gran Resistencia y de los demás aglomerados urbanos del NEA en los cuartos trimestres de 2016, 2020 y 2025.
+
+### Objetivos específicos
+
+1. Analizar la evolución de la informalidad laboral entre la población asalariada de Gran Resistencia y de los demás aglomerados urbanos del NEA en los períodos analizados.
+
+2. Comparar las condiciones de precariedad laboral, considerando la estabilidad de la ocupación y la insuficiencia horaria, entre los períodos analizados.
+
+3. Examinar las diferencias en las condiciones de inserción laboral según el nivel educativo de la población ocupada de Gran Resistencia y de los demás aglomerados urbanos del NEA.
+
+## Desarrollo conceptual
+
+El análisis de la informalidad laboral en América Latina ha atravesado diferentes enfoques conceptuales. Desde una perspectiva productivista, las primeras interpretaciones latinoamericanas vincularon la informalidad con las características de la estructura productiva y con la heterogeneidad existente entre sectores de diferente productividad. En este enfoque, el sector informal urbano se encuentra asociado principalmente con unidades productivas de pequeña escala, menor dotación de capital y tecnología y empleos de baja productividad. La persistencia de este tipo de inserciones laborales se relaciona con las dificultades de las economías latinoamericanas para generar una cantidad suficiente de puestos de trabajo en los sectores de mayor productividad capaces de absorber a la fuerza de trabajo disponible.
+
+Esta perspectiva se encuentra estrechamente relacionada con el enfoque estructuralista latinoamericano. Fernández-Franco, Graña, Lastra y Weksler (2022) señalan que los aportes latinoamericanos sobre el mercado de trabajo han destacado la existencia de una marcada heterogeneidad productiva en la región, que se expresa en la coexistencia de puestos de trabajo con diferentes niveles de ingresos y calidad. Desde esta perspectiva, las dificultades de absorción de fuerza de trabajo por parte de los sectores más dinámicos favorecen la permanencia de actividades de baja productividad y bajos ingresos. Los autores muestran que esta heterogeneidad continúa siendo relevante para comprender los mercados laborales latinoamericanos, donde el empleo mantiene una importante concentración en pequeñas unidades productivas y en puestos de calificación baja o media.
+
+Sin embargo, las transformaciones experimentadas por los mercados de trabajo ampliaron la discusión sobre la informalidad. La expansión de modalidades de subcontratación, tercerización y otras formas de vinculación laboral mostró que las inserciones laborales de baja calidad no se encuentran exclusivamente concentradas en las unidades productivas tradicionalmente identificadas como informales. En este contexto adquiere relevancia una concepción legalista de la informalidad, que desplaza la atención desde las características del establecimiento productivo hacia las condiciones de la relación laboral y, particularmente, hacia el acceso de los trabajadores a derechos y mecanismos de protección social.
+
+Esta modificación conceptual permite distinguir entre la pertenencia a un sector productivo considerado informal y la existencia de un empleo informal. Desde el criterio legalista, un trabajador puede encontrarse inserto en una unidad productiva formal y, al mismo tiempo, mantener una relación laboral sin la protección correspondiente. En el caso argentino, Fernández-Franco et al. (2022) utilizan la realización de descuentos jubilatorios como variable para analizar el acceso de los asalariados a la seguridad social. Esta perspectiva resulta especialmente pertinente para el presente trabajo, en el que la informalidad laboral será operacionalizada a partir de la ausencia de descuento jubilatorio entre la población asalariada.
+
+La informalidad, sin embargo, no agota el problema de la calidad del empleo. El concepto de precariedad laboral permite incorporar otras dimensiones de las condiciones de inserción. Fernández-Franco et al. (2022) señalan que la precariedad constituye un fenómeno multidimensional y mencionan, entre sus posibles manifestaciones, aspectos vinculados con la protección social y otras características de las relaciones laborales. Por lo tanto, informalidad y precariedad son conceptos relacionados, pero no necesariamente equivalentes. Mientras que el criterio legalista de informalidad utilizado en este trabajo permitirá observar la registración y protección social de los asalariados, la precariedad será abordada mediante dimensiones adicionales vinculadas con la estabilidad o continuidad de la ocupación y con la insuficiencia horaria.
+
+Esta distinción permite reconocer que las condiciones laborales desfavorables pueden adoptar diferentes formas y combinarse de distintas maneras. Un trabajador puede presentar ausencia de protección social, inestabilidad laboral o insuficiencia de horas de trabajo, sin que estas situaciones necesariamente coincidan en todos los casos. Por ello, el análisis empírico buscará observar separadamente estas dimensiones antes de examinar sus diferencias según determinadas características sociolaborales de la población.
+
+La evidencia comparativa presentada por Fernández-Franco et al. (2022) refuerza algunos de los argumentos centrales de los enfoques estructuralistas. El análisis de trece países latinoamericanos muestra la persistencia de una estructura ocupacional caracterizada por un peso significativo de pequeños establecimientos y puestos de calificación baja y media. Al compararla con Estados Unidos, los autores encuentran diferencias importantes en la composición del empleo y sostienen que el rezago productivo latinoamericano se traduce en un deterioro más general de las condiciones laborales, aunque con mayor intensidad en los establecimientos pequeños. Al mismo tiempo, la heterogeneidad existente dentro del propio sector informal y la presencia de problemas de calidad del empleo más allá de los segmentos tradicionalmente considerados informales muestran los límites de una interpretación estrictamente dual del mercado de trabajo.
+
+En consecuencia, el estudio de las condiciones de inserción laboral requiere considerar simultáneamente las características estructurales del mercado de trabajo y las distintas formas concretas que puede asumir la calidad del empleo. A partir de este marco, el presente trabajo analizará la informalidad desde un criterio legalista y distintas dimensiones de la precariedad laboral en Gran Resistencia y los demás aglomerados urbanos del NEA. Asimismo, el nivel educativo será incorporado como variable de apertura para examinar si estas condiciones de inserción presentan diferencias entre grupos educativos, mientras que la condición de pobreza del hogar será considerada posteriormente como dimensión socioeconómica complementaria.
+
+## Metodología
+
+El trabajo adopta un diseño cuantitativo, descriptivo-comparativo, basado en el procesamiento de los microdatos de la Encuesta Permanente de Hogares (EPH) elaborada por el Instituto Nacional de Estadística y Censos (INDEC). Se utilizan tres cortes temporales correspondientes a los cuartos trimestres de 2016, 2020 y 2025. La selección del mismo trimestre permite reducir las diferencias asociadas a la estacionalidad, mientras que los años seleccionados permiten comparar un momento inicial, una coyuntura excepcional atravesada por la pandemia de COVID-19 y un período reciente. Dado que se trata de tres cortes temporales no equidistantes, los resultados serán interpretados como comparaciones entre momentos específicos y no como una tendencia continua.
+
+El ámbito territorial comprende los cuatro aglomerados urbanos del Nordeste Argentino relevados por la EPH: Gran Resistencia, Corrientes, Formosa y Posadas. Gran Resistencia constituye el principal ámbito de interés, mientras que los restantes aglomerados son utilizados como referencia comparativa regional. La unidad general de análisis está constituida por las personas ocupadas residentes en estos aglomerados, aunque el universo específico se adecuará a cada indicador.
+
+Las condiciones de inserción laboral serán analizadas mediante tres indicadores. En primer lugar, la informalidad laboral se abordará desde un criterio legalista, considerando la proporción de asalariados que no cuentan con descuento jubilatorio. En segundo lugar, se analizará una dimensión de la precariedad vinculada con la estabilidad de la ocupación, identificando entre los asalariados aquellos puestos que poseen un tiempo de finalización. Para este último indicador se considerarán únicamente las respuestas válidas de la variable PP07C, excluyendo los casos sin respuesta o que declaran no saber. Asimismo, debe señalarse que esta variable no releva al servicio doméstico, por lo que el indicador no representa al conjunto de la población asalariada, sino al universo efectivamente comprendido por la pregunta. Finalmente, se considerará la insuficiencia horaria mediante la identificación de la población ocupada en situación de subocupación por insuficiencia de horas. Para cada indicador se respetará el universo correspondiente y se utilizarán los ponderadores de la EPH para obtener estimaciones representativas de la población relevada.
+
+Como principal variable de apertura se utilizará el nivel educativo. A partir de las categorías disponibles en la EPH se construirán tres grupos: nivel educativo bajo, integrado por personas sin instrucción, con primario incompleto, primario completo o secundario incompleto; nivel medio, correspondiente a secundario completo y superior o universitario incompleto; y nivel alto, correspondiente a superior o universitario completo. Dado que la desagregación por nivel educativo reduce la cantidad de observaciones disponibles en algunos grupos, las estimaciones correspondientes a subgrupos con menor cantidad de casos deberán analizarse cuidadosamente.
+
+
+De manera complementaria, se incorporará la condición de pobreza del hogar, diferenciando entre hogares indigentes, pobres no indigentes y no pobres. Esta dimensión será utilizada para analizar la relación entre las condiciones de inserción laboral y la situación socioeconómica de los hogares. Debido a que las canastas regionales disponibles mediante get_poverty_lines() se encuentran actualizadas solamente hasta el segundo trimestre de 2025, se incorporarán manualmente los datos oficiales de la Canasta Básica Alimentaria (CBA) y de la Canasta Básica Total (CBT) publicados por el INDEC para la región Noreste. Los valores trimestrales serán obtenidos a partir del promedio de las canastas correspondientes a octubre, noviembre y diciembre de 2025.
+
+El procesamiento se realizará en R a partir de los microdatos individuales de la EPH. Las bases de los distintos períodos serán armonizadas para construir indicadores comparables y posteriormente integradas en una única base de análisis. Los resultados serán presentados mediante estimaciones ponderadas y visualizaciones que permitan observar las diferencias temporales, territoriales y educativas.
+
+## Resultados y análisis
+
+```{r paquetes}
+library(tidyverse)
+library(eph)
+```
+```{r descarga-eph}
+eph_2016 <- get_microdata(
+  year = 2016,
+  trimester = 4,
+  type = "individual"
+)
+
+eph_2020 <- get_microdata(
+  year = 2020,
+  trimester = 4,
+  type = "individual"
+)
+
+eph_2025 <- get_microdata(
+  year = 2025,
+  trimester = 4,
+  type = "individual"
+)
+```
+
+```{r filtrar-nea}
+nea_2016 <- eph_2016 %>%
+  filter(AGLOMERADO %in% c(7, 8, 12, 15))
+nea_2020 <- eph_2020 %>%
+  filter(AGLOMERADO %in% c(7, 8, 12, 15))
+
+nea_2025 <- eph_2025 %>%
+  filter(AGLOMERADO %in% c(7, 8, 12, 15))
+```
+
+```{r unir-base}
+nea_2016 <- nea_2016 %>%
+  mutate(anio = 2016)
+
+nea_2020 <- nea_2020 %>%
+  mutate(anio = 2020)
+
+nea_2025 <- nea_2025 %>%
+  mutate(anio = 2025)
+
+base_nea <- bind_rows(
+  nea_2016,
+  nea_2020,
+  nea_2025
+)
+```
+
+```{r variables-informalidad}
+base_nea <- base_nea %>%
+  mutate(
+    ocupado = if_else(ESTADO == 1, 1, 0),
+    
+    asalariado = if_else(
+      ocupado == 1 & CAT_OCUP == 3, 1, 0
+    ),
+    
+    asalariado_registrado = if_else(
+      ocupado == 1 & CAT_OCUP == 3 & PP07H == 1, 1, 0
+    ),
+    
+    asalariado_no_registrado = if_else(
+      ocupado == 1 & CAT_OCUP == 3 & PP07H == 2, 1, 0
+    )
+  )
+```
+```{r indicador-informalidad}
+informalidad <- base_nea %>%
+  filter(asalariado == 1, PP07H %in% c(1, 2)) %>%
+  group_by(anio, AGLOMERADO) %>%
+  summarise(
+    tasa_informalidad = weighted.mean(
+      asalariado_no_registrado,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+
+```
+```{r variables-estabilidad}
+base_nea <- base_nea %>%
+  mutate(
+    empleo_con_finalizacion = if_else(
+      asalariado == 1 & PP07C == 1, 1, 0
+    )
+  )
+```
+```{r indicador-estabilidad}
+empleo_temporal <- base_nea %>%
+  filter(asalariado == 1, PP07C %in% c(1, 2)) %>%
+  group_by(anio, AGLOMERADO) %>%
+  summarise(
+    tasa_empleo_temporal = weighted.mean(
+      empleo_con_finalizacion,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+
+
+```
+
+
+```{r variables-subocupacion}
+base_nea <- base_nea %>%
+  mutate(
+    subocupado = if_else(
+      ocupado == 1 &
+        PP3E_TOT < 35 &
+        PP03G == 1 &
+        PP03H == 1,
+      1,
+      0
+    )
+  )
+```
+```{r indicador-subocupacion }
+subocupacion <- base_nea %>%
+  filter(ocupado == 1) %>%
+  group_by(anio, AGLOMERADO) %>%
+  summarise(
+    tasa_subocupacion = weighted.mean(
+      subocupado,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+```
+```{r nivel-educativo}
+base_nea <- base_nea %>%
+  mutate(
+    nivel_educativo = case_when(
+      NIVEL_ED %in% c(1, 2, 3, 7) ~ "Bajo",
+      NIVEL_ED %in% c(4, 5) ~ "Medio",
+      NIVEL_ED == 6 ~ "Alto",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
+```{r indicadores-educacion}
+informalidad_educacion <- base_nea %>%
+  filter(
+    asalariado == 1,
+    PP07H %in% c(1, 2),
+    !is.na(nivel_educativo)
+  ) %>%
+  group_by(anio, AGLOMERADO, nivel_educativo) %>%
+  summarise(
+    tasa_informalidad = weighted.mean(
+      asalariado_no_registrado,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+
+empleo_temporal_educacion <- base_nea %>%
+  filter(
+    asalariado == 1,
+    PP07C %in% c(1, 2),
+    !is.na(nivel_educativo)
+  ) %>%
+  group_by(anio, AGLOMERADO, nivel_educativo) %>%
+  summarise(
+    tasa_empleo_temporal = weighted.mean(
+      empleo_con_finalizacion,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+
+subocupacion_educacion <- base_nea %>%
+  filter(
+    ocupado == 1,
+    !is.na(nivel_educativo)
+  ) %>%
+  group_by(anio, AGLOMERADO, nivel_educativo) %>%
+  summarise(
+    tasa_subocupacion = weighted.mean(
+      subocupado,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+```
+```{r pobreza}
+canastas_indec <- get_poverty_lines(regional = TRUE)
+
+canasta_nea_2025_4 <- tibble(
+  region = "Noreste",
+  periodo = "2025.4",
+  CBA = mean(c(157679.95, 164584.23, 171065.04)),
+  CBT = mean(c(329551.10, 342335.20, 355815.28)),
+  codigo = 41
+)
+
+canastas_indec <- bind_rows(
+  canastas_indec,
+  canasta_nea_2025_4
+)
+
+base_nea_pobreza <- calculate_poverty(
+  base = base_nea,
+  basket = canastas_indec,
+  window = "quarter",
+  print_summary = FALSE
+)
+```
+```{r indicadores-pobreza}
+informalidad_pobreza <- base_nea_pobreza %>%
+  filter(
+    asalariado == 1,
+    PP07H %in% c(1, 2),
+    !is.na(situacion)
+  ) %>%
+  group_by(anio, AGLOMERADO, situacion) %>%
+  summarise(
+    tasa_informalidad = weighted.mean(
+      asalariado_no_registrado,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+
+empleo_temporal_pobreza <- base_nea_pobreza %>%
+  filter(
+    asalariado == 1,
+    PP07C %in% c(1, 2),
+    !is.na(situacion)
+  ) %>%
+  group_by(anio, AGLOMERADO, situacion) %>%
+  summarise(
+    tasa_empleo_temporal = weighted.mean(
+      empleo_con_finalizacion,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+
+subocupacion_pobreza <- base_nea_pobreza %>%
+  filter(
+    ocupado == 1,
+    !is.na(situacion)
+  ) %>%
+  group_by(anio, AGLOMERADO, situacion) %>%
+  summarise(
+    tasa_subocupacion = weighted.mean(
+      subocupado,
+      PONDERA,
+      na.rm = TRUE
+    ) * 100,
+    .groups = "drop"
+  )
+```
+
+De manera complementaria, el análisis según condición de pobreza del hogar muestra diferencias en las condiciones de inserción laboral en Gran Resistencia. La informalidad entre los asalariados pertenecientes a hogares pobres alcanzó el 64,6 % en 2016, el 61,5 % en 2020 y el 67,2 % en 2025, mientras que entre aquellos pertenecientes a hogares no pobres fue del 27,8 %, 23,0 % y 16,6 %, respectivamente. También se observan diferencias en el empleo con tiempo de finalización, que presentó valores superiores entre los asalariados de hogares pobres en los tres períodos analizados. Estos resultados muestran una asociación entre la situación socioeconómica del hogar y las condiciones de inserción laboral consideradas, sin que ello implique establecer una relación causal.
+
+En el caso de la subocupación, no se realizó una interpretación según condición de pobreza para Gran Resistencia en 2025, debido a que los casos subocupados del período no contaban con información que permitiera clasificarlos según esta condición.
+
+```{r grafico-gran resistencia}
+datos_gr <- informalidad %>%
+  filter(AGLOMERADO == 8) %>%
+  select(anio, tasa_informalidad) %>%
+  left_join(
+    empleo_temporal %>%
+      filter(AGLOMERADO == 8) %>%
+      select(anio, tasa_empleo_temporal),
+    by = "anio"
+  ) %>%
+  left_join(
+    subocupacion %>%
+      filter(AGLOMERADO == 8) %>%
+      select(anio, tasa_subocupacion),
+    by = "anio"
+  )
+datos_gr_largo <- datos_gr %>%
+  pivot_longer(
+    cols = c(
+      tasa_informalidad,
+      tasa_empleo_temporal,
+      tasa_subocupacion
+    ),
+    names_to = "indicador",
+    values_to = "tasa"
+  )
+datos_gr_largo <- datos_gr_largo %>%
+  mutate(
+    indicador = case_when(
+      indicador == "tasa_informalidad" ~ "Informalidad laboral",
+      indicador == "tasa_empleo_temporal" ~ "Empleo con tiempo de finalización",
+      indicador == "tasa_subocupacion" ~ "Subocupación por insuficiencia horaria"
+    )
+  )
+ggplot(
+  datos_gr_largo,
+  aes(
+    x = factor(anio),
+    y = tasa,
+    group = indicador,
+    color = indicador
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
+  geom_text(aes(label = paste0(round(tasa, 1), "%")), vjust = -0.8, show.legend = FALSE) +
+  scale_y_continuous(
+  limits = c(0, 45),
+  breaks = seq(0, 45, 5),
+  expand = expansion(mult = c(0, 0.05))
+) +
+  labs(
+    title = "Condiciones de inserción laboral en Gran Resistencia",
+    subtitle = "Informalidad, empleo con tiempo de finalización y subocupación\nCuartos trimestres de 2016, 2020 y 2025",
+    x = "Año",
+    y = "Porcentaje",
+    color = "Indicador",
+    caption = "Fuente: elaboración propia sobre microdatos de la EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+En Gran Resistencia, los tres indicadores analizados presentan comportamientos diferenciados entre los períodos seleccionados. La informalidad laboral entre los asalariados pasó del 35,8 % en 2016 al 39,5 % en 2020 y se mantuvo prácticamente estable en 2025, cuando alcanzó el 39,4 %. En cambio, el empleo con tiempo de finalización mostró una variación más pronunciada: aumentó del 16,9 % en 2016 al 35,8 % en 2020 y descendió posteriormente al 16,3 % en 2025, ubicándose en un nivel similar al observado al comienzo del período. Por su parte, la subocupación por insuficiencia horaria pasó del 6,4 % en 2016 al 12,1 % en 2020 y disminuyó al 2,8 % en 2025.
+
+Estos resultados muestran que las dimensiones consideradas no evolucionaron de manera homogénea. Si bien los tres indicadores registraron valores superiores en 2020 respecto de 2016, hacia 2025 presentan comportamientos diferentes: la informalidad permanece en niveles cercanos a los observados en 2020, mientras que el empleo con tiempo de finalización retorna a valores próximos a los de 2016 y la subocupación se ubica por debajo de ambos períodos anteriores. En este sentido, los resultados respaldan la conveniencia de analizar las condiciones de inserción laboral desde una perspectiva multidimensional, ya que una única dimensión no permite representar por sí sola las distintas formas que pueden asumir las condiciones laborales desfavorables.
+
+La comparación con los demás aglomerados urbanos del NEA permite contextualizar la evolución observada en Gran Resistencia. En materia de informalidad laboral, en 2016 Gran Resistencia (35,8 %) presentaba un nivel similar al de Corrientes (35,4 %) y superior a Posadas (29,7 %) y Formosa (24,6 %). Hacia 2025, en cambio, las diferencias territoriales se redujeron considerablemente: los cuatro aglomerados registraron valores próximos al 40 %. El empleo con tiempo de finalización mostró un comportamiento diferente, con mayores diferencias entre aglomerados. Gran Resistencia pasó del 16,9 % en 2016 al 35,8 % en 2020 y retornó al 16,3 % en 2025, mientras que Corrientes registró 21,7 %, 24,8 % y 18,6 %, respectivamente. Posadas y Formosa presentaron, en general, valores considerablemente inferiores.
+
+La subocupación por insuficiencia horaria también mostró variaciones territoriales. En 2020 se produjo una aproximación de los valores entre los cuatro aglomerados, que se ubicaron entre el 10,0 % y el 12,9 %, mientras que en 2025 el indicador disminuyó en todos ellos. Gran Resistencia registró entonces uno de los niveles más bajos (2,8 %), junto con Formosa (2,5 %), frente a Corrientes (6,2 %) y Posadas (8,3 %). En conjunto, la comparación regional muestra que las tres dimensiones no presentan una evolución territorial uniforme: mientras la informalidad tendió a aproximarse entre los aglomerados hacia 2025, el empleo con tiempo de finalización y la subocupación conservaron diferencias más marcadas. Esto refuerza la necesidad de considerar distintas dimensiones para caracterizar las condiciones de inserción laboral.
+
+
+
+```{r grafico-informalidad-educacion-gr}
+informalidad_educacion_gr <- informalidad_educacion %>%
+  filter(AGLOMERADO == 8) %>%
+  mutate(
+    nivel_educativo = factor(
+      nivel_educativo,
+      levels = c("Bajo", "Medio", "Alto")
+    )
+  )
+
+ggplot(
+  informalidad_educacion_gr,
+  aes(
+    x = factor(anio),
+    y = tasa_informalidad,
+    group = nivel_educativo,
+    color = nivel_educativo
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
+  geom_text(
+    aes(label = paste0(round(tasa_informalidad, 1), "%")),
+    vjust = -0.8,
+    show.legend = FALSE
+  ) +
+  scale_y_continuous(
+    limits = c(0, 85),
+    breaks = seq(0, 80, 10),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Informalidad laboral según nivel educativo en Gran Resistencia",
+    subtitle = "Proporción de asalariados sin descuento jubilatorio\nCuartos trimestres de 2016, 2020 y 2025",
+    x = "Año",
+    y = "Porcentaje",
+    color = "Nivel educativo",
+    caption = "Fuente: elaboración propia sobre microdatos de la EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+La informalidad laboral presenta diferencias marcadas según el nivel educativo de los asalariados de Gran Resistencia. En 2016, la tasa alcanzó el 64,1 % entre quienes tenían nivel educativo bajo, frente al 27,0 % del nivel medio y el 10,5 % del nivel alto. En 2020, los valores fueron del 58,6 %, 39,0 % y 12,6 %, respectivamente. En 2025, la informalidad alcanzó el 76,8 % entre los asalariados de nivel educativo bajo, mientras que entre quienes tenían nivel medio fue del 39,2 % y entre aquellos con nivel alto del 9,0 %.
+
+En los tres períodos se mantiene, por lo tanto, un patrón consistente: la informalidad es mayor entre los asalariados de nivel educativo bajo, disminuye entre aquellos con nivel medio y registra sus menores valores entre quienes poseen nivel educativo alto. La magnitud de las diferencias varía, pero el orden relativo de los tres grupos se mantiene. Los resultados muestran así una asociación entre nivel educativo y condiciones de registración laboral en Gran Resistencia, sin que esta relación pueda interpretarse en términos causales.
+
+El empleo con tiempo de finalización presenta un patrón similar. En los tres períodos, los mayores valores corresponden al nivel educativo bajo y los menores al nivel alto. En 2025, por ejemplo, las proporciones fueron del 45,6 % para el nivel bajo, 17,8 % para el medio y 4,6 % para el alto. No obstante, la estimación correspondiente al nivel educativo bajo en ese año debe interpretarse cuidadosamente, dado que se basa en 26 observaciones muestrales válidas.
+
+```{r grafico-subocupacion-educacion-gr}
+subocupacion_educacion_gr <- subocupacion_educacion %>%
+  filter(AGLOMERADO == 8) %>%
+  mutate(
+    nivel_educativo = factor(
+      nivel_educativo,
+      levels = c("Bajo", "Medio", "Alto")
+    )
+  )
+
+ggplot(
+  subocupacion_educacion_gr,
+  aes(
+    x = factor(anio),
+    y = tasa_subocupacion,
+    group = nivel_educativo,
+    color = nivel_educativo
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
+  geom_text(
+  aes(
+    label = paste0(round(tasa_subocupacion, 1), "%"),
+    vjust = case_when(
+      nivel_educativo == "Alto" & anio == 2025 ~ 0.5,
+      nivel_educativo == "Alto" ~ 1.5,
+      TRUE ~ -0.8
+    ),
+    hjust = case_when(
+      nivel_educativo == "Alto" & anio == 2025 ~ -0.3,
+      TRUE ~ 0.5
+    )
+  ),
+  size = 3,
+  show.legend = FALSE
+) +
+  scale_y_continuous(
+    limits = c(0, 18),
+    breaks = seq(0, 18, 3),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title = "Subocupación según nivel educativo en Gran Resistencia",
+    subtitle = "Subocupación por insuficiencia horaria entre la población ocupada\nCuartos trimestres de 2016, 2020 y 2025",
+    x = "Año",
+    y = "Porcentaje",
+    color = "Nivel educativo",
+    caption = "Fuente: elaboración propia sobre microdatos de la EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+La subocupación por insuficiencia horaria presenta un comportamiento menos uniforme según el nivel educativo que los indicadores anteriores. En 2016, los niveles bajo y alto registraron valores similares, del 8,5 % y 8,3 %, respectivamente, mientras que el nivel medio presentó una proporción menor, del 3,9 %. En 2020, la subocupación alcanzó el 15,0 % entre las personas ocupadas con nivel educativo bajo, el 12,1 % entre aquellas con nivel medio y el 6,8 % entre quienes poseían nivel alto. En 2025, los valores descendieron al 6,1 %, 1,9 % y 0,9 %, respectivamente.
+
+A diferencia de lo observado en la informalidad laboral y en el empleo con tiempo de finalización, la subocupación no presenta un gradiente educativo uniforme en los tres períodos analizados. Si bien en 2020 y 2025 los mayores niveles corresponden al grupo educativo bajo y los menores al nivel alto, en 2016 los niveles bajo y alto presentan proporciones prácticamente similares. Este comportamiento muestra que la asociación entre nivel educativo y subocupación resulta menos sistemática que la observada en las otras dimensiones de inserción laboral.
+
+## Conclusiones 
+
+El análisis realizado muestra que las condiciones de inserción laboral en Gran Resistencia presentaron comportamientos diferenciados entre 2016, 2020 y 2025. Los tres indicadores considerados registraron valores superiores en 2020 respecto de 2016, aunque posteriormente siguieron trayectorias distintas. Mientras la informalidad laboral se mantuvo en 2025 en niveles próximos a los observados en 2020, el empleo con tiempo de finalización retornó a valores similares a los de 2016 y la subocupación por insuficiencia horaria descendió por debajo de los dos períodos anteriores. La comparación con los demás aglomerados del NEA mostró, además, que estas variaciones no se produjeron de manera uniforme en el territorio.
+
+El nivel educativo permitió identificar diferencias relevantes en las condiciones de inserción laboral. La informalidad y el empleo con tiempo de finalización presentaron mayores valores entre los grupos de nivel educativo bajo y menores entre aquellos con nivel alto. La subocupación, en cambio, mostró un comportamiento menos sistemático, ya que este gradiente no se verificó de manera uniforme en los tres períodos. De manera complementaria, la condición de pobreza mostró diferencias entre los asalariados de hogares pobres y no pobres, particularmente en la informalidad laboral.
+
+La comparación entre los aglomerados del NEA también permitió identificar tanto similitudes como diferencias en sus trayectorias. Hacia 2025 se observa una mayor aproximación territorial en los niveles de informalidad, mientras que el empleo con tiempo de finalización y la subocupación conservaron diferencias más marcadas entre Gran Resistencia, Corrientes, Formosa y Posadas. Asimismo, respecto de 2020 se registraron reducciones en determinadas dimensiones, particularmente en la subocupación, aunque estas variaciones no fueron homogéneas entre los aglomerados ni entre los distintos indicadores. Esto muestra que los cambios en las condiciones de inserción laboral deben interpretarse atendiendo tanto a la dimensión analizada como a las particularidades de cada mercado de trabajo urbano.
+
+En conjunto, los resultados permiten sostener la utilidad de analizar las condiciones de inserción laboral desde una perspectiva multidimensional. La informalidad, la estabilidad de la ocupación y la insuficiencia horaria constituyen dimensiones relacionadas con la calidad del empleo, pero no necesariamente evolucionan en la misma dirección ni presentan idénticas diferencias entre grupos sociales. En este sentido, el análisis realizado resulta consistente con la distinción conceptual entre informalidad y precariedad laboral desarrollada en el trabajo y muestra la importancia de considerar distintas dimensiones para caracterizar las heterogeneidades presentes en el mercado de trabajo.
+
+## Referencias
+Fernández-Franco, S., Graña, J. M., Lastra, F., & Weksler, G. (2022). Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada. Ensayos de Economía, 32(61), 124–151. https://doi.org/10.15446/ede.v32n61.100343
+
+Instituto Nacional de Estadística y Censos. (2016). La medición de la pobreza y la indigencia en la Argentina. INDEC.
+
+Instituto Nacional de Estadística y Censos. (s. f.). Encuesta Permanente de Hogares (EPH): Diseño de registro y estructura para las bases preliminares de hogar y personas. Dirección de Encuesta Permanente de Hogares.
+
+Instituto Nacional de Estadística y Censos. (2026). Incidencia de la pobreza y la indigencia en 31 aglomerados urbanos: Segundo semestre de 2025. Informes técnicos, 10(80).
