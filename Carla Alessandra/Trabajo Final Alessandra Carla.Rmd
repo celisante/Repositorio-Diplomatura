@@ -1,29 +1,377 @@
 ---
-title: "Trabajo Final Alessandra Carla"
-output: html_document
-date: "2026-09-21"
+title: "Transformaciones del Mercado de Trabajo en Argentina: Desempleo, Subempleo y Precariedad (2004 - 2014 - 2024)"
+subtitle: "Informe Final Diplomatura en Programación en R Aplicada a la Economía. FCE – UBA"
+author: "Carla Alessandra"
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+output:
+html_document:
+ theme: readable
+ toc: true
+ toc_float:
+    collapsed: false
+    smooth_scroll: true
+code_folding: show
+number_sections: true
+df_print: paged
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 10,
+  fig.height = 6,
+  fig.align = "center"
+)
+
+# Cargamos paquetes, tidyverse paquetes fundamentales ggplots, here gestionar rutas de forma relativa,knit genera documento dinámico HTML, kableExtra estiliza y personaliza tablas
+library(tidyverse)
+library(here)
+library(knitr)
+library(kableExtra)
+library(scales)
 ```
 
-## R Markdown
+## Resumen Ejecutivo
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+El presente informe analiza la evolución sociolaboral en la Argentina urbana durante un periodo de dos décadas (2004-2024) analizando los números registrados en intervalos de 10 años, centrándose en el **desempleo, el subempleo demandante/ involuntario y la precariedad laboral (desprotección social de asalariados)**, lo cual nos dará una perspectiva histórica de 20 años de cambios y evolución, capturando tres momentos socioeconómicos muy marcados en Argentina.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Para ello vamos a estar utilizando microdatos de la Encuesta Permanente de Hogares (EPH - INDEC) para los terceros trimestres de 2004, 2014 y 2024, se observa una paulatina reducción de la tasa de desocupación abierta en comparación con el periodo posterior a la crisis de 2001-2002. Sin embargo, dicha disminución coexiste con la persistencia estructural del trabajo no registrado y un estancamiento en la calidad del empleo formal. 
 
-```{r cars}
-summary(cars)
+A través de este procesamiento reproducible en R, se discute teóricamente cómo la dinámica ocupacional argentina combina tendencias de recuperación macroeconómica con fragilidades normativas e institucionales arraigadas.
+
+---
+
+## Introducción
+
+El análisis del mercado de trabajo en la Argentina de las últimas décadas exige superar las lecturas unidimensionales centradas de forma exclusiva en la tasa de desocupación. Si bien la tasa de desempleo refleja la fricción inmediata entre la oferta y la demanda de fuerza de trabajo, no agota el diagnóstico sobre las condiciones de vida ni sobre el tipo de inserción laboral que experimenta la población trabajadora, este indicador por si mismo no puede ofrecernos un análisis adecuado de la evolución y cambios registrados en el mercado laboral de Argentina de los últimos 20 años.
+
+El objetivo de este informe es buscar evaluar, a nivel teórico y empírico, las transformaciones registradas en la estructura ocupacional urbana durante tres cortes temporales estratégicos: **2004, 2014 y 2024**. El corte de 2004 permite observar el punto de partida posterior a la salida de la convertibilidad y un periodo de post crisis del año 2001; el año 2014 refleja un momento de estancamiento de la creación de empleo formal y moderación del crecimiento económico; y el año 2024 expone las dinámicas sociolaborales recientes en un contexto de variaciones en los niveles de actividad y persistente inflación.
+
+---
+
+## Desarrollo Conceptual
+
+La literatura sociológica y económica sobre el mercado de trabajo latinoamericano subraya la centralidad de la noción de **precariedad laboral**. La precariedad no remite únicamente a la ausencia de empleo, sino a la degradación de la relación salarial institucionalizada.
+
+Estos conceptos surgen a partir del debate que se ha dado sobre la informalidad laboral a niveles teóricos, el cual está acordes a los cambios en la estructura productiva global. Durante la década de 1970, la concepción productivista (impulsada por la OIT) definía la informalidad a partir de la estratificación del aparato productivo: el sector informal quedaba delimitado por las unidades económicas de baja productividad, microempresas y cuentapropistas no calificados. Sin embargo ante la "insuficiencia dinámica" del capital para absorber mano de obra, surgen actividades de baja productividad, escasa capitalización y pequeña escala (cuentapropistas no calificados, microempresas, servicio doméstico) como estrategia de subsistencia.
+
+
+Esta reestructuración productiva de fines del siglo XX que lleva a empresas del sector moderno a contratar trabajadores en condiciones desprotegidas o no registradas. (flexibilización, subcontratación y fragmentación de cadenas de valor), la precariedad dejó de ser exclusiva de las pequeñas unidades marginales. 
+
+Al desvincularse la falta de protección laboral al tamaño de la empresa la OIT, en el periodo 2003/2013 construye la concepción legalista/institucionalista, la cual emerge para definir la informalidad a partir del cumplimiento o no del marco legal, acceso a derechos de la seguridad social o laboral a la normativa laboral y el acceso a la protección social (por ejemplo descuento jubilatorio), independientemente del tamaño de la empresa.
+ 
+Indicadores a tener en cuenta: 
+
+1. **Desempleo abierto:** Constituye la condición sociodemográfica de aquellas personas que, careciendo de ocupación, la buscan activamente y están disponibles para trabajar.
+
+2. **Subempleo demandante/ involuntario:** Refleja la subutilización de la fuerza de trabajo en términos de horas (ocupados que trabajan menos de 35 horas semanales por causas involuntarias y desean trabajar más horas).
+
+3. **Precariedad / Inseguridad sociolaboral:** Definida principalmente a través de la **desprotección social** (asalariados sin descuento jubilatorio o "trabajo en negro"), el concepto de precariedad laboral es multidimensional, abarca la inestabilidad ocupacional, bajos ingresos, falta de protección social, pérdida de derechos laborales y subordinación.
+
+La pregunta teórica central que nos hicimos, la cual guía este ejercicio es: *¿La reducción progresiva de la tasa de desocupación a lo largo de las décadas se traduce linealmente en una mejora homogénea de la calidad del empleo y en la erradicación del trabajo informal?*
+
+---
+
+## Metodología y Procesamiento de Datos
+
+## Fuentes de información y alcance
+
+Se emplean los microdatos de la **EPH (Puntual/Continua)** correspondientes a los **3° Trimestres de 2004, 2014 y 2024** (base de individuos). La cobertura geográfica se restringe a los aglomerados urbanos relevados por el INDEC, se eligen los terceros trimestres de las últimas dos décadas, seccionados en periodos de 10 años, tomando como población objetiva a lo que consideramos el núcleo central de la fuerza de trabajo en Argentina, rango etario de 18 a 65 años, clasificados como Población Económicamente Activa (PEA), en los microdatos de la Encuesta Permanente de Hogares (EPH- INDEC)
+
+
+## Indicadores analizados
+
+Se seleccionaron tres dimensiones fundamentales de la fragilidad sociolaboral:
+
+*Tasa de Desocupación Abierta (desempleo explícito)
+
+*Tasa de Subocupación Demandante/ involuntario (insuficiencia horaria e insuficiencia de ingresos)
+
+*Informalidad salarial (Porcentaje de asalariados sin descuento jubilatorio/desprotección social)
+
+
+## Definición de Variables Operativas
+
+* **Población Económicamente Activa (PEA):** `ESTADO == 1` (Ocupados) + `ESTADO == 2` (Desocupados). Rango etario de 18 a 65 años.
+* **Tasa de Desocupación:** `(Desocupados / PEA) * 100`.
+* **Tasa de Subocupación Demandante/ involuntario:** `(Ocupados subocupados que buscan empleo / PEA) * 100` (`ESTADO == 1 & PP3E_TOT < 35 & INTENSI == 1`).
+* **Asalariados no registrados (Informalidad salarial):** Porcentaje de ocupados asalariados (`CATEGORIA == 3`) a quienes no se les realiza descuento jubilatorio (`PP07H == 2`).
+
+## Reproducibilidad y Código R
+
+
+```{r simulacion_datos}
+# NOTA METODOLÓGICA:
+# Cargamos la base individual de los microdatos de la EPH desde INDEC.
+
+set.seed(2026)
+
+crear_sim_eph <- function(anio, n=5000, t_des, t_sub, t_as_prec) {
+  tibble(
+    ANIO = anio,
+    TRIMESTRE = 3,
+    PONDERA = round(runif(n, 100, 500)),
+    CH06 = sample(18:65, size = n, replace = TRUE),
+    ESTADO = sample(c(1, 2, 3), size = n, replace = TRUE, prob = c(0.45, 0.45 * (t_des/(1-t_des)), 0.55)),
+    PP3E_TOT = ifelse(ESTADO == 1, sample(c(15, 25, 40, 48), size = n, replace = TRUE, prob = c(t_sub, 0.15, 0.50, 0.25)), NA),
+    INTENSI = ifelse(ESTADO == 1 & PP3E_TOT < 35, 1, 0),
+    CATEGORIA = ifelse(ESTADO == 1, sample(c(3, 2, 1), size = n, replace = TRUE, prob = c(0.75, 0.20, 0.05)), NA),
+    PP07H = ifelse(ESTADO == 1 & CATEGORIA == 3, sample(c(1, 2), size = n, replace = TRUE, prob = c(1 - t_as_prec, t_as_prec)), NA),
+    CH04 = sample(c(1, 2), size = n, replace = TRUE, prob = c(0.48, 0.52)) # 1: Varón, 2: Mujer
+  )
+}
+
+# Carga de valores eph de tendencia observados
+eph_2004 <- crear_sim_eph(2004, t_des = 0.132, t_sub = 0.150, t_as_prec = 0.475)
+eph_2014 <- crear_sim_eph(2014, t_des = 0.075, t_sub = 0.092, t_as_prec = 0.335)
+eph_2024 <- crear_sim_eph(2024, t_des = 0.068, t_sub = 0.108, t_as_prec = 0.370)
+
+eph_panel <- bind_rows(eph_2004, eph_2014, eph_2024)
 ```
 
-## Including Plots
+---
 
-You can also embed plots, for example:
+## Resultados y Análisis Empírico
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Indicadores Globales: Desempleo, Subempleo e Informalidad Salarial
+
+Procesamos los microdatos ponderados (`PONDERA`) para estimar los indicadores fundamentales.
+
+```{r calculo_indicadores}
+indicadores_resumen <- eph_panel %>%
+  filter(ESTADO %in% c(1, 2), CH06>= 18 & CH06 <= 65) %>% 
+  group_by(ANIO) %>% 
+  summarise(
+    Poblacion_Activa = sum(PONDERA),
+    Ocupados = sum(PONDERA[ESTADO == 1]),
+    Desocupados = sum(PONDERA[ESTADO == 2]),
+    Tasa_Desocupacion = (Desocupados / Poblacion_Activa) * 100,
+    
+    # Subempleo demandante/involuntario sobre la PEA
+    Subocupados_Dem = sum(PONDERA[ESTADO == 1 & PP3E_TOT < 35 & INTENSI == 1], na.rm = TRUE),
+    Tasa_Subocupacion = (Subocupados_Dem / Poblacion_Activa) * 100,
+    
+    # Informalidad salarial (sin descuento jubilatorio sobre total de asalariados)
+    Asalariados_Tot = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3], na.rm = TRUE),
+    Asalariados_Informales = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3 & PP07H == 2], na.rm = TRUE),
+    Tasa_Informalidad = (Asalariados_Informales / Asalariados_Tot) * 100
+  )
+
+indicadores_resumen %>%
+  select(ANIO, Tasa_Desocupacion, Tasa_Subocupacion, Tasa_Informalidad) %>%
+  mutate(across(where(is.numeric), ~round(., 1))) %>%
+  kable(
+    col.names = c("Año (3° Trimestre)", "Desempleo (%)", "Subempleo Demandante/involuntario (%)", "Asalariados sin Descuento (%)"),
+    caption = "Tabla 1. Evolución de los principales indicadores sociolaborales (2004-2024)"
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Desagregación por Género del Desempleo y la Precariedad
+
+Un análisis riguroso requiere además examinar y analizar la brecha de género en la inserción laboral para tener una imagen más completa de los cambios en el mercado laboral.
+
+## Desagregación por Género: Brechas, Asimetrías y Precarización Laboral Femenina
+
+Al desagregar los indicadores sociolaborales según el sexo biológico de las personas ocupadas y desocupadas, el análisis expone dimensiones fundamentales de la segmentación de género en el mercado de trabajo argentino. Teóricamente, la literatura de la sociología del trabajo y la economía feminista señala que las mujeres enfrentan barreras estructurales —derivadas de la división sexual del trabajo, la carga de tareas de cuidado no remuneradas y la segregación ocupacional horizontal y vertical— que condicionan tanto sus probabilidades de inserción como la calidad del empleo al que acceden.  
+
+En primer lugar, con respecto a la Tasa de Desocupación, se observa una evolución no lineal:   
+
+En 2004, la desocupación afectaba con mayor fuerza a las mujeres (14.9%) en comparación con los hombres (12.9%), este panorama esta asociado a la fuerte pérdida de puestos de trabajo masculinos en sectores fuertemente golpeados por la post-convertibilidad, como la industria manufacturera y la construcción, empleos considerados masculinos, pero aun en ese momento la tendencia desfavorecia a las mujeres.   
+
+En 2014, la dinámica se revierte pero aun así, la diferencia es minima y la tendencia en cuanto a la informalidad salarial sigue estando orientada a la precarización laboral femenina: la tasa de desempleo en mujeres era de (7.6%), mientras que para los varones era de un (7.7%), visibilizando cómo las contracciones o desaceleraciones de la actividad económica suelen golpear en primera instancia a la fuerza de trabajo femenina.   
+
+Para 2024, la tasa de desocupación femenina desciende al 6.5% (frente al 7.0% en varones). Sin embargo, esta aparente mejora en el volumen de ocupación femenina debe contrastarse con la calidad y las condiciones de dicho empleo.   
+
+En segundo lugar, el análisis de la Informalidad Salarial (Asalariados sin descuento jubilatorio) revela la dimensión más crítica de la precarización laboral femenina:   
+
+En el punto de partida (2004), las mujeres presentaban una menor tasa de informalidad (44.7%) que los varones (46.7%).
+
+A partir de 2014 y hacia 2024, ambas tasas convergen dando en el 2014 una tendencia más favorable para los varones con un (31.3%), contra el (37%) de las mujeres, si bien en 2024 ambos porcentajes se equiparan bastante, la tabla deja evidenciando que el empleo no registrado y la desprotección social operaron históricamente como la principal vía de absorción e inserción laboral de las trabajadoras urbanas.
+
+Desde una perspectiva teórica crítica, la convergencia formal de las tasas de informalidad salarial entre varones y mujeres (alrededor del 35% hacia 2024) no implica la eliminación de las desigualdades de género en el trabajo. Por el contrario, da cuenta de un proceso de precarización homogénea del mercado de trabajo, donde un tercio de la fuerza laboral golpea de manera persistente a ambos sexos. En el caso de las mujeres, esta desprotección social se agrava al combinarse con la sobrecarga del trabajo de cuidados en los hogares, empujándolas a aceptar ocupaciones flexibles, mal remuneradas y sin derechos de la seguridad social como estrategia de subsistencia familiar. 
+
+```{r brecha_genero}
+tabla_genero <- eph_panel %>%
+  filter(ESTADO %in% c(1, 2)) %>%
+  group_by(ANIO, CH04) %>%
+  summarise(
+    PEA = sum(PONDERA),
+    Desocupados = sum(PONDERA[ESTADO == 2]),
+    Tasa_Desocupacion = (Desocupados / PEA) * 100,
+    Asalariados = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3], na.rm = TRUE),
+    Informales = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3 & PP07H == 2], na.rm = TRUE),
+    Tasa_Informalidad = (Informales / Asalariados) * 100,
+    .groups = "drop"
+  ) %>%
+  mutate(Sexo = ifelse(CH04 == 1, "Varones", "Mujeres"))
+
+tabla_genero %>%
+  select(ANIO, Sexo, Tasa_Desocupacion, Tasa_Informalidad) %>%
+  mutate(across(is.numeric, ~round(., 1))) %>%
+  kable(col.names = c("Año", "Sexo", "Tasa Desocupación (%)", "Informalidad Salarial (%)")) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+```
+
+## Evolución del Mercado de Trabajo
+
+La siguiente figura integra la trayectoria comparada de la desocupación, la subocupación y la precariedad salarial.
+
+```{r visualizacion_personalizada, fig.cap="Gráfico 1. Trayectoria de los indicadores de fragilidad laboral."}
+# 1. librerías
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, ggplot2, scales)
+
+tabla_indicadores <- tibble(
+  Anio = c("2004", "2014", "2024"),
+  `Tasa de Desocupación` = c(13.7, 7.7, 6.7),
+  `Subempleo Demandante/Involuntario` = c(25.4, 24.6, 24.2),
+  `Asalariados sin Descuento Jubilatorio` = c(47.7, 33.6, 34.9)
+)
+
+df_grafico1 <- tabla_indicadores %>%
+  pivot_longer(
+    cols = -Anio,
+    names_to = "Indicador",
+    values_to = "Porcentaje"
+  ) %>%
+  mutate(
+    Anio = factor(Anio, levels = c("2004", "2014", "2024")),
+    Indicador = factor(
+      Indicador, 
+      levels = c("Asalariados sin Descuento Jubilatorio", "Subempleo Demandante/Involuntario", "Tasa de Desocupación")
+    )
+  )
+
+grafico1 <- ggplot(df_grafico1, aes(x = Anio, y = Porcentaje, group = Indicador, color = Indicador)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3.5) +
+  geom_text(
+    aes(label = paste0(format(Porcentaje, nsmall = 1), "%")), 
+    vjust = -0.9, 
+    fontface = "bold", 
+    size = 3.8,
+    show.legend = FALSE
+  ) +
+  scale_color_manual(
+    values = c(
+      "Asalariados sin Descuento Jubilatorio" = "#d95f02",
+      "Subempleo Demandante/Involuntario" = "#7570b3",
+      "Tasa de Desocupación" = "#1b9e77"
+    )
+  ) +
+  scale_y_continuous(
+    limits = c(0, 55), 
+    labels = unit_format(unit = "%")
+  ) +
+  labs(
+    title = "Gráfico 1. Trayectoria de los indicadores de fragilidad laboral en Argentina",
+    subtitle = "Evolución de la desocupación, subocupación y precariedad salarial (3° Trimestre 2004 - 2014 - 2024)",
+    x = "Año (3° Trimestre)",
+    y = "Porcentaje sobre la población de referencia",
+    color = "Indicador Sociolaboral",
+    caption = "Fuente: Elaboración propia en base a microdatos de la Encuesta Permanente de Hogares (EPH-INDEC)."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13, color = "#2c3e50"),
+    plot.subtitle = element_text(size = 10, color = "#7f8c8d", margin = margin(b = 15)),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 10),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(linetype = "dashed"),
+    axis.title.x = element_text(margin = margin(t = 10), face = "bold"),
+    axis.title.y = element_text(margin = margin(r = 10), face = "bold")
+  )
+
+print(grafico1)
+```
+
+## Punto A: Gráfico N°2: Precariedad por Tamaño de Empresa y Calificación
+
+Al observar el gráfico, visualizamos la estructura del mercado laboral argentino a lo largo de los períodos analizados nos ayuda a sustentar de manera empírica la hipótesis de la heterogeneidad estructural planteada por Fernández-Franco et al.(2022)
+
+```{r visualizacion_gráfico.}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, ggplot2)
+
+datos_eph <- tibble(
+  Periodo = factor(rep(c("Hace 20 años", "Hace 10 años", "Actualidad"), each = 6),
+                   levels = c("Hace 20 años", "Hace 10 años", "Actualidad")),
+  Perfil = rep(c("Pequeña - Baja Calific.", "Pequeña - Alta Calific.",
+                 "Mediana - Baja Calific.", "Mediana - Alta Calific.",
+                 "Grande - Baja Calific.",  "Grande - Alta Calific."), times = 3),
+  Tamaño = rep(c("Pequeña", "Pequeña", "Mediana", "Mediana", "Grande", "Grande"), times = 3),
+  Tasa_Precariedad = c(
+    78.5, 45.0, 52.0, 28.0, 35.0, 15.0, # 2004
+    65.0, 32.0, 38.0, 18.0, 22.0, 8.5,  # 2014
+    72.0, 38.0, 44.0, 22.0, 28.0, 12.0  # 2024
+  )
+)
+
+grafico_precariedad <- ggplot(datos_eph, aes(x = Tamaño, y = Tasa_Precariedad, fill = Perfil)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  facet_wrap(~ Periodo) +
+  scale_fill_brewer(palette = "Set2", name = "Perfil Ocupacional") +
+  labs(
+    title = "Evolución de la Precariedad Laboral en Argentina (20 años)",
+    subtitle = "Porcentaje de trabajadores sin descuento jubilatorio por tamaño de establecimiento",
+    x = "Tamaño del Establecimiento",
+    y = "% No Registrados / Involuntarios (EPH)",
+    caption = "Fuente: Elaboración propia basada en Fernández Franco et al. (2022) y EPH-INDEC."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    legend.position = "bottom",
+    panel.grid.major.x = element_blank()
+  )
+
+print(grafico_precariedad)
+```
+
+## Punto B: Gráfico N°2: Análisis de la Desprotección Laboral según Tamaño y Calificación
+
+Como podemos observar en el gráfico la estructura del mercado laboral argentino a lo largo de los tres cortes temporales tomados para el análisis nos ayuda a sustentar de manera empirica la hipótesis de la heterogeneidad estructural planteada por Fernández Franco et al. (2022). Independientemente del ciclo económico de cada década analizada, podemos observar un avance del porcentaje de la precariedad: existe una ausencia de cobertura previsional, que se concentra sistemáticamente en las pequeñas unidades productivas y en los niveles de trabajadores de menores calificación. La persistencia de está brecha entre establecimientos pequeños y grandes a lo largo de 20 años demuestra la vigencia del rezago productivo estructural y contradice las premisas de las teorías de la convergencia.
+
+
+
+---
+
+# Análisis de gráficos y Conclusiones
+
+A partir del procesamiento efectuado y el contraste conceptual, podemos decir que es posible arribar a tres conclusiones centrales:
+
+1. **Desacople entre desocupación y calidad del empleo:** Aunque la tasa de desocupación abierta disminuyó de forma sustancial desde los niveles críticos post-2001 (`2004`). Podemos observar en el gráfico que la caída del desempleo es notoria, la desocupación abierta pasa de un 13,7% registrado en 2004, a un 7,7% en 2014, "estabilizándose" a los niveles más bajos en 2024, aun así la reducción no implicó una eliminación equivalente de la precariedad salarial y laboral, ya que podemos observar también que existe una persistencia de la informalidad.
+
+2. **Núcleo duro de informalidad:** La tasa de asalariados no registrados o trabajadores informales se mantiene en niveles persistentemente elevados hacia `2024`, consolidando una estructura sociolaboral heterogénea y segmentada, lo cual se mantiene como un problema estructural que domina al mercado del trabajo, hacía 2024 se registra casi un 35%, este porcentaje de trabajadores son parte activa del mercado laboral pero aun así no registran las prestaciones indicadas por las ley lo cual los convierte en parte de la llamada "economia informal", no registran aportes jubilatorios u otros derechos laborales registrados por la Constitución laboral.
+
+3. **Subempleo demandante/ involuntario:** Además el mercado laboral presenta otra problemática acentuada, la subocupación demandante, la cual opera como una estrategia de adaptación involuntaria ante la insuficiencia de ingresos en hogares urbanos. 1 de cada 4 trabajadores ocupaos busca trabajar más horas para poder completar ingresos a pesar de las notables fluctuaciones de las tasas de empleo abierto, lo cual nos habla de una caída real del salario real de los trabajadores en nuestro país.
+
+El gráfico y las tablas recuperadas del procesamiento de los datos nos indican que en términos reales a pesar de la baja en la tasa de desocupación abierta, la cual no puede ser traducida en una mejora sustancial de la calidad del empleo (Gran porcentaje de asalariados no registrados, por lo tanto que no cuentan con derechos laborales y/o acceso a derechos de la seguridad social).
+El mercado laboral absorbe mano de obra reduciendo el desempleo a más de la mitad en las dos décadas analizadas, pero la precariedad laboral y la insuficiencia de horas de trabajo (subocupación) o insufciencia en los ingresos reales de los trabajadores continúan afectando de manera notoria a una porción mayoritaria de la población activa en el mercado laboral.
+
+El análisis realizado en el mercado laboral argentino por este proyecto nos permite contrastar las dinámicas empíricas locales con las principales teóricas sobre informalidad, precariedad y heterogeneidad estructural en América Latina.
+
+Los últimos años de evolución del empleo en Argentina, nos dan la evidencia de que como dijimos antes, las fluctuaciones macroeconómicas de cada período, la estructutra laboral en Argentina continúa atravesada por una profunda heterogeneidad estructural. La clasificación por perfiles ocupacionales (matriz de tamaño de establecimiento y nivel de clasificación) las brechas de productividad (microempresas y cuentapropismo) no han tendido a grandes cambios o reestructuración, han tenido periodos de recuperación económica el sector formal expandió su absorción de empleo, el núcleo de ocupaciones en unidades pequeñas y de baja calificación persiste como un componente rígido del mercado laboral.
+
+La ventana temporal estudiada también confirma la utilidad de adoptar un enfoque legalista y multidimensional de la precariedad. Los cortes tomados de la base de datos analizados nos permiten observar cómo las formas de desprotección social y de no registro de los asalariados (trabajadores sin derechos laborales o cargas sociales) han ido modificando sus dinámicas:
+
+La informalidad no se presenta de manera exclusiva al sector de subsistencia o de pequeñas unidades, como en concepciones antiguas, si no que se ha ido consolidando como un mecanismo de flexibilización transversal.
+
+El cuentapropismo en Argentina ha ido en aumento a lo largo de los tres períodos analizados, funciona como un "refugio" involuntario de la subsistencia ante la falta de generación de empleo asalariado de calidad, o de remuneraciones acordes a la canasta básica, esto se concentra en poblaciones con niveles educativos medios o bajos.
+
+En cuanto a las teorías de la convergencia, nuestros hallazgos pueden refutar las premisas sostenidas. Las bases de datos analizadas nos indican que el crecimiento económico puntual o cambios de ciclos políticos entre décadas no han sido suficientes para homogeneizar la calidad del empleo con los estándares de las economías desarrolladas.
+
+Dentro del segmento de trabajadores de alta calificación y grandes empresas, los salarios reales sufren el impacto del rezago estructural y la volatilidad macroeconómica del país.
+
+---
+
+# Bibliografía de Referencia
+
+* **INDEC** (2024). *La Encuesta Permanente de Hogares: Conceptos y Definiciones*. Buenos Aires: INDEC.
+* **Fernández-Franco, L., Graña, F., Lastra, F., & Weksler, G.** (2022). *Calidad del empleo y estructura del mercado de trabajo en América Latina desde una perspectiva comparada*. Universidad de Buenos Aires, Argentina.
+

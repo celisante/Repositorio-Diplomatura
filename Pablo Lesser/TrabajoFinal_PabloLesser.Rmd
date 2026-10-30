@@ -1,29 +1,1213 @@
+
 ---
-title: "TrabajoFinal_LesserPablo"
-output: html_document
-date: "2026-09-08"
+title: "La estructura ocupacional y sus segmentaciones."
+subtitle: "Las ocupaciones en la transición del patrón de acumulación en Argentina, 2023 - 2026"
+author: "Pablo Lesser"
+date: "2026"
+output:
+  html_document:
+    toc: true
+    toc_depth: 1
+    number_sections: false
+    code_folding: hide
+lang: es
 ---
+<style>
+p {
+  text-align: justify;
+}
+
+/* Índice lateral fijo */
+#TOC {
+  position: fixed;
+  top: 20px;
+  left: 8px;
+  width: 210px;
+  max-height: 95vh;
+  overflow-y: auto;
+  z-index: 1000;
+  font-size: 12px;
+}
+
+/* Reducir la sangría del documento */
+.main-container {
+  margin-left: 240px;
+  max-width: none;
+  width: auto;
+}
+
+/* En pantallas pequeñas, recuperar el diseño normal */
+@media (max-width: 1000px) {
+  #TOC {
+    position: static;
+    width: auto;
+    max-height: none;
+  }
+  .main-container {
+    margin-left: auto;
+    width: auto;
+  }
+}
+</style>
+
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  out.width = "100%"
+)
+
+# Setting y Librerías
+
+rm(list=ls())
+options(scipen = 999)
+
+library(tidyverse)
+library(eph)
+library(ineq)
+library(dineq)
+library(ggplot2)
+library(scales)
+library(gt)
+
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# 1. Resumen ejecutivo
 
-```{r cars}
-summary(cars)
+El presente trabajo se proponemos analizar la estructura ocupacional urbana argentina durante la transición económica iniciada a fines de 2023, a fin de examinar las continuidades y transformaciones de la segmentación la estructura ocupacional en el contexto de cambio del patrón de acumulación. Para ello se realiza una descripción de la composición y características de las ocupaciones en general, y las trayectorias de los trabajadores asalariados en particular.
+
+A partir de los microdatos de la Encuesta Permanente de Hogares (EPH) del INDEC, se caracteriza la estructura ocupacional del cuarto trimestre de 2023 y se compara la calidad del empleo asalariado con la del primer trimestre de 2026. Asimismo, se construyen paneles trimestrales que permiten explorar las transiciones entre condiciones de registro laboral, categorías ocupacionales y ramas de actividad. 
+
+Los resultados muestran una estructura ocupacional heterogénea, con diferencias importantes entre ramas de actividad en la composición de las categorías ocupacionales y los niveles de calificación. La informalidad constituye una dimensión central de esa segmentación, especialmente en el servicio doméstico, la construcción y el comercio. 
+
+Se realiza un análisis longitudinal que constata la persistencia de las condiciones de registro y de las posiciones ocupacionales. Los trabajadores formales e informales presentan elevadas probabilidades de permanecer en su condición de origen, mientras que las posibilidades de continuidad en el empleo asalariado y en la ocupación específica varían según la calificación. Los trabajadores no calificados exhiben mayores probabilidades de pasar a la desocupación o la inactividad que los profesionales y técnicos. 
+
+# 2. Introducción
+
+La inserción de la economía argentina en el mercado mundial configura una estructura productiva heterogénea y desequilibrada, caracterizada por diferencias de productividad entre sectores (Pinto, 1970; Diamand, 1972). Esta estructura productiva tiene como correlato una estructura ocupacional segmentada. Esto ha llevado a prestar atención a la aparición de un sector informal y a la incapacidad de los sectores más dinámicos de la economía para absorber la oferta de fuerza de trabajo (Souza y Tokman, 1976). Los esfuerzos se orientaron a la descripción empírica de la segmentación, enfatizando el clivaje entre trabajadores formales e informales (Beccaria y Groisman, 2015). Así como la identificación de barreras de acceso y mecanismo de fijación de remuneraciones que generan una brecha de ingresos y una marcada desigualdad en las condiciones laborales (Paz, 2013). 
+
+Lo que, en algunos casos, conduce a centrar el análisis en las características individuales y la capacidad de agencia de los trabajadores, relegando la estructura productiva a un segundo plano o asumiéndola como un contexto dado, en lugar de considerarla un factor determinante (Waisgrais, 2001). En contraposición, los enfoques de Arakaki (2017) y Fernández Massi y Giosa Zuazua (2020), recuperan la estructura productiva como dimensión explicativa de las desigualdades en los puestos de trabajo. En ambos casos estudian la movilidad laboral en el marco de las transformaciones de la economía argentina durante la pos convertibilidad, caracterizada por la expansión del empleo. Este trabajo retoma esa perspectiva para examinar los movimientos ocupacionales en un contexto económico de transformación de la estructura productiva. La transición hacia un patrón de acumulación de valorización financiera y netamente extractivista amerita indagar cómo se manifiesta el mismo a nivel del empleo.  
+
+
+# 3. Desarrollo conceptual
+
+La segmentación es un campo en disputa en la que conviven diferentes enfoques y teorías, pero que tienen en común identificar distintos segmentos en los mercados laborales; uno primario y uno secundario. Estos presentan inserciones laborales diferenciadas en términos de remuneración, categoría ocupacional, calificación y acceso a la formalidad. Mientras que en los países desarrollados esta segmentación se adjudica a un factor tecnológico o a la concentración del capital, en América Latina, la segmentación suele considerarse en torno un sector moderno y uno tradicional; o bien, un sector formal y uno informal (Souza y Tokman, 1976). Es decir, no como un problema de los asalariados, sino de los trabajadores por cuenta propia no calificados, los marginales, asociados con el refugio frente al desempleo y una lógica de subsistencia. 
+
+Sin embargo, en la década del ’90 comienzan a identificarse rasgos del trabajo informal en el sector moderno de la economía, en los mismos asalariados. La informalidad deja de definirse como un sector y pasa a describir las características del empleo. (Fernández Massi, 2014) 
+
+A riesgo de simplificar podríamos resumir las posturas frente a la informalidad entre dos polos. Por un lado, los neoclásico u ortodoxo, quienes sostienen que el empleo informal es producto de excesivas regulaciones estatales. Por el otro, los neomarxistas, sostienen que el sector informal es funcional a la acumulación del capital abaratando los costos, incluso asociada al sector formal, sea de forma terciarizada en la producción, sea en la realización de plusvalía (Contreras Dávila). 
+
+Por eso creemos que los dos primeros años del gobierno de Javier Milei son un laboratorio relevante para poner a prueba las teorías. En medio de esta violenta acelerada transición hacia un modo de acumulación basado en el extractivismo y la apertura comercial y financiera. ¿qué permanece y qué cambia en la estructura de ocupaciones? ¿los sectores que motorizan el crecimiento económico han ofrecido más y mejores puestos de trabajo? ¿Cuáles son los observables de la mutación en el modo de acumulación?
+
+
+# 4. Metodología
+
+La fuente privilegiada para el análisis de la segmentación del mercado de trabajo es Encuesta Permanente de Hogares (EPH) que elabora el INDEC. La misma ofrece rica datos sobre la composición de los hogares, las características de los individuos y las sus condiciones de empleo, pero presenta limitaciones para caracterizar los establecimientos en los que se insertan y reconstruir los vínculos entre estructura productiva y estructura ocupacional. Como sostiene Fernández Massi (2014), podemos definir a la EPH como una base de datos diseñada para brindar información sobre la oferta de fuerza de trabajo. Pero presenta serias limitaciones a la hora de explorar el lado de la demanda y reconstruir la estructura ocupacional, los establecimientos y los sectores de actividad a partir de los atributos de los individuos. Además, si bien se todos los sectores de actividad están contemplados, al tratarse de una encuesta una orientada al empleo urbano las actividades primarias son prácticamente inexistentes. 
+
+Esta es nuestra principal limitación. Sobre todo, ante el incipiente cambio en el modo de acumulación que experimenta la Argentina bajo el gobierno de Javier Milei, en el que la apertura de la economía, la desregulación, y las garantías ofrecidas al capital concentrado impulsaron los sectores mineros, energéticos y agropecuarios junto con los servicios financieros, en detrimento de los sectores de la construcción, la industria manufacturera, el comercio (IIPE, 2026). Es decir, que el crecimiento económico se trasladó a sectores capital intensivos que no son el objetivo de registro de nuestro instrumento. De hecho, la cantidad de casos del sector primario eran tan poco significativos que hemos decidido eliminarlos y trabajar exclusivamente con los sectores característicamente urbanos que son los que la muestra permitía captar correctamente.  
+   
+En consecuencia, este trabajo no pretende ofrecer una caracterización directa de las transformaciones de la estructura productiva, sino examinar sus posibles manifestaciones en la composición del empleo urbano y en las transiciones entre distintas posiciones ocupacionales. 
+
+Para ello, hemos partido de caracterizar el escenario base, el último trimestre de 2023, momento en el que cambia el gobierno y a partir de ahí intentar comprender las transformaciones que se perciben en las ocupaciones. 
+
+A fin de caracterizar la estructura ocupacional se construye el universo las ocupaciones registradas en los 31 aglomerados urbanos de la EPH en las distintas ramas de actividad y caracteriza según la categoría y la calificación. Aunque, para facilitar el análisis se simplifica un poco el agrupamiento de los sectores de actividad y se descartan las calificaciones ambiguas, erróneas o en las que falta información.  
+
+A partir esa caracterización hemos decidido centrar el análisis sobre los asalariados. Se analiza la formalidad o informalidad de los puestos de trabajo adoptando la nueva metodología del INDEC, (INDEC, 2025) y se registra el deterioro de la calidad del empleo de los mismos al compararlos con el último dato disponible. 
+
+Finalmente, para explorar las trayectorias laborales durante el período, se desarrolla un análisis longitudinal mediante paneles construidos a partir del esquema de rotación de la muestra de la EPH, que contempla la renovación parcial de los hogares encuestados. Este diseño permite seguir a las personas observadas en más de un relevamiento y comparar sus situaciones laborales en dos momentos, identificando transiciones entre condiciones de registro, tipos de establecimiento, ramas de actividad y posiciones ocupacionales. 
+
+
+
+```{r descarga-eph, results='hide'}
+#===============================================================================
+# Construcción de bases EPH
+#===============================================================================
+
+# Selección de variables 
+variables <- c(
+  "CODUSU",# Código Vivienda
+  "NRO_HOGAR", # Nro hogar
+  "COMPONENTE", # Componente del hogar
+  "ANO4", # año
+  "TRIMESTRE",# Trimestre
+  "REGION", # Región
+  "CH04", # Sexo
+  "CH06", # Edad
+  "ESTADO", # Condición de actividad
+  "CAT_OCUP", # Categoría ocupacional
+  "PONDERA", # Ponderador gral
+  "EMPLEO", # Formalidad
+  "PP04B1", # Servicio doméstico
+  "PP07G1", # Vacaciones pagas
+  "PP07G2", # Aguinaldo
+  "PP07G3", # Dias pagos por enfermedad
+  "PP07G4", # Obra social
+  "PP07H", # Descuento jubilatorio
+  "PP04B_COD", # Rama de actividad
+  "PP04D_COD" # Ocupación
+)
+
+
+# Función para descargar la serie larga:
+descargar_eph <- function(anios, variables,
+                          primer_trimestre = 1,
+                          ultimo_trimestre = 4) {
+  bases <- list()
+  for (anio in anios) {
+    trimestres <- 1:4
+    if (anio == min(anios)) {
+      trimestres <- trimestres[trimestres >= primer_trimestre]
+    }
+    if (anio == max(anios)) {
+      trimestres <- trimestres[trimestres <= ultimo_trimestre]
+    }
+    for (trimestre in trimestres) {
+    nombre <- paste0("ephi_", anio, "_", trimestre)
+      cat("Descargando:", anio, "trimestre", trimestre, "\n")
+      bases[[nombre]] <- get_microdata(
+        year = anio,
+        period = trimestre,
+        type = "individual",
+        vars = variables
+      )
+    }
+  }
+  list2env(bases, envir = .GlobalEnv)
+}
+
+# Descargo las bases del periodo 
+descargar_eph(
+  anios = 2023:2026,
+  variables = variables,
+  primer_trimestre = 4,
+  ultimo_trimestre = 1
+)
+
+# Preparar la tabla CAES para Rama de Actividad
+# Clasificación CAES: versión 1.0
+caes <- eph::caes %>%
+  filter(
+    caes_version == "1.0",
+    stringr::str_detect(PP04B_COD, "^[0-9]{2}$")
+  ) %>%
+  select(PP04B_COD, PP04B_label, caes_eph_label) %>%
+  arrange(PP04B_COD)
+
+#===============================================================================
+# Armo una función para etiquetar y recodificar variables
+recod_eph <- function(base) {
+  # Agrego las etiquetas de la EPH
+  #base <- organize_labels(df = base, type = "individual")
+  # Agrego las variables de la CNO
+  base <- organize_cno(base = base)
+  # Agrego la rama de actividad y recodifico las variables
+  base <- base %>%
+    mutate(
+      rama_2d = stringr::str_pad(
+        substr(as.character(PP04B_COD), 1, 2),
+        width = 2,
+        side = "left",
+        pad = "0"
+      )
+    ) %>%
+    left_join(caes, by = c("rama_2d" = "PP04B_COD")) %>%
+    mutate(
+      rama = case_when(
+        rama_2d %in% c("01", "02", "03", "05", "06", "07", "08", "09") ~ "Actividades primarias",
+        rama_2d == "35" ~ "Otras ramas",
+        rama_2d %in% c("85", "86", "87", "88", "90", "91", "92", "93", "94", "95", "96") ~ "Servicios comunitarios, sociales y personales",
+        rama_2d %in% c("45", "48", "55", "56") ~ "Comercio, hoteles y restaurantes",
+        rama_2d == "97" ~ "Servicio domestico",
+        PP04B1 == 1 ~ "Servicio domestico",
+        TRUE ~ caes_eph_label
+      ),
+      CALIFICACION = case_when(
+        CALIFICACION %in% c(
+          "Ns.Nc", "falta informacion",
+          "mal codificado", "otro",
+          "Sin especificar"
+        ) ~ "No calificados",
+        TRUE ~ CALIFICACION
+      ),
+      ocupacion = case_when(
+        CAT_OCUP == 1 & CALIFICACION == "Profesionales" ~ "Patrón - profesional",
+        CAT_OCUP == 1 & CALIFICACION == "Técnicos" ~ "Patrón - técnico",
+        CAT_OCUP == 1 & CALIFICACION == "Operativos" ~ "Patrón - operativo",
+        CAT_OCUP == 1 & CALIFICACION == "No calificados" ~ "Patrón - no calificado",
+        CAT_OCUP == 3 & CALIFICACION == "Profesionales" ~ "Asalariado - profesional",
+        CAT_OCUP == 3 & CALIFICACION == "Técnicos" ~ "Asalariado - técnico",
+        CAT_OCUP == 3 & CALIFICACION == "Operativos" ~ "Asalariado - operativo",
+        CAT_OCUP == 3 & CALIFICACION == "No calificados" ~ "Asalariado - no calificado",
+        CAT_OCUP == 2 & CALIFICACION == "Profesionales" ~ "Cuenta propia - profesional",
+        CAT_OCUP == 2 & CALIFICACION == "Técnicos" ~ "Cuenta propia - técnico",
+        CAT_OCUP == 2 & CALIFICACION == "Operativos" ~ "Cuenta propia - operativo",
+        CAT_OCUP == 2 & CALIFICACION == "No calificados" ~ "Cuenta propia - no calificado",
+        CAT_OCUP == 4 ~ "Trabajador familiar",
+        TRUE ~ NA_character_
+      )
+    )
+  return(base)
+}
+
+# Ejecuto la recodificación
+ephi_2023_4 <- recod_eph(ephi_2023_4)
+ephi_2024_1 <- recod_eph(ephi_2024_1)
+ephi_2024_2 <- recod_eph(ephi_2024_2)
+ephi_2024_3 <- recod_eph(ephi_2024_3)
+ephi_2024_4 <- recod_eph(ephi_2024_4)
+ephi_2025_1 <- recod_eph(ephi_2025_1)
+ephi_2025_2 <- recod_eph(ephi_2025_2)
+ephi_2025_3 <- recod_eph(ephi_2025_3)
+ephi_2025_4 <- recod_eph(ephi_2025_4)
+ephi_2026_1 <- recod_eph(ephi_2026_1)
+
+# dejo estableciod un orden para las ramas
+# Orden de las ramas de actividad
+orden_ramas <- c(
+  "Comercio, hoteles y restaurantes",
+  "Servicios comunitarios, sociales y personales",
+  "Servicios financieros, de alquiler y empresariales",
+  "Industria manufacturera",
+  "Construccion",
+  "Transporte, almacenamiento y comunicaciones",
+  "Administracion publica, defensa y seguridad social",
+  "Servicio domestico",
+  "Otras ramas"
+)
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# 5. Resultados y análisis
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+## 5.1. La estructura ocupacional al inicio del gobierno de LLA.
+
+Para caracterizar la estructura ocupacional al inicio del período de análisis, se considera el cuarto trimestre de 2023. El cuadro presenta la distribución de las categorías ocupacionales y los niveles de calificación dentro de cada rama de actividad, lo que permite identificar diferencias en la composición del empleo urbano.
+
+Del cuadro surge el peso del empleo asalariado para la estructura ocupacional. Sin embargo, los asalariados no son homogéneos. Aún en las calificaciones en donde se concentra el grueso de los asalariados difieren mucho de una rama a otra. La administración pública concentra un 60,7% del empelo asalariado con calificación operativa, mientras que en los servicios comunitarios, sociales y personales son apenas un 22,2%. Se puede observar que las ramas con mayor proporción de profesionales y técnicos son las de servicio y la administración pública. Mientras que el sector con más baja calificación es el servicio doméstico. 
+
+En la construcción, el trabajo operativo tiene un peso importante tanto entre los asalariados, con un 35,9%, como entre los cuentapropistas, en donde suman el 35,0%. También se observa una proporción elevada de asalariados no calificados. 
+
+
+```{r cuadro_01-estructura-base}
+#============================================================================
+## Cuadro 01: Estructura ocupacional al IV trimestre de 2023
+#============================================================================
+
+# Calculo ocupados y porcentajes por rama, categoría y calificación
+ocupados_2023_4 <- ephi_2023_4 %>%
+  filter(
+    ESTADO == 1,
+    !is.na(rama),
+    rama != "Actividades primarias"
+  ) %>%
+  mutate(
+    CALIFICACION = if_else(
+      CAT_OCUP == 4,
+      "Total",
+      CALIFICACION
+    )
+  ) %>%
+  group_by(rama, CAT_OCUP, CALIFICACION) %>%
+  summarise(
+    ocupados = sum(PONDERA, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  group_by(rama) %>%
+  mutate(
+    porcentaje = ocupados / sum(ocupados, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+# Defino el orden y las etiquetas de las categorías y calificaciones
+categorias <- ocupados_2023_4 %>%
+  distinct(CAT_OCUP, CALIFICACION) %>%
+  mutate(
+    orden_ocupacion = match(CAT_OCUP, c(1, 3, 2, 4)),
+    orden_calificacion = match(
+      CALIFICACION,
+      c("Profesionales", "Técnicos", "Operativos", "No calificados", "Total")
+    ),
+    cat_ocup_etiqueta = case_when(
+      CAT_OCUP == 1 ~ "Patrón",
+      CAT_OCUP == 2 ~ "Cuenta propia",
+      CAT_OCUP == 3 ~ "Asalariados",
+      CAT_OCUP == 4 ~ "Trab. familiar"
+    ),
+    calificacion_etiqueta = CALIFICACION
+  ) %>%
+  arrange(orden_ocupacion, orden_calificacion) %>%
+  mutate(
+    id_categoria = paste0("cat_", sprintf("%02d", row_number()))
+  ) %>%
+  select(
+    id_categoria,
+    CAT_OCUP,
+    cat_ocup_etiqueta,
+    CALIFICACION,
+    calificacion_etiqueta
+  )
+
+# Ordeno las ramas por cantidad total de ocupados
+orden_rama <- ocupados_2023_4 %>%
+  group_by(rama) %>%
+  summarise(
+    total_ocupados = sum(ocupados, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_ocupados))
+
+# Paso los datos al formato ancho
+tabla_ancha_01 <- ocupados_2023_4 %>%
+  left_join(
+    categorias %>%
+      select(CAT_OCUP, CALIFICACION, id_categoria),
+    by = c("CAT_OCUP", "CALIFICACION")
+  ) %>%
+  select(rama, id_categoria, porcentaje) %>%
+  tidyr::pivot_wider(
+    names_from = id_categoria,
+    values_from = porcentaje,
+    values_fill = 0
+  ) %>%
+  left_join(
+    orden_rama,
+    by = "rama"
+  ) %>%
+  arrange(desc(total_ocupados)) %>%
+  select(
+    rama,
+    all_of(categorias$id_categoria)
+  )
+
+# Cuadro 01
+tabla_01 <- tabla_ancha_01 %>%
+  gt::gt(rowname_col = "rama") %>%
+  gt::cols_label(
+    .list = setNames(
+      categorias$calificacion_etiqueta,
+      categorias$id_categoria
+    )
+  ) %>%
+  gt::tab_spanner(
+    label = "Patrón",
+    columns = categorias$id_categoria[categorias$CAT_OCUP == 1],
+    gather = FALSE
+  ) %>%
+  gt::tab_spanner(
+    label = "Cuenta propia",
+    columns = categorias$id_categoria[categorias$CAT_OCUP == 2],
+    gather = FALSE
+  ) %>%
+  gt::tab_spanner(
+    label = "Asalariados",
+    columns = categorias$id_categoria[categorias$CAT_OCUP == 3],
+    gather = FALSE
+  ) %>%
+  gt::tab_spanner(
+    label = "Trab. familiar",
+    columns = categorias$id_categoria[categorias$CAT_OCUP == 4],
+    gather = FALSE
+  ) %>%
+  gt::fmt_percent(
+    columns = tidyselect::all_of(categorias$id_categoria),
+    decimals = 1,
+    dec_mark = ",",
+    sep_mark = "."
+  ) %>%
+  gt::cols_align(
+    align = "center",
+    columns = tidyselect::all_of(categorias$id_categoria)
+  ) %>%
+  gt::tab_style(
+    style = gt::cell_borders(
+      sides = "right",
+      color = "#A77A83",
+      weight = gt::px(1)
+    ),
+    locations = list(
+      gt::cells_body(
+        columns = c(
+          categorias$id_categoria[categorias$CAT_OCUP == 1][2],
+          categorias$id_categoria[categorias$CAT_OCUP == 2][4],
+          categorias$id_categoria[categorias$CAT_OCUP == 3][4]
+        )
+      ),
+      gt::cells_column_labels(
+        columns = c(
+          categorias$id_categoria[categorias$CAT_OCUP == 1][2],
+          categorias$id_categoria[categorias$CAT_OCUP == 2][4],
+          categorias$id_categoria[categorias$CAT_OCUP == 3][4]
+        )
+      ),
+      gt::cells_stub()
+    )
+  ) %>%
+  gt::tab_style(
+    style = gt::cell_text(weight = "normal"),
+    locations = gt::cells_column_labels(
+      columns = tidyselect::all_of(categorias$id_categoria)
+    )
+  ) %>%
+  gt::tab_options(
+    table.font.size = gt::px(12),
+    data_row.padding = gt::px(5),
+    heading.align = "left",
+    column_labels.font.weight = "bold",
+    column_labels.background.color = "#A77A83",
+    table.border.top.color = "#7A263A",
+    table.border.top.width = gt::px(2),
+    table.border.bottom.color = "#7A263A",
+    table.border.bottom.width = gt::px(2),
+    row.striping.background_color = "#F8F1F2"
+  ) %>%
+  gt::tab_header(
+    title = gt::md("Cuadro 1: Estructura ocupacional por rama de actividad"),
+    subtitle = gt::md(
+      "Población ocupada por categoría ocupacional y calificación. Total de aglomerados urbanos, IV trimestre de 2023"
+    )
+  ) %>%
+  gt::tab_style(
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_title(groups = "title")
+  ) %>%
+  gt::tab_source_note(
+    source_note = gt::md(
+      "*Fuente:* Elaboración propia en base a EPH - INDEC."
+    )
+  )
+
+tabla_01
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## 5.2. La segmentación fundamental: formales e informales.
+
+Si tomamos la informalidad tal como la define la nueva metodología del INDEC (2023), el servicio doméstico alcanza un 75,7% de informalidad y el sector de la construcción, un 70,4%. Seguidos por Comercio, restaurantes y hoteles; y Transporte, almacenamiento y comunicaciones, con un 45,7% y 35,3%, respectivamente. Previsiblemente, el sector de menor informalidad es la Administración pública, aunque presenta un 9,5% de empleos informales.
+
+```{r grafico_01, echo=TRUE, fig.width=11, fig.height=8, dpi=300}
+#==============================================================================
+### Gráfico 01: Ramas de actividad según informalidad
+#==============================================================================
+
+# Distribución de asalariados por rama y condición de registro
+
+dg_01 <- ephi_2023_4 %>%
+  filter(
+    ESTADO == 1,
+    CAT_OCUP == 3,
+    !is.na(rama),
+    rama != "Actividades primarias"
+  ) %>%
+  mutate(
+    cond_reg = factor(
+      EMPLEO,
+      levels = c(1, 2),
+      labels = c("Formal", "Informal")
+    )
+  ) %>%
+  group_by(rama, cond_reg) %>%
+  summarise(
+    asalariados = sum(PONDERA, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  group_by(rama) %>%
+  mutate(
+    porcentaje = asalariados / sum(asalariados, na.rm = TRUE) * 100
+  ) %>%
+  ungroup() %>%
+  mutate(
+    rama = forcats::fct_rev(
+      factor(rama, levels = orden_rama$rama)
+    )
+  )
+
+# Gráfico 02: Ramas de actividad según categorías ocupacionales
+grafico_1 <- ggplot(
+  dg_01,
+  aes(
+    x = porcentaje,
+    y = rama,
+    fill = cond_reg
+  )
+) +
+  geom_col() +
+  geom_text(
+    aes(
+      label = ifelse(
+        porcentaje >= 5,
+        paste0(round(porcentaje, 1), "%"),
+        ""
+      )
+    ),
+    position = position_stack(vjust = 0.5),
+    size = 3,
+    color = "white"
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Formal" = "#7A263A",
+      "Informal" = "#C58F9A"
+    ),
+    breaks = c("Formal", "Informal")
+  ) +
+  labs(
+    title = "Grafico 1: Asalariados por rama de actividad y condición de registro laboral",
+    subtitle = "EPH, 4.º trimestre de 2023",
+    x = "Porcentaje de asalariados",
+    y = "Rama de actividad",
+    fill = "Condición de registro",
+    caption = "Fuente: Elaboración propia en base a EPH-INDEC."
+  ) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(
+      color = "#E8D0D3",
+      linewidth = 0.3
+    ),
+    panel.background = element_blank()
+  )
+
+grafico_1
+
+```
+
+
+## 5.3. La precarización laboral durante el gobierno de LLA.
+
+Esta composición de las distintas ramas de actividad se ve reflejada en la heterogénea calidad del empleo en cada una de ellas. 
+
+Si observamos la variación en la calidad del empleo entre el momento en que asume el gobierno y al inicio de su segundo año (hemos decidido comparar con el I trimestre de 2026 porque era el último disponible) puede verse un leve deterioro en las distintas ramas. 
+
+
+```{r cuadro_2, echo=TRUE, results='asis'}
+
+#===============================================================================
+# Cuadro 02: Deterioro en la calidd del empleo
+#===============================================================================
+
+# Para tomar asalariados del inicio y el final
+calidad_2023_4 <- ephi_2023_4 %>%
+  filter(
+    ESTADO == 1,
+    CAT_OCUP == 3,
+    !is.na(rama),
+    rama != "Actividades primarias"
+  ) %>%
+  mutate(periodo = "IV-2023")
+calidad_2026_1 <- ephi_2026_1 %>%
+  filter(
+    ESTADO == 1,
+    CAT_OCUP == 3,
+    !is.na(rama),
+    rama != "Actividades primarias"
+  ) %>%
+  mutate(periodo = "I-2026")
+
+# unir los periodos
+calidad <- bind_rows(
+  calidad_2023_4,
+  calidad_2026_1
+)
+
+# seleccionar y reorganizar los indicadores de calidad
+calidad_comp <- calidad %>%
+  select(
+    periodo,
+    rama,
+    PONDERA,
+    PP07H,
+    PP07G1,
+    PP07G2,
+    PP07G3,
+    PP07G4
+  ) %>%
+  pivot_longer(
+    cols = c(PP07H, PP07G1, PP07G2, PP07G3, PP07G4),
+    names_to = "var_calidad",
+    values_to = "valor"
+  ) %>%
+  mutate(
+    var_calidad = recode(
+      var_calidad,
+      "PP07H" = "Descuento jubilatorio",
+      "PP07G1" = "Vacaciones pagas",
+      "PP07G2" = "Aguinaldo",
+      "PP07G3" = "Días de enfermedad pagos",
+      "PP07G4" = "Obra social"
+    )
+  )
+
+# calcular porcentajes ponderados
+cuadro_calidad <- calidad_comp %>%
+  group_by(periodo, rama, var_calidad) %>%
+  summarise(
+    total_ponderado = sum(
+      as.double(PONDERA)[!is.na(valor) & valor %in% c(1, 2)],
+      na.rm = TRUE
+    ),
+    porcentaje = ifelse(
+      total_ponderado > 0,
+      100 * sum(
+        as.double(PONDERA)[!is.na(valor) & valor == 1],
+        na.rm = TRUE
+      ) / total_ponderado,
+      NA_real_
+    ),
+    .groups = "drop"
+  ) %>%
+  select(periodo, rama, var_calidad, porcentaje) %>%
+  mutate(
+    periodo = factor(periodo, levels = c("IV-2023", "I-2026"))
+  ) %>%
+  pivot_wider(
+    names_from = c(periodo, var_calidad),
+    values_from = porcentaje,
+    names_glue = "{periodo}_{var_calidad}"
+  ) %>%
+  mutate(
+    orden = match(as.character(rama), orden_ramas)
+  ) %>%
+  arrange(orden) %>%
+  select(
+    rama,
+    `IV-2023_Descuento jubilatorio`,
+    `IV-2023_Vacaciones pagas`,
+    `IV-2023_Aguinaldo`,
+    `IV-2023_Días de enfermedad pagos`,
+    `IV-2023_Obra social`,
+    `I-2026_Descuento jubilatorio`,
+    `I-2026_Vacaciones pagas`,
+    `I-2026_Aguinaldo`,
+    `I-2026_Días de enfermedad pagos`,
+    `I-2026_Obra social`
+  )
+
+# Cuadro 02
+tabla_02 <- cuadro_calidad %>%
+  gt::gt(rowname_col = "rama") %>%
+  gt::tab_header(
+    title = gt::md("Cuadro 2: Calidad del empleo por rama de actividad"),
+    subtitle = gt::md("IV trimestre de 2023 y I trimestre de 2026")
+  ) %>%
+  gt::tab_style(
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_title(groups = "title")
+  ) %>%
+  gt::tab_spanner(
+    label = "IV trimestre de 2023",
+    columns = tidyselect::starts_with("IV-2023_")
+  ) %>%
+  gt::tab_spanner(
+    label = "I trimestre de 2026",
+    columns = tidyselect::starts_with("I-2026_")
+  ) %>%
+  gt::cols_label(
+    `IV-2023_Descuento jubilatorio` = "Descuento jubilatorio",
+    `IV-2023_Vacaciones pagas` = "Vacaciones pagas",
+    `IV-2023_Aguinaldo` = "Aguinaldo",
+    `IV-2023_Días de enfermedad pagos` = "Días de enfermedad pagos",
+    `IV-2023_Obra social` = "Obra social",
+    `I-2026_Descuento jubilatorio` = "Descuento jubilatorio",
+    `I-2026_Vacaciones pagas` = "Vacaciones pagas",
+    `I-2026_Aguinaldo` = "Aguinaldo",
+    `I-2026_Días de enfermedad pagos` = "Días de enfermedad pagos",
+    `I-2026_Obra social` = "Obra social"
+  ) %>%
+  gt::fmt_number(
+    columns = tidyselect::where(is.numeric),
+    decimals = 1,
+    dec_mark = ",",
+    sep_mark = "."
+  ) %>%
+  gt::cols_width(
+    gt::stub() ~ gt::px(110),
+    gt::everything() ~ gt::px(70)
+  ) %>%
+  gt::cols_align(
+    align = "center",
+    columns = tidyselect::where(is.numeric)
+  ) %>%
+  gt::tab_style(
+    style = gt::cell_text(size = gt::px(10)),
+    locations = gt::cells_body()
+  ) %>%
+  gt::tab_options(
+    table.font.size = gt::px(10),
+    data_row.padding = gt::px(5),
+    heading.align = "left",
+    column_labels.font.weight = "bold",
+    column_labels.background.color = "#A77A83",
+    column_labels.padding = gt::px(2),
+    table.border.top.color = "#7A263A",
+    table.border.top.width = gt::px(2),
+    table.border.bottom.color = "#7A263A",
+    table.border.bottom.width = gt::px(2),
+    row.striping.background_color = "#F8F1F2"
+  ) %>%
+  gt::tab_source_note(
+    source_note = gt::md("*Fuente:* Elaboración propia con base en la EPH-INDEC.")
+  )
+
+tabla_02
+
+```
+
+## 5.4. Estudio de panel: los cambios en el empleo asalariado.
+
+El análisis de las transiciones ocupacionales permite complementar la comparación entre la situación del empleo en 2023 y 2026, al trazar los desplazamientos de los trabajadores entre distintas ocupaciones. El objetivo es examinar en qué medida las transformaciones observadas durante el período se expresan en cambios en la condición de registro, el tipo de establecimiento, la ocupación y la rama de actividad, así como identificar posibles continuidades en las segmentaciones de la estructura ocupacional.
+
+
+```{r armado de paneles, include=FALSE}
+
+#===============================================================================
+# Armado de Paneles
+#===============================================================================
+
+panel_1 <- inner_join(ephi_2023_4, ephi_2024_1,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_2 <- inner_join(ephi_2024_1, ephi_2024_2,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_3 <- inner_join(ephi_2024_2, ephi_2024_3,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_4 <- inner_join(ephi_2024_3, ephi_2024_4,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_5 <- inner_join(ephi_2024_4, ephi_2025_1,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_6 <- inner_join(ephi_2025_1, ephi_2025_2,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_7 <- inner_join(ephi_2025_2, ephi_2025_3,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_8 <- inner_join(ephi_2025_3, ephi_2025_4,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+panel_9 <- inner_join(ephi_2025_4, ephi_2026_1,
+                       by = c("CODUSU", "NRO_HOGAR", "COMPONENTE", "CH04"), 
+                       suffix = c("_i", "_f")) %>% 
+  filter(ESTADO_i == 1,
+         CAT_OCUP_i == 3) %>%
+  mutate(
+    ocupacion_f = case_when(
+      ESTADO_f == 2 ~ "Desocupado",
+      ESTADO_f == 3 ~ "Inactivo",
+      ESTADO_f == 1 ~ ocupacion_f,
+      TRUE ~ NA_character_
+    )
+  )
+
+# Unificación de los paneles en una sola base
+pool_final <- bind_rows(panel_1, 
+                        panel_2, 
+                        panel_3, 
+                        panel_4,
+                        panel_5,
+                        panel_6,
+                        panel_7,
+                        panel_8,
+                        panel_9) %>% 
+  filter(abs(CH06_i - CH06_f) <= 2,# Control: Misma persona (edad consistente)
+         !is.na(ocupacion_i),
+         !is.na(ocupacion_f)) 
+
+```
+
+
+### 5.4.1. El empleo informal.
+
+De acuerdo con la literatura, la segmentación más firme se da entre el empleo formal y el informal. Mientras que el 93,2% de los que tenían un empleo formal en el inicio, se mantienen dentro del mismo sector al final. Así como el 84,5% de los que tenía un empleo informal, mantendrá la informalidad como destino. 
+
+```{r matriz_empleo, echo=TRUE, results='hide'}
+
+
+#===============================================================================
+# Informalidad 
+#===============================================================================
+
+matriz_empleo <- pool_final %>%
+  mutate(
+    empleo_i_cat = case_when(
+      EMPLEO_i == 1 ~ "Formal",
+      EMPLEO_i == 2 ~ "Informal",
+      TRUE ~ NA_character_
+    ),
+    empleo_f_cat = case_when(
+      EMPLEO_f == 1 ~ "Formal",
+      EMPLEO_f == 2 ~ "Informal",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(
+    !is.na(empleo_i_cat),
+    !is.na(empleo_f_cat)
+  ) %>%
+  count(
+    empleo_i_cat,
+    empleo_f_cat,
+    wt = PONDERA_i,
+    name = "personas_pond"
+  ) %>%
+  group_by(empleo_i_cat) %>%
+  mutate(
+    probabilidad = personas_pond / sum(personas_pond)
+  ) %>%
+  ungroup()
+
+#Para ordenar las categorias
+niveles_empleo <- c("Formal", "Informal")
+
+# Grafico
+gmatriz_empleo <- ggplot(matriz_empleo, aes(x = empleo_f_cat, y = empleo_i_cat, fill = probabilidad)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = scales::percent(probabilidad, accuracy = 0.1)),
+    color = "black",
+    size = 3.5
+  ) +
+  scale_x_discrete(limits = niveles_empleo) +
+  scale_y_discrete(limits = rev(niveles_empleo)) +
+  scale_fill_gradient(
+    low = "#F2E2E3",
+    high = "#762A3D",
+    labels = scales::percent,
+    name = "Probabilidad"
+  ) +
+  labs(
+    title = "Transiciones entre empleo formal e informal",
+    subtitle = "EPH - Paneles trimestrales agrupados",
+    x = "Situación laboral final",
+    y = "Situación laboral inicial",
+    caption = "Fuente: elaboración propia sobre la base de la EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    axis.text.y = element_text(size = 9),
+    panel.grid = element_blank(),
+    plot.title = element_text(face = "bold"),
+    legend.position = "right"
+  )
+
+gmatriz_empleo
+
+```
+
+
+### 5.4.2. Las ocupaciones.
+
+Para analizar las ocupaciones hemos construido la tipología resultante de considerar la categoría ocupacional y el nivel de calificación. Lo que nos permite indagar en cuáles son los destinos de los trabajadores que en el tiempo inicial se encontraban en alguna ocupación asalariada. 
+
+En la mayoría de los casos, la ocupación de destino coincide con la ocupación de origen. Los asalariados operativos continúan siéndolo en un 67,1%, mientras que los asalariados técnicos mantienen su condición en un 59,4% y los asalariados profesionales, en un 57,3%. Los asalariados no calificados, que son los de más baja probabilidad de persistir en la categoría ocupacional, lo hacen en un 55,5%. 
+
+Para todos los asalariados, la posibilidad de seguir siendo asalariados es alta. Aún para los no calificados, es del 78,8%. En el caso de los profesionales, es del 90,8%. 
+
+Esto es la contracara de las posibilidades que tienen los asalariados de quedar desocupados o parar a la inactividad. Sólo el 1% de probabilidad de pasar a ser desocupado y 2,6% de ser inactivo en el caso de los profesionales. Mientras que los de calificación técnica tienden a la desocupación en un 1,5% y a la inactividad en un 2,8%. En los de calificación operativa estas probabilidades ya se disparan a 2,9% para la desocupación y 4,4% para la inactividad. Mientras que los no calificados presentan un riesgo de 5,6% de encontrarse en condición de desocupación y de 10,6% de pasar a la inactividad. 
+
+Resulta interesante, por último, destacar que en caso de pasar al cuentapropismo, la mayor probabilidad está en la conservación de la calificación ocupacional. 
+
+
+```{r matriz_ocupacion, echo=TRUE, results='hide'}
+
+# =============================================================================  
+# Matriz de transición para todas las categorias
+# =============================================================================  
+
+# matriz
+matriz_ocupacion <- pool_final %>%
+  filter(
+    !is.na(ocupacion_i),
+    !is.na(ocupacion_f)
+  ) %>%
+  count(
+    ocupacion_i,
+    ocupacion_f,
+    wt = PONDERA_i,
+    name = "personas_pond"
+  ) %>%
+  group_by(ocupacion_i) %>%
+  mutate(
+    probabilidad = personas_pond / sum(personas_pond)
+  ) %>%
+  ungroup()
+
+matriz_ocupacion %>%
+  count(ocupacion_f, .drop = FALSE)
+
+
+#para ordenar los ejes 
+niveles_y <- c(
+  "Asalariado - profesional",
+  "Asalariado - técnico",
+  "Asalariado - operativo",
+  "Asalariado - no calificado"
+)
+niveles_x <- c(
+  "Asalariado - profesional",
+  "Asalariado - técnico",
+  "Asalariado - operativo",
+  "Asalariado - no calificado",
+  "Patrón - profesional",
+  "Patrón - técnico",
+  "Cuenta propia - profesional",
+  "Cuenta propia - técnico",
+  "Cuenta propia - operativo",
+  "Cuenta propia - no calificado",
+  "Trabajador familiar",
+  "Desocupado",
+  "Inactivo"
+)
+
+# Grafico 
+gmatriz_ocupacion <- ggplot(matriz_ocupacion, 
+                            aes(x = ocupacion_f, y = ocupacion_i, fill = probabilidad)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = scales::percent(probabilidad, accuracy = 0.1)),
+    color = "black",
+    size = 2.5,
+    fontface = "bold"
+  ) +
+  scale_x_discrete(limits = niveles_x, drop = TRUE) +
+  scale_y_discrete(limits = rev(niveles_y), drop = TRUE) +
+  scale_fill_gradient(
+    low = "#F2E2E3",
+    high = "#762A3D",
+    labels = scales::percent,
+    name = "Probabilidad"
+  ) +
+  labs(
+    title = "Transiciones ocupacionales de trabajadores asalariados",
+    subtitle = "EPH - Paneles trimestrales agrupados",
+    x = "Situación ocupacional final",
+    y = "Situación ocupacional inicial",
+    caption = "Fuente: elaboración propia sobre la base de la EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 9),
+    panel.grid = element_blank(),
+    plot.title = element_text(face = "bold"),
+    legend.position = "right"
+  )
+
+gmatriz_ocupacion
+
+```
+
+
+### 5.4.3. Las ramas de actividad.
+
+Por último, cabría esperar en un momento de transición de la matriz productiva y del modo de acumulación, un trasvasamiento de los sectores o ramas de actividad más perjudicados con la competencia de productos importados o con el levantamiento de regulaciones hacia los sectores más dinámicos de la economía. Es decir, que aquellos que mantienen la condición de ocupados busquen mejorar su posición dentro de la heterogenia estructura de la economía argentina.  
+
+Sin embargo, los datos con los que contamos ofrecen una imagen de bastante estabilidad en la rama de actividad. Esto no quiere decir que no se esté modificando el volumen ni la composición de la estructura ocupacional de la Argentina. 
+
+
+```{r matriz_ramas, echo=TRUE, results='hide'}
+
+
+#===============================================================================
+# RAMA
+#===============================================================================
+
+matriz_rama <- pool_final %>%
+  filter(
+    !is.na(rama_i),
+    !is.na(rama_f),
+    rama_i != "Actividades primarias",
+    rama_f != "Actividades primarias"
+  ) %>%
+  count(
+    rama_i,
+    rama_f,
+    wt = PONDERA_i,
+    name = "personas_pond"
+  ) %>%
+  group_by(rama_i) %>%
+  mutate(
+    probabilidad = personas_pond / sum(personas_pond)
+  ) %>%
+  ungroup()
+
+# Para ordenar por cantidad
+niveles_rama <- matriz_rama %>%
+  group_by(rama_i) %>%
+  summarise(total = sum(personas_pond), .groups = "drop") %>%
+  arrange(desc(total)) %>%
+  pull(rama_i)
+
+# Gráfico
+gmatriz_rama <- ggplot(matriz_rama, aes(x = rama_f, y = rama_i, fill = probabilidad)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = scales::percent(probabilidad, accuracy = 0.1)),
+    color = "black",
+    size = 2.3
+  ) +
+  scale_x_discrete(limits = niveles_rama) +
+  scale_y_discrete(limits = rev(niveles_rama)) +
+  scale_fill_gradient(
+    low = "#F2E2E3",
+    high = "#762A3D",
+    labels = scales::percent,
+    name = "Probabilidad"
+  ) +
+  labs(
+    title = "Transiciones entre ramas de actividad",
+    subtitle = "EPH - Paneles trimestrales agrupados",
+    x = "Rama de actividad final",
+    y = "Rama de actividad inicial",
+    caption = "Fuente: elaboración propia sobre la base de la EPH-INDEC."
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 7, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 7),
+    axis.title = element_text(size = 9),
+    panel.grid = element_blank(),
+    plot.title = element_text(face = "bold"),
+    legend.position = "right"
+  )
+
+gmatriz_rama
+
+```
+
+# 6. Conclusiones.
+
+El análisis de la estructura ocupacional permite reconocer la persistencia de la segmentación que se expresa tanto en las condiciones de inserción laboral como en las posibilidades de movilidad entre ocupaciones. Las diferencias entre ramas de actividad, categorías ocupacionales y niveles de calificación muestran que el empleo urbano no constituye un universo homogéneo, sino una estructura en la que coexisten posiciones con distintas condiciones de estabilidad, protección y vulnerabilidad.
+
+La informalidad constituye una de las manifestaciones más visibles de esa heterogeneidad. Su elevada incidencia en ramas como el servicio doméstico, la construcción y el comercio contrasta con la situación de la administración pública. Estas diferencias sugieren que las condiciones laborales no pueden comprenderse exclusivamente a partir de los atributos individuales de los trabajadores, sino que deben analizarse en relación con la heterogeneidad estructural de la economía argentina. 
+
+La comparación entre 2023 y 2026 muestra, además, un deterioro de los indicadores de calidad del empleo asalariado, con diferencias según las distintas ramas. Los ejercicios longitudinales de panel permiten precisar las posibilidades que encuentra cada categoría ocupacional. Los asalariados no calificados presentan una mayor propensión pasar a la desocupación o la inactividad que las ocupaciones profesionales o técnicas. 
+
+Pero a partir de este instrumento construido a partir de los microdatos de la EPH, la posibilidad de un trasvasamiento masivo de ocupados a una rama más dinámica no parece estar sucediendo. Quizás la clave de las mutaciones de la estructura ocupacional haya que buscarla en el deterioro de la calidad del empleo. 
+
+
+# 7. Bibliografía
+
+Arakaki, G. A. (2017). Movilidad ocupacional en un mercado de trabajo segmentado: Argentina, 2003-2013. Estudios del Trabajo, (54), 27-54. https://ri.conicet.gov.ar/handle/11336/75764
+
+Contreras, T. (2019). Empleo informal. Evolución teórica y criterios para su estimación
+derivados de la Organización Internacional del Trabajo (OIT). Revista Lebret 11, pp 11- 35.
+https://doi.org/10.15332/rl.v0i11.2410
+
+Diamand, M. (1972). La estructura productiva desequilibrada argentina y el tipo de cambio. Desarrollo Económico, 12(45), 25–47. doi.org
+
+Fernández Massi, M. (2014). Segmentación del mercado de trabajo y estructura productiva: un análisis del empleo sectorial en Argentina (Trabajo de investigación de posgrado). Universidad de Buenos Aires; Universitat Autònoma de Barcelona. https://ddd.uab.cat/record/117002
+
+Fernández Massi, M. y Giosa Zuazua, N. (2015). La segmentación del trabajo en la Argentina: un análisis de movilidad para los años de la posconvertibilidad. Realidad Económica, (295), 45-73.
+
+Instituto de Interdisciplinario de Economía Política [IIEP]. (2026). Informe de coyuntura macroeconómica N° 15: El PBI sigue creciendo de forma asimétrica. Facultad de Ciencias Económicas, Universidad de Buenos Aires. https://economicas.uba.ar/iiep/wp-content/uploads/Informe-macroeconomico-N-15.pdf
+
+Instituto Nacional de Estadística y Censos (INDEC) Diseño conceptual y metodológico para la medición de la informalidad laboral con datos de la EPH. - 1a ed. - Ciudad Autónoma de Buenos Aires : Instituto Nacional de Estadística y Censos - INDEC, 2025.Libro digital, PDF - (Metodología INDEC ; 43)
+ 
+Paz, J. (2013). Segmentación del mercado de trabajo en la Argentina. Desarrollo y Sociedad, (72), 105–156. https://doi.org/10.13043/dys.72.3
+
+Pinto, A. (1970). Naturaleza e implicaciones de la heterogeneidad estructural de la América Latina. El Trimestre Económico, 37(145), 83–100.
+
+Souza, P. R., y Tokman, V. E. (1976). El sector informal urbano. Revista de la CEPAL, (1), 141–147.
+
+Waisgrais, S. (2001). Segmentación del mercado de trabajo en Argentina: Una aproximación a través de la economía informal. Asuntos de Capital Humano, 1(1), 45–63.

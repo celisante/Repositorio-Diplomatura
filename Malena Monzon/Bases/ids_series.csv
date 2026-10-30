@@ -1,0 +1,9 @@
+serie,idVariable,descripcion,moneda,unidadExpresion,primerFechaInformada
+circulante,17,Billetes y monedas en poder del público,ML,En millones de ARS,1996-01-02
+dep_pesos,91,Depósitos en pesos de los sectores público y privados no financieros (incluye cedros),ML,En millones de ARS,2002-12-31
+cta_cte,85,Cuentas corrientes de los sectores público y privado no financieros,ML,En millones de ARS,2002-12-31
+caja_ah,86,Cajas de ahorro de los sectores público y privado no financieros,ML,En millones de ARS,2002-12-31
+plazo_fijo,87,Depósitos a plazo no ajustables por CER/UVAS de los sectores público y privado no financieros,ML,En millones de ARS,2002-12-31
+plazo_uva,88,Depósitos a plazo ajustables por CER/UVAS de los sectores público y privado no financieros,ML,En millones de ARS,2003-01-31
+dep_usd_ars,103,Depósitos  de los sectores público y privado no financieros,ME,En millones de ARS,2002-12-31
+dep_usd,107,Depósitos  de los sectores público y privado no financieros,ME,En millones de USD,2002-12-31

@@ -1,0 +1,464 @@
+---
+title: "Las secuelas del corralito"
+subtitle: "La composición de cartera de los argentinos después de la convertibilidad (2003 - 2026)"
+author: "Malena Monzon"
+date: today
+date-format: "DD/MM/YYYY"
+lang: es
+format:
+  html:
+    toc: true
+    toc-title: "Índice"
+    toc-depth: 2
+    number-sections: true
+    code-fold: true
+    code-summary: "Ver código"
+    embed-resources: true
+    fig-width: 10
+    fig-height: 6
+    theme: cosmo
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(knitr)
+
+options(scipen = 999)
+
+# Si es TRUE, vuelve a descargar las series de la API del BCRA.
+# Si es FALSE, usa los CSV ya guardados en /bases.
+ACTUALIZAR_DATOS <- FALSE
+
+if (ACTUALIZAR_DATOS || !file.exists("bases/ids_series.csv")) {
+  source("descarga_bcra.R", encoding = "UTF-8")
+}
+
+dir.create("graficos", showWarnings = FALSE)
+```
+
+```{r estetica}
+#| include: false
+
+colores <- c(
+  pesos    = "#27408B",
+  dolares  = "#8B864E",
+  plazo    = "#8B5F65",
+  vista    = "#68838B",
+  destaque = "#8B1A1A",
+  hitos    = "#CDC1C5"
+)
+
+pct <- function(x) paste0(format(round(x, 1), nsmall = 1, decimal.mark = ","), "%")
+mes_txt <- function(x) format(x, "%m/%Y")
+
+hitos <- tribble(
+  ~fecha,                ~evento,                        ~lado,
+  as.Date("2008-09-01"), "Crisis internacional",         -0.4,
+  as.Date("2011-11-01"), "Cepo cambiario",               -0.4,
+  as.Date("2015-12-01"), "Salida del cepo",              -0.4,
+  as.Date("2018-05-01"), "Crisis cambiaria",             -0.4,
+  as.Date("2019-09-01"), "Vuelta del cepo",              -0.4,
+  as.Date("2020-03-01"), "Pandemia",                      1.4,
+  as.Date("2023-12-01"), "Cambio de gobierno",           -0.4,
+  as.Date("2024-08-01"), "Blanqueo",                      1.4,
+  as.Date("2025-04-01"), "Salida del cepo (personas)",    1.4
+)
+
+# Etiquetas verticales: `lado` ubica el texto a la izquierda (-0.4) o a la
+# derecha (1.4) de la línea, para que no se superpongan los hitos cercanos
+capa_hitos <- list(
+  geom_vline(data = hitos, aes(xintercept = fecha),
+             linetype = "dashed", color = colores["hitos"], linewidth = 0.6),
+  geom_text(data = hitos, aes(x = fecha, y = Inf, label = evento, vjust = lado),
+            inherit.aes = FALSE, angle = 90, hjust = 1.05, size = 3, color = "grey45")
+)
+
+tema_tif <- theme_minimal(base_size = 12) +
+  theme(
+    plot.title           = element_text(face = "bold", size = 16, color = "grey15"),
+    plot.subtitle        = element_text(color = "grey30"),
+    plot.caption         = element_text(hjust = 0, color = "grey45", size = 8.5),
+    legend.position      = "top",
+    legend.justification = "left",
+    panel.grid.minor     = element_blank(),
+    panel.grid.major.x   = element_blank()
+  )
+
+eje_x   <- scale_x_date(date_breaks = "2 years", date_labels = "%Y",
+                        expand = expansion(mult = c(0.01, 0.07)))
+eje_pct <- scale_y_continuous(labels = label_percent(scale = 1, decimal.mark = ","),
+                              limits = c(0, NA))
+
+fuente <- function(nombres) {
+  ids <- map_dbl(nombres, ~ ids_series$idVariable[ids_series$serie == .x])
+  paste0("Fuente: elaboración propia en base a BCRA (API Estadísticas v4.0, ids ",
+         paste(ids, collapse = ", "), "). Promedios mensuales de datos diarios.")
+}
+```
+
+
+# Resumen ejecutivo
+
+Este trabajo indaga si la crisis de la convertibilidad dejó una marca duradera en la forma en que los argentinos componen su cartera de activos líquidos. Con series del BCRA entre 2003 y 2026, construimos tres indicadores: los depósitos en pesos sobre el M3, la composición por moneda del M3 bimonetario y la distribución de los depósitos en pesos entre la vista y el plazo fijo.
+
+Los resultados sugieren que el trauma no se expresa como una desconfianza generalizada hacia los bancos. La proporción de pesos depositados alcanzó en los últimos años los niveles más altos de la serie, y la participación del plazo fijo creció en lugar de caer. La marca de 2001 aparece, en cambio, en la relación con el dólar: los depósitos en moneda extranjera crecen cada vez que el acceso a las divisas es libre, y se retiran de los bancos ante cada amenaza de restricción, como ocurrió tras la vuelta del control de cambios en 2019. Concluimos que la hipótesis racional explica bien el comportamiento de los pesos dentro del sistema, mientras que la hipótesis del trauma ayuda a comprender la persistencia del dólar como reserva de valor.
+
+# Introducción
+
+El 1 de diciembre de 2001, mediante el Decreto 1570/2001, el gobierno nacional restringió la extracción de efectivo de los bancos. La medida, conocida como *corralito*, fue el desenlace de una corrida en la que el público intentaba convertir sus depósitos en pesos a dólares y retirarlos del sistema ante la expectativa del fin de la convertibilidad (Tiscornia, 2022, p. 66). Semanas después, el abandono del "uno a uno" vino acompañado de la **pesificación** de los depósitos en dólares, mientras el tipo de cambio llegaba a multiplicarse por cuatro. Para millones de ahorristas, la promesa de que *"el que depositó dólares recibirá dólares"* quedó incumplida.
+
+Tiscornia (2022, p. 67) se refiere a este episodio como la *"traumática salida de la convertibilidad"*. En este trabajo tomamos esa palabra en un sentido preciso: entendemos por **trauma** una experiencia que modifica la conducta posterior aun cuando desaparecen las condiciones que la originaron. Desde esta perspectiva, nos preguntamos: **¿la crisis de la convertibilidad dejó una marca duradera en la forma en que los argentinos componen su cartera de activos líquidos?**
+
+Para responderla, distinguimos dos confianzas que la crisis puso en cuestión:
+
+- la confianza en la **moneda local**, es decir, la disposición a ahorrar en pesos y no en dólares;
+- la confianza en el **sistema bancario**, es decir, la disposición a dejar el dinero en un banco, y en particular a inmovilizarlo a plazo.
+
+Para observarlas construimos tres indicadores con series del Banco Central de la República Argentina (BCRA) entre 2003 y 2026. Como los datos comienzan una vez superado lo peor de la crisis, no observamos el corralito en sí, sino sus **secuelas**.
+
+En la sección 3 presentamos el marco conceptual, en la sección 4 la metodología, en la sección 5 los resultados y en la sección 6 las conclusiones.
+
+
+# Desarrollo conceptual
+
+## El dinero como activo de una cartera
+
+En *La contrarrevolución en la teoría monetaria*, Friedman (1970) recupera la teoría cuantitativa del dinero frente a la revolución keynesiana. Un elemento central de su planteo es la forma en que el dinero afecta a la economía: un aumento en la cantidad de dinero eleva las tenencias de efectivo del público en relación con otros activos, y quienes tienen ese exceso de efectivo **intentan reacomodar su cartera** comprando otros activos. A diferencia de los keynesianos, los monetaristas sostienen que ese reacomodamiento involucra una gama mucho más amplia de activos.
+
+Friedman también retoma de Irving Fisher la distinción entre la tasa de interés **nominal** y la tasa **real esperada**, es decir, la que los ahorristas esperan obtener una vez descontada la inflación. Esta distinción es clave para nuestro problema. Desde esta mirada, la decisión de mantener pesos, depositarlos en un banco o pasarse al dólar es una decisión de cartera que responde al **rendimiento esperado** de cada alternativa. Si la tasa que paga un plazo fijo no compensa la inflación o la devaluación esperadas, es racional reducir las tenencias en pesos.
+
+De este planteo se desprende una primera hipótesis, que llamamos **hipótesis racional**: la composición de la cartera de los argentinos responde a los rendimientos relativos, y debería volver a sus niveles previos cuando esos rendimientos se normalizan.
+
+## La convertibilidad y su salida
+
+La historia monetaria argentina ofrece motivos de sobra para desconfiar de la moneda local. Entre 1970 y 1991 el país atravesó tres hiperinflaciones y cuatro cambios de moneda, en los que se le quitaron trece ceros (Tiscornia, 2022, p. 64). El Plan de Convertibilidad de 1991 fue la respuesta a esa experiencia: fijó por ley la paridad de un peso por dólar y obligó al BCRA a emitir solo contra divisas. Según Tiscornia (2022, p. 64), el slogan del "uno a uno" *"tuvo un profundo efecto psicológico en la población"* y contribuyó a domar las expectativas de inflación.
+
+Sin embargo, el régimen tenía una debilidad: el BCRA podía respaldar el circulante con sus reservas, pero no los depósitos (Tiscornia, 2022, p. 66). Cuando a fines de los noventa se deterioraron las condiciones internacionales y se prolongó la recesión, el público corrió a convertir sus depósitos y retirarlos. El desenlace incluyó el corralito, la cesación de pagos de la deuda, el abandono de la convertibilidad y la pesificación de deudas y contratos.
+
+La crisis rompió así las dos confianzas a la vez. El intento más extremo de dotar al peso de credibilidad, atándolo al dólar, terminó confirmando que el dólar era el verdadero resguardo de valor. Y los bancos, que debían custodiar los ahorros, fueron el lugar donde esos ahorros quedaron atrapados.
+
+Los años posteriores tampoco permitieron reconstruirla: la inflación volvió a superar el 10% anual, en 2007 comenzó la manipulación de las estadísticas de precios (Tiscornia, 2022, p. 68) y en 2011 se reimplantó el control de cambios, con una brecha que hacia 2015 llegaba al 50% (Tiscornia, 2022, p. 69).
+
+De este recorrido se desprende la segunda hipótesis, que llamamos **hipótesis del trauma**: la experiencia de 2001 instaló una desconfianza persistente que no se revierte aunque mejoren las condiciones.
+
+## Sustitución de monedas e histéresis
+
+La literatura sobre economías dolarizadas ofrece herramientas para precisar la idea de trauma. Calvo y Végh (1992) distinguen la **sustitución de monedas**, en la que la moneda extranjera se usa como medio de pago, de la **sustitución de activos**, en la que se usa como reserva de valor. El caso argentino corresponde principalmente al segundo tipo: el peso conserva su función en las transacciones cotidianas, mientras que el dólar funciona como resguardo del ahorro.
+
+Por otra parte, estudios sobre América Latina mostraron que la dolarización tiende a no revertirse una vez que la inflación se estabiliza (Guidotti y Rodríguez, 1992). Este fenómeno se conoce como **histéresis**: el nivel de dolarización depende no solo de las condiciones presentes sino también de la historia. Desde una perspectiva sociológica, Luzzi y Wilkis (2019) muestran cómo el dólar se convirtió en una institución de la vida cotidiana argentina, cargada de la memoria de sucesivas crisis.
+
+Contamos, entonces, con dos explicaciones posibles para un mismo comportamiento. Si predomina la **hipótesis racional**, deberíamos observar que la composición de la cartera acompaña los cambios en el contexto y se recupera cuando este mejora. Si predomina la **hipótesis del trauma**, deberíamos encontrar una desconfianza que persiste: pesos que vuelven lentamente a los bancos, un refugio en el dólar que se activa en cada crisis y no se desarma después, y un rechazo a inmovilizar el dinero a plazo. El ejercicio empírico que presentamos a continuación busca evidencia para una y otra.
+
+
+# Metodología
+
+## Fuente de datos
+
+Los datos provienen de la **API de Estadísticas Monetarias del BCRA** (versión 4.0), de acceso público. La descarga se realiza con el script `descarga_bcra.R`, que guarda cada serie como un archivo CSV en la carpeta `bases/`.
+
+Trabajamos con series de *saldos diarios* de depósitos de los sectores público y privado no financieros. Utilizamos las series de la planilla *Series.xlsm* del BCRA porque presentan los depósitos **separados por moneda**: las series de depósitos de la sección *Principales Variables* suman pesos y dólares, lo que impide distinguir ambas monedas. Todas las series utilizadas comienzan el 31/12/2002.
+
+```{r importacion}
+# Tabla con el nombre, el id y la descripción oficial de cada serie
+ids_series <- read_csv("bases/ids_series.csv", show_col_types = FALSE)
+
+# Series diarias: una tabla por serie, guardadas en una lista
+series_diarias <- ids_series$serie %>%
+  set_names() %>%
+  map(~ read_csv(paste0("bases/bcra_", .x, "_diario.csv"), show_col_types = FALSE))
+```
+
+```{r tabla-series}
+#| echo: false
+
+ids_series %>%
+  select(serie, idVariable, descripcion, moneda, unidadExpresion) %>%
+  kable(col.names = c("Serie", "Id BCRA", "Descripción oficial", "Moneda", "Unidad"),
+        caption = "Series utilizadas (ML = moneda local; ME = moneda extranjera)")
+```
+
+## Procesamiento
+
+Transformamos las series diarias en **promedios mensuales**, lo que suaviza la estacionalidad propia de los días de cobro de salarios y del aguinaldo, y permite unir series que no se publican exactamente los mismos días. Descartamos el mes en curso por estar incompleto.
+
+```{r procesamiento}
+# Promedio mensual de cada serie
+a_mensual <- function(df, nombre) {
+  df %>%
+    mutate(mes = floor_date(fecha, "month")) %>%
+    summarise(valor = mean(valor, na.rm = TRUE), .by = mes) %>%
+    rename(!!nombre := valor)
+}
+
+# Unimos las series mensuales en una sola tabla, con una columna por serie
+base_mensual <- series_diarias %>%
+  imap(a_mensual) %>%
+  reduce(inner_join, by = "mes") %>%
+  filter(mes < floor_date(Sys.Date(), "month")) %>%
+  arrange(mes)
+```
+
+## Construcción de los indicadores
+
+Construimos tres indicadores, cada uno asociado a una de las dimensiones de la confianza que identificamos:
+
+- **Indicador 1. Depósitos en pesos / M3.** Siguiendo la definición del BCRA, el M3 está compuesto por los billetes y monedas en poder del público más los depósitos totales en pesos. El indicador mide qué parte del dinero en pesos se encuentra dentro del sistema bancario.
+- **Indicador 2. Depósitos en pesos y en dólares / M3 bimonetario.** Definimos el M3 bimonetario como el M3 más los depósitos en dólares, valuados en pesos por el BCRA. Expresamos ambos tipos de depósito como porcentaje de este **mismo denominador** para que sean comparables. Como variante, presentamos el stock de depósitos en dólares medido en dólares, que no se ve afectado por las variaciones del tipo de cambio.
+- **Indicador 3. Depósitos a plazo fijo y a la vista / depósitos en pesos.** Los depósitos a la vista incluyen cuentas corrientes y cajas de ahorro; los depósitos a plazo fijo incluyen los tradicionales y los ajustables por CER/UVA.
+
+```{r indicadores}
+base_mensual <- base_mensual %>%
+  mutate(
+    # Indicador 1
+    m3             = circulante + dep_pesos,
+    dep_m3         = dep_pesos / m3 * 100,
+    # Indicador 2
+    m3_bimonetario = circulante + dep_pesos + dep_usd_ars,
+    dep_pesos_m3bi = dep_pesos   / m3_bimonetario * 100,
+    dep_usd_m3bi   = dep_usd_ars / m3_bimonetario * 100,
+    # Indicador 3
+    vista          = cta_cte + caja_ah,
+    plazo_total    = plazo_fijo + plazo_uva,
+    plazo_dep      = plazo_total / dep_pesos * 100,
+    vista_dep      = vista       / dep_pesos * 100
+  )
+
+write_csv(base_mensual, "bases/indicadores_monetarios_mensual.csv")
+
+primero <- slice_min(base_mensual, mes, n = 1)
+ultimo  <- slice_max(base_mensual, mes, n = 1)
+```
+
+La base final cubre el período comprendido entre `r mes_txt(primero$mes)` y `r mes_txt(ultimo$mes)`, con un total de `r nrow(base_mensual)` meses.
+
+## Limitaciones
+
+- **Período.** Las series comienzan en 2003, por lo que no observamos la crisis de 2001-2002 sino sus consecuencias.
+- **Dólares fuera del sistema.** Los indicadores solo registran los dólares depositados en bancos. Los dólares que el público atesora fuera del sistema financiero, que son una expresión directa de la desconfianza hacia los bancos, no forman parte de estas series.
+- **Tipo de cambio.** Los depósitos en dólares se valúan al tipo de cambio oficial. En los períodos con control de cambios, la brecha con las cotizaciones paralelas hace que su peso relativo quede subestimado.
+- **Composición de los depósitos.** Los depósitos a la vista y a plazo fijo no suman el total de los depósitos en pesos, ya que existen otras colocaciones de menor peso.
+
+
+# Resultados y análisis
+
+Para ordenar la lectura de los resultados distinguimos seis períodos, que siguen los principales cambios de régimen macroeconómico y cambiario:
+
+| Período | Características principales |
+|---|---|
+| 2003-2007 | Recuperación económica, superávit fiscal e inflación baja |
+| 2008-2011 | Crisis internacional y consolidación de la inflación en torno al 25% |
+| 2011-2015 | Control de cambios y brecha cambiaria creciente |
+| 2015-2019 | Salida del control de cambios, metas de inflación y crisis de 2018 |
+| 2019-2023 | Vuelta del control de cambios, pandemia y aceleración inflacionaria |
+| 2023-2026 | Cambio de gobierno, blanqueo y salida del control de cambios |
+
+## Indicador 1: ¿cuánto del dinero en pesos está en los bancos?
+
+El primer indicador mide qué proporción del dinero en pesos los argentinos mantienen depositada en el sistema bancario, en lugar de conservarla en efectivo. Si la crisis dañó la confianza en los bancos, esperaríamos que esta proporción se recupere lentamente y que caiga en cada episodio de tensión.
+
+```{r grafico-1}
+grafico_1 <- ggplot(base_mensual, aes(x = mes, y = dep_m3)) +
+  capa_hitos +
+  geom_line(color = colores["pesos"], linewidth = 1.1) +
+  geom_point(data = ultimo, color = colores["destaque"], size = 2.8) +
+  geom_text(data = ultimo, aes(label = pct(dep_m3)),
+            hjust = -0.2, color = colores["destaque"], size = 3.8, fontface = "bold") +
+  eje_x + eje_pct +
+  labs(
+    title    = "¿Cuánto del dinero en pesos está en los bancos?",
+    subtitle = "Depósitos totales en pesos como % de M3",
+    caption  = paste0(fuente(c("circulante", "dep_pesos")),
+                      "\nM3 = billetes y monedas en poder del público + depósitos totales en pesos."),
+    x = NULL, y = NULL
+  ) +
+  tema_tif
+
+grafico_1
+ggsave("graficos/indicador_1_depositos_m3.png", grafico_1,
+       width = 10, height = 6, dpi = 300, bg = "white")
+```
+
+La serie muestra una trayectoria en dos tramos. Entre 2003 y 2015, la participación de los depósitos en el M3 descendió desde 79% hasta valores cercanos al 73%, y se mantuvo estancada en ese nivel durante más de una década. El valor inicial debe leerse con cautela: en 2003, cerca de un quinto de los depósitos en pesos correspondía a otras colocaciones, en buena medida depósitos reprogramados durante la crisis que se devolvían en cuotas. A medida que esos fondos se liberaron, la proporción de pesos dentro de los bancos no creció: durante los años de recuperación, el público conservó en efectivo cerca de un cuarto de su dinero en pesos.
+
+A partir de 2018 la tendencia se invierte. El indicador sube a 79% en 2019 y alcanza su máximo mensual en abril de 2024 (88,9%), para ubicarse en torno al 85% en 2026. Este aumento coincide con los años de mayor inflación del período, en los que mantener billetes resulta más costoso, y con la expansión de los pagos electrónicos. Lejos de reflejar una desconfianza persistente hacia los bancos, el comportamiento reciente del indicador es compatible con la **hipótesis racional**: cuando aumenta el costo de mantener efectivo, los argentinos depositan sus pesos.
+
+
+
+## Indicador 2: ¿pesos o dólares?
+
+El segundo indicador compara el peso de los depósitos en pesos y en dólares dentro del M3 bimonetario. Un aumento de la participación de los depósitos en dólares acompañado de una caída de los depósitos en pesos indica sustitución de activos: el ahorro se desplaza hacia la moneda extranjera. La hipótesis del trauma predice que este desplazamiento se activa en cada crisis y no se revierte por completo después.
+
+```{r grafico-2}
+ind_2_largo <- base_mensual %>%
+  select(mes, dep_pesos_m3bi, dep_usd_m3bi) %>%
+  pivot_longer(-mes, names_to = "serie", values_to = "valor") %>%
+  mutate(serie = recode(serie,
+                        dep_pesos_m3bi = "Depósitos en pesos / M3",
+                        dep_usd_m3bi   = "Depósitos en dólares / M3"))
+
+ultimos_2 <- slice_max(ind_2_largo, mes, n = 1, by = serie)
+
+grafico_2 <- ggplot(ind_2_largo, aes(x = mes, y = valor, color = serie)) +
+  capa_hitos +
+  geom_line(linewidth = 1.1) +
+  geom_point(data = ultimos_2, size = 2.8) +
+  geom_text(data = ultimos_2, aes(label = pct(valor)),
+            hjust = -0.2, size = 3.8, fontface = "bold", show.legend = FALSE) +
+  scale_color_manual(values = c(
+    "Depósitos en pesos / M3"   = unname(colores["pesos"]),
+    "Depósitos en dólares / M3" = unname(colores["dolares"])
+  )) +
+  eje_x + eje_pct +
+  labs(
+    title    = "¿Pesos o dólares? Sustitución de monedas en los depósitos",
+    subtitle = "Depósitos en pesos y en dólares como % del M3 bimonetario",
+    caption  = paste0(fuente(c("circulante", "dep_pesos", "dep_usd_ars")),
+                      "\nM3 bimonetario = circulante + depósitos en pesos + depósitos en dólares valuados en pesos (sectores público y privado no financieros).",
+                      "\nNo incluye dólares fuera del sistema bancario."),
+    x = NULL, y = NULL, color = NULL
+  ) +
+  tema_tif
+
+grafico_2
+ggsave("graficos/indicador_2_sustitucion_monedas.png", grafico_2,
+       width = 10, height = 6, dpi = 300, bg = "white")
+```
+
+Como la participación de los depósitos en dólares aumenta mecánicamente con cada devaluación, complementamos el análisis con el stock de depósitos medido en dólares, que refleja solo las decisiones de los ahorristas.
+
+```{r grafico-2b}
+grafico_2b <- ggplot(base_mensual, aes(x = mes, y = dep_usd / 1000)) +
+  capa_hitos +
+  geom_line(color = colores["dolares"], linewidth = 1.1) +
+  geom_point(data = ultimo, color = colores["destaque"], size = 2.8) +
+  geom_text(data = ultimo,
+            aes(label = paste0("USD ", format(round(dep_usd / 1000, 1), decimal.mark = ","), " MM")),
+            hjust = 1.15, vjust = -0.3, color = colores["destaque"], size = 3.8, fontface = "bold") +
+  scale_y_continuous(labels = label_number(prefix = "USD ", suffix = " MM",
+                                           big.mark = ".", decimal.mark = ","),
+                     limits = c(0, NA)) +
+  eje_x +
+  labs(
+    title    = "Stock de depósitos en dólares",
+    subtitle = "Miles de millones de dólares",
+    caption  = fuente("dep_usd"),
+    x = NULL, y = NULL
+  ) +
+  tema_tif
+
+grafico_2b
+ggsave("graficos/indicador_2b_depositos_usd.png", grafico_2b,
+       width = 10, height = 6, dpi = 300, bg = "white")
+```
+
+La participación de los depósitos en dólares parte de un nivel mínimo: 3,9% en 2003, con un stock de apenas USD 1.300 millones, como consecuencia de la pesificación. Desde allí, el indicador describe ciclos que acompañan de cerca al régimen cambiario.
+
+Mientras fue posible comprar divisas libremente, los dólares volvieron a los bancos. Entre 2003 y 2011 el stock pasó de USD 1.300 millones a USD 15.400 millones, y la participación llegó a 14,1% en 2010, con un salto tras la crisis internacional de 2008. Con el control de cambios de 2011 el proceso se revirtió: entre octubre de 2011 y junio de 2012 el stock cayó de USD 15.900 a 10.500 millones, y en 2013 la participación tocó 5,3%. Tras la salida del cepo, los depósitos en dólares se triplicaron hasta USD 31.000 millones en 2018. El máximo de la serie se registra en agosto de 2019, el mes de las elecciones primarias: los dólares llegaron a representar el 31,4% del M3 bimonetario, y los depósitos en pesos cayeron a su mínimo (54,2%).
+
+El stock en dólares permite separar dos fenómenos. Una parte del salto de 2018-2019 se explica por la devaluación, ya que el stock se mantuvo en torno a USD 30.000 millones. Lo que sí revela una decisión de los ahorristas es lo que ocurre después: entre julio y diciembre de 2019 el stock cayó de USD 34.400 a 20.700 millones, una pérdida del 40% en cinco meses. Ante la amenaza de nuevas restricciones, los argentinos no solo prefirieron el dólar, sino que **retiraron sus dólares de los bancos**, el mismo reflejo que en 2001.
+
+Desde 2024, los depósitos en dólares alcanzan niveles récord, impulsados por el blanqueo y la salida del cepo: entre julio y diciembre de 2024 el stock pasó de USD 20.400 a 34.000 millones, y en septiembre de 2026 llegó a USD 44.200 millones, el máximo de la serie. Los dólares regresan a los bancos, pero el peso pierde terreno: la participación de los depósitos en pesos baja de 74,5% en 2023 a 63% en 2026.
+
+
+
+## Indicador 3: ¿a plazo o a mano?
+
+El corralito afectó con especial dureza a los depósitos a plazo, que fueron reprogramados y devueltos meses o años después. Por eso, el tercer indicador observa cómo se distribuyen los depósitos en pesos entre colocaciones a la vista, disponibles en cualquier momento, y a plazo fijo. Si la crisis dejó una marca sobre la confianza en los bancos, esperaríamos una preferencia persistente por la liquidez.
+
+```{r grafico-3}
+ind_3_largo <- base_mensual %>%
+  select(mes, plazo_dep, vista_dep) %>%
+  pivot_longer(-mes, names_to = "serie", values_to = "valor") %>%
+  mutate(serie = recode(serie,
+                        plazo_dep = "Plazo fijo",
+                        vista_dep = "A la vista (cuenta corriente + caja de ahorro)"))
+
+ultimos_3 <- slice_max(ind_3_largo, mes, n = 1, by = serie)
+
+grafico_3 <- ggplot(ind_3_largo, aes(x = mes, y = valor, color = serie)) +
+  capa_hitos +
+  geom_line(linewidth = 1.1) +
+  geom_point(data = ultimos_3, size = 2.8) +
+  geom_text(data = ultimos_3, aes(label = pct(valor)),
+            hjust = -0.2, size = 3.8, fontface = "bold", show.legend = FALSE) +
+  scale_color_manual(values = c(
+    "Plazo fijo"                                     = unname(colores["plazo"]),
+    "A la vista (cuenta corriente + caja de ahorro)" = unname(colores["vista"])
+  )) +
+  eje_x + eje_pct +
+  labs(
+    title    = "¿Confiar el dinero a plazo o tenerlo a mano?",
+    subtitle = "Depósitos a plazo fijo y a la vista como % de los depósitos totales en pesos",
+    caption  = fuente(c("dep_pesos", "cta_cte", "caja_ah", "plazo_fijo", "plazo_uva")),
+    x = NULL, y = NULL, color = NULL
+  ) +
+  tema_tif
+
+grafico_3
+ggsave("graficos/indicador_3_plazo_vs_vista.png", grafico_3,
+       width = 10, height = 6, dpi = 300, bg = "white")
+```
+
+Contra lo que predice la hipótesis del trauma, no observamos una preferencia persistente por la liquidez. La participación del plazo fijo en los depósitos en pesos se mantuvo entre 42% y 49% hasta 2018 y luego superó el 50% en varios años, mientras que los depósitos a la vista descendieron a 41,7% en 2026. La sensibilidad al rendimiento se ve con claridad en enero de 2024: tras la devaluación y la baja de las tasas de interés de diciembre de 2023, los depósitos a la vista alcanzaron su máximo (59,9%). Cuando el plazo fijo dejó de compensar la inflación, los ahorristas prefirieron la liquidez; cuando las tasas volvieron a ser atractivas, regresaron al plazo fijo, que llegó a 57,6% en septiembre de 2026. Dentro del sistema, la elección entre liquidez y plazo responde al rendimiento, en línea con el planteo de Friedman. Cabe matizar que se trata mayormente de colocaciones a 30 días, por lo que la disposición a inmovilizar el dinero sigue siendo limitada.
+
+
+
+## Síntesis por períodos
+
+```{r tabla-periodos}
+#| echo: false
+
+base_mensual %>%
+  mutate(periodo = case_when(
+    mes <  as.Date("2008-01-01") ~ "2003-2007",
+    mes <  as.Date("2011-11-01") ~ "2008-2011",
+    mes <  as.Date("2015-12-01") ~ "2011-2015",
+    mes <  as.Date("2019-09-01") ~ "2015-2019",
+    mes <  as.Date("2023-12-01") ~ "2019-2023",
+    TRUE                         ~ "2023-2026"
+  )) %>%
+  summarise(across(c(dep_m3, dep_pesos_m3bi, dep_usd_m3bi, plazo_dep, vista_dep), mean),
+            dep_usd = mean(dep_usd) / 1000,
+            .by = periodo) %>%
+  mutate(across(c(dep_m3, dep_pesos_m3bi, dep_usd_m3bi, plazo_dep, vista_dep), pct),
+         dep_usd = format(round(dep_usd, 1), decimal.mark = ",")) %>%
+  kable(col.names = c("Período", "Dep. $ / M3", "Dep. $ / M3 bimon.", "Dep. USD / M3 bimon.",
+                      "Plazo fijo / Dep. $", "Vista / Dep. $", "Dep. USD (miles de M)"),
+        align = "lrrrrrr",
+        caption = "Indicadores promedio por período")
+```
+
+La lectura por períodos confirma que la composición de la cartera se mueve más con el régimen cambiario que con la distancia a la crisis. Con control de cambios (2011-2015 y 2019-2023), los depósitos en pesos ganan participación, no por mayor confianza en el peso sino por las restricciones para acceder a la divisa; en los períodos de apertura, los depósitos en dólares crecen con rapidez.
+
+
+
+# Conclusiones
+
+Nos preguntamos si la crisis de la convertibilidad dejó una marca duradera en la composición de cartera de los argentinos. Los resultados indican que la respuesta depende de qué confianza se observe.
+
+La confianza en los bancos **como lugar para guardar pesos** no muestra señales de un daño permanente. La proporción del dinero en pesos que está depositada alcanzó en los últimos años los niveles más altos de la serie, y la participación del plazo fijo creció en lugar de caer. En este terreno, la **hipótesis racional** ofrece una mejor explicación: el comportamiento responde al costo de mantener efectivo y a las tasas de interés, tal como sugiere el enfoque de cartera de Friedman.
+
+La marca de 2001 aparece, en cambio, en la relación con el **dólar**. Cada vez que el acceso a las divisas fue libre, los depósitos en dólares crecieron y ganaron participación; cada vez que se impusieron restricciones, los ahorristas los retiraron de los bancos. Ese reflejo de proteger los dólares fuera del sistema ante la amenaza de un nuevo control es coherente con la **hipótesis del trauma** y con la idea de histéresis: el dólar sigue siendo la reserva de valor de los argentinos más de dos décadas después de la crisis.
+
+El récord de depósitos en dólares de 2024-2026 abre una pregunta para seguir investigando: si la confianza en los bancos se está reconstruyendo, lo hace en dólares y no en pesos. Responderla requerirá incorporar los dólares que el público mantiene fuera del sistema y las tasas de interés reales, para contrastar de forma directa ambas hipótesis.
+
+# Referencias {.unnumbered}
+
+Calvo, G. y Végh, C. (1992). *Currency substitution in developing countries: an introduction*. IMF Working Paper 92/40. Washington D.C.: Fondo Monetario Internacional.
+
+Friedman, M. (1970). *The Counter-Revolution in Monetary Theory*. IEA Occasional Paper, 33. Londres: Institute of Economic Affairs.
+
+Guidotti, P. y Rodríguez, C. (1992). Dollarization in Latin America: Gresham's Law in reverse? *IMF Staff Papers*, 39(3).
+
+Luzzi, M. y Wilkis, A. (2019). *El dólar. Historia de una moneda argentina (1930-2019)*. Buenos Aires: Crítica.
+
+Tiscornia, C. E. (2022). Política monetaria: bases teóricas, historia internacional y versiones en la Argentina. *Revista Cultura Económica*, 40(103), 39-76.
+
+Banco Central de la República Argentina. API de Estadísticas Monetarias v4.0. <https://api.bcra.gob.ar/estadisticas/v4.0/monetarias>

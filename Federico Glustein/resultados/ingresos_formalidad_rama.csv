@@ -1,34 +1,3 @@
-rama,formalidad,ingreso_promedio,casos
-Administración pública,Formal,981950.2074771975,1658
-Administración pública,Informal,297840.83845045866,197
-"Agricultura, ganadería y pesca",Formal,1085798.864075649,45
-"Agricultura, ganadería y pesca",Informal,306243.9089158866,60
-Alojamiento y comidas,Formal,663419.1990938934,232
-Alojamiento y comidas,Informal,360652.8269898093,394
-Comercio y reparación,Formal,934857.1124097344,981
-Comercio y reparación,Informal,406088.09664827737,776
-Construcción,Formal,852543.2288059613,283
-Construcción,Informal,387273.81441270333,589
-"Electricidad, gas, agua y saneamiento",Formal,1160010.906598975,112
-"Electricidad, gas, agua y saneamiento",Informal,291199.10614525137,24
-Enseñanza,Formal,698916.1821733135,1250
-Enseñanza,Informal,397582.4104694543,113
-Finanzas y seguros,Formal,1396628.6761375335,193
-Finanzas y seguros,Informal,678103.5376349199,33
-Industria manufacturera,Formal,1006839.0788719824,704
-Industria manufacturera,Informal,480229.42533537996,220
-Información y comunicaciones,Formal,1239564.5364194035,180
-Información y comunicaciones,Informal,1261940.9193239075,54
-Minería y petróleo,Formal,2037759.8215350034,144
-Minería y petróleo,Informal,800000,1
-Organismos extraterritoriales,Formal,376415.09433962265,2
-Otros servicios,Formal,836729.0419084195,200
-Otros servicios,Informal,354397.18003009836,273
-Salud y servicios sociales,Formal,867876.4607992193,724
-Salud y servicios sociales,Informal,577773.0166576047,236
-Servicio doméstico y actividades de hogares,Formal,289278.531153905,264
-Servicio doméstico y actividades de hogares,Informal,197225.4334478812,957
-Servicios profesionales y empresariales,Formal,908087.0664230074,551
-Servicios profesionales y empresariales,Informal,574295.7994407727,264
-Transporte y almacenamiento,Formal,1098012.03546996,333
-Transporte y almacenamiento,Informal,701353.4333594064,199
+version https://git-lfs.github.com/spec/v1
+oid sha256:1085143ea1b0b15edf0e3351a832ce39b21d0f1037356288b9c946bed338228c
+size 2087

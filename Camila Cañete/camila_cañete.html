@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Camila Cañete">
+
+<title>Polarización y estructura ocupacional del empleo en los aglomerados urbanos argentinos</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="camila_cañete_files/libs/clipboard/clipboard.min.js"></script>
+<script src="camila_cañete_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="camila_cañete_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="camila_cañete_files/libs/quarto-html/popper.min.js"></script>
+<script src="camila_cañete_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="camila_cañete_files/libs/quarto-html/anchor.min.js"></script>
+<link href="camila_cañete_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="camila_cañete_files/libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="camila_cañete_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="camila_cañete_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="camila_cañete_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Polarización y estructura ocupacional del empleo en los aglomerados urbanos argentinos</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Camila Cañete </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+  body {
+    text-align: justify;
+  }
+</style>
+<section id="resumen-ejecutivo" class="level2">
+<h2 class="anchored" data-anchor-id="resumen-ejecutivo">Resumen ejecutivo</h2>
+<p>Este trabajo analiza la evolución de la estructura ocupacional del empleo en los aglomerados urbanos argentinos entre 2017 y 2024, utilizando los microdatos de la Encuesta Permanente de Hogares (EPH). El análisis clasifica a los ocupados según cuatro niveles de calificación: Profesionales, Técnicos, Operativos y No calificados, y estudia tanto la evolución agregada como las diferencias territoriales.</p>
+<p>Los resultados no muestran un proceso de polarización ocupacional generalizado: la participación conjunta de los estratos intermedios pasó de 69,2% en 2017 a 72,0% en 2024. Sin embargo, se identifican diferencias entre aglomerados y cuatro casos, Bahía Blanca-Cerri, Gran Resistencia, Formosa y Río Gallegos, en los que aumentó simultáneamente la participación de Profesionales y No calificados, de acuerdo con la definición operativa adoptada.</p>
+<p>El análisis complementario de ingresos muestra, además, diferencias persistentes entre los niveles de calificación ocupacional.</p>
+</section>
+<section id="introducción" class="level2">
+<h2 class="anchored" data-anchor-id="introducción">1. Introducción</h2>
+<p>El mercado laboral atraviesa transformaciones asociadas al cambio tecnológico. La literatura sobre cambio tecnológico y empleo ha identificado modificaciones en la composición de las tareas realizadas por los trabajadores y, en algunos contextos, un proceso de polarización ocupacional caracterizado por el crecimiento relativo de empleos ubicados en los extremos de la distribución y una reducción de los empleos de calificación intermedia (Autor et al., 2003; Goos &amp; Manning, 2007). Sin embargo, en economías periféricas como la argentina, este fenómeno interactúa con una matriz productiva marcada por la heterogeneidad estructural y la informalidad (Apella &amp; Zunino, 2017).</p>
+<p>Este trabajo busca responder cómo evolucionó la composición del empleo según el nivel de calificación en los aglomerados urbanos relevados por la Encuesta Permanente de Hogares (EPH) entre 2017 y 2024, y qué diferencias territoriales se observan en estos patrones. El objetivo principal es caracterizar esta evolución a nivel agregado e identificar la heterogeneidad territorial en los aglomerados urbanos.</p>
+<p><strong>Hipótesis:</strong> La evolución de la estructura ocupacional según el nivel de calificación no fue homogénea entre los aglomerados urbanos, observándose diferencias territoriales en la magnitud y dirección de los cambios entre 2017 y 2024.</p>
+</section>
+<section id="desarrollo-conceptual" class="level2">
+<h2 class="anchored" data-anchor-id="desarrollo-conceptual">2. Desarrollo conceptual</h2>
+<section id="trabajo-calificación-y-estructura-ocupacional" class="level3">
+<h3 class="anchored" data-anchor-id="trabajo-calificación-y-estructura-ocupacional">2.1 Trabajo, calificación y estructura ocupacional</h3>
+<p>La calificación ocupacional no depende únicamente de la educación formal del trabajador, sino también de las características y complejidad de las tareas que demanda el puesto. El enfoque basado en tareas permite distinguir las ocupaciones según el tipo de actividades que realizan los trabajadores y analizar cómo el cambio tecnológico puede afectar de manera diferente a distintos tipos de tareas (Autor et al., 2003).</p>
+<p>Para este trabajo se utiliza el Clasificador Nacional de Ocupaciones (CNO), que organiza las ocupaciones según distintos criterios, entre ellos su nivel de calificación. A partir de esta clasificación se identifican cuatro estratos: Profesionales, Técnicos, Operativos y No calificados (INDEC, 2011).</p>
+</section>
+<section id="polarización-del-empleo" class="level3">
+<h3 class="anchored" data-anchor-id="polarización-del-empleo">2.2 Polarización del empleo</h3>
+<p>La literatura sobre polarización ocupacional estudia procesos en los cuales aumenta la participación relativa de los empleos ubicados en los extremos de la distribución ocupacional, mientras que disminuye la participación de los empleos intermedios. Este patrón ha sido documentado, entre otros casos, para el mercado laboral británico por Goos y Manning (2007).</p>
+<p>Uno de los mecanismos teóricos asociados a estos procesos es el Cambio Tecnológico Sesgado hacia la Rutina (RBTC, por sus siglas en inglés). Este enfoque plantea que determinadas tecnologías pueden sustituir tareas rutinarias, tanto cognitivas como manuales, mientras que pueden complementar tareas no rutinarias que requieren capacidades analíticas, resolución de problemas o interacción interpersonal (Autor et al., 2003).</p>
+<p>Para este trabajo se adopta una definición operativa de polarización: se considera que un aglomerado presenta un patrón de polarización cuando aumenta simultáneamente la participación porcentual de los empleos de alta calificación, Profesionales, y de baja calificación, No calificados, entre 2017 y 2024.</p>
+<p>Esta definición permite identificar específicamente los casos en los que se produce un aumento simultáneo de ambos extremos de la distribución ocupacional, diferenciando este proceso de otras modificaciones en la estructura del empleo.</p>
+</section>
+<section id="dimensión-territorial" class="level3">
+<h3 class="anchored" data-anchor-id="dimensión-territorial">2.3 Dimensión territorial</h3>
+<p>La estructura ocupacional puede presentar diferencias entre los distintos territorios. En este trabajo, la dimensión territorial se incorpora mediante el análisis de los aglomerados urbanos relevados por la EPH, con el objetivo de identificar diferencias en la evolución de la composición del empleo según el nivel de calificación.</p>
+<p>El análisis territorial permite observar si los cambios identificados a nivel agregado se presentan de manera homogénea o si existen trayectorias diferenciadas entre los aglomerados. Esta dimensión resulta particularmente relevante en el contexto latinoamericano, donde las características de los mercados laborales pueden diferir entre países y territorios y modificar la forma en que se manifiestan las transformaciones tecnológicas (Weller et al., 2019).</p>
+</section>
+<section id="motivación-tecnológica" class="level3">
+<h3 class="anchored" data-anchor-id="motivación-tecnológica">2.4 Motivación tecnológica</h3>
+<p>El enfoque del Cambio Tecnológico Sesgado hacia la Rutina constituye uno de los principales marcos utilizados para analizar los efectos del cambio tecnológico sobre el empleo. La tecnología y la automatización pueden sustituir determinadas tareas rutinarias, mientras que otras tareas no rutinarias pueden presentar mayores posibilidades de complementariedad tecnológica (Autor et al., 2003).</p>
+<p>En los últimos años, la incorporación de tecnologías de inteligencia artificial generativa amplió el debate sobre la relación entre tecnología y empleo. La evidencia reciente de la Organización Internacional del Trabajo señala que la exposición a la inteligencia artificial generativa depende de las tareas que componen las distintas ocupaciones y que el efecto más probable es la transformación de determinados puestos de trabajo, más que su sustitución completa (Gmyrek et al., 2025).</p>
+<p>En este sentido, el enfoque basado en tareas constituye un marco conceptual útil para interpretar los cambios observados en la estructura ocupacional, aunque los resultados empíricos de este trabajo no permiten identificar directamente el efecto causal del cambio tecnológico.</p>
+</section>
+</section>
+<section id="metodología" class="level2">
+<h2 class="anchored" data-anchor-id="metodología">3. Metodología</h2>
+<p>Para el desarrollo de este trabajo empírico se utilizaron los microdatos de la Encuesta Permanente de Hogares (EPH) provistos por el INDEC. Para reducir la incidencia de la estacionalidad, se seleccionó exclusivamente el cuarto trimestre de los años 2017, 2021 y 2024.</p>
+<p>El universo de análisis se delimitó a la población ocupada de 18 a 65 años inclusive, descartando registros sin calificación ocupacional definida. Metodológicamente, se tomó la decisión de unificar la Ciudad Autónoma de Buenos Aires y los Partidos del Gran Buenos Aires en una única entidad analítica (“Gran Buenos Aires”), dado que conforman un mercado laboral metropolitano integrado por desplazamientos pendulares diarios.</p>
+<p>La calificación ocupacional se determinó a partir del código correspondiente del Clasificador Nacional de Ocupaciones (CNO), identificando los cuatro estratos: Profesionales, Técnicos, Operativos y No calificados (INDEC, 2011).</p>
+<p>Todos los cálculos de composición del empleo se realizaron utilizando el factor de expansión poblacional (<code>PONDERA</code>). La participación de cada estrato se obtuvo a partir de la cantidad de ocupados ponderada por dicho factor respecto del total de ocupados de la muestra analizada.</p>
+<p>Para analizar las diferencias territoriales, se calcularon las participaciones de cada estrato de calificación para los aglomerados urbanos relevados por la EPH. Posteriormente, se comparó la variación en puntos porcentuales entre 2017 y 2024. Para identificar los casos que presentan un patrón de polarización según la definición adoptada, se verificó si la participación de Profesionales y No calificados aumentó simultáneamente durante el período.</p>
+<p>Como dimensión complementaria, se analizó la relación entre la calificación ocupacional y los ingresos laborales. Para neutralizar la distorsión generada por la inflación nominal del período, se calculó el ingreso laboral promedio ponderado (<code>P21</code> utilizando <code>PONDIIO</code>) y se expresó el ingreso de cada categoría como múltiplo del ingreso promedio de los trabajadores No calificados de cada año.</p>
+<p>Cabe destacar una limitación metodológica fundamental vinculada al diseño de la EPH: en aglomerados de menor tamaño poblacional, la apertura de los datos por estrato de calificación reduce significativamente el tamaño de la muestra efectiva (N). Por lo tanto, las variaciones interanuales en estos territorios deben interpretarse con cautela, ya que pueden reflejar variabilidad muestral propia del diseño de la encuesta.</p>
+</section>
+<section id="resultados-y-análisis" class="level2">
+<h2 class="anchored" data-anchor-id="resultados-y-análisis">4. Resultados y análisis</h2>
+<section id="composición-ocupacional-por-año" class="level3">
+<h3 class="anchored" data-anchor-id="composición-ocupacional-por-año">4.1 Composición ocupacional por año</h3>
+<p>A nivel agregado, la estructura ocupacional de los aglomerados urbanos argentinos entre 2017 y 2024 muestra una relativa estabilidad. Los empleos de calificación intermedia, Técnicos y Operativos, mantienen un peso predominante a lo largo del período.</p>
+<p>En 2017, los empleos Operativos representaban aproximadamente el 50,6% del empleo analizado, mientras que los Técnicos alcanzaban el 18,6%. Los Profesionales representaban el 9,4% y los No calificados el 21,3%.</p>
+<p>En 2024, los Operativos aumentaron su participación hasta el 55,1%, mientras que los Técnicos representaron el 16,9%. Por su parte, los Profesionales alcanzaron el 11,5% y los No calificados el 16,5%.</p>
+<p>Estos resultados muestran que, si bien se produjeron modificaciones en la composición interna de la estructura ocupacional, no se observa una transformación generalizada hacia una estructura concentrada en los extremos.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="camila_cañete_files/figure-html/grafico-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="cambio-en-la-composición-hay-un-patrón-de-polarización" class="level3">
+<h3 class="anchored" data-anchor-id="cambio-en-la-composición-hay-un-patrón-de-polarización">4.2 Cambio en la composición: ¿hay un patrón de polarización?</h3>
+<p>La evidencia agregada no muestra un proceso de polarización ocupacional generalizado durante el período analizado.</p>
+<p>La participación conjunta de los empleos ubicados en los extremos de la distribución, Profesionales y No calificados, pasó de aproximadamente 30,8% en 2017 a 28,0% en 2024, mientras que los estratos intermedios pasaron de 69,2% a 72,0%.</p>
+<p>Por lo tanto, bajo la definición operativa adoptada en este trabajo, aumento simultáneo de la participación de Profesionales y No calificados, no se observa un patrón de polarización a nivel agregado.</p>
+</section>
+<section id="diferencias-territoriales" class="level3">
+<h3 class="anchored" data-anchor-id="diferencias-territoriales">4.3 Diferencias territoriales</h3>
+<p>Si bien el resultado agregado no evidencia una polarización generalizada, el análisis por aglomerado muestra una importante heterogeneidad territorial.</p>
+<p>Al aplicar la definición operativa de polarización, se identifican cuatro aglomerados en los que aumentó simultáneamente la participación de Profesionales y No calificados entre 2017 y 2024: Bahía Blanca Cerri, Gran Resistencia, Formosa y Río Gallegos.</p>
+<p>Estos casos cumplen con el criterio establecido para identificar un patrón de polarización en este trabajo.</p>
+<p>Sin embargo, los resultados no permiten atribuir estos cambios a mecanismos productivos específicos, dado que el análisis no incorpora variables que midan directamente la estructura productiva o de servicios de cada aglomerado.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="camila_cañete_files/figure-html/grafico-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ingresos-por-nivel-de-calificación" class="level3">
+<h3 class="anchored" data-anchor-id="ingresos-por-nivel-de-calificación">4.4 Ingresos por nivel de calificación</h3>
+<p>El análisis de los ingresos laborales permite complementar el estudio de la estructura ocupacional incorporando una dimensión económica asociada a los distintos niveles de calificación.</p>
+<p>Al expresar el ingreso laboral promedio de cada categoría como múltiplo del ingreso promedio de los trabajadores No calificados del mismo año, se observa una diferencia persistente entre los niveles de calificación.</p>
+<p>En los tres años analizados, los trabajadores Profesionales presentan el mayor ingreso laboral promedio relativo, seguidos por Técnicos y Operativos.</p>
+<p>En 2024, el ingreso promedio de los Operativos equivale aproximadamente a 1,88 veces el de los No calificados, el de los Técnicos a 2,20 veces y el de los Profesionales a 3,82 veces.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="camila_cañete_files/figure-html/grafico-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusiones" class="level2">
+<h2 class="anchored" data-anchor-id="conclusiones">5. Conclusiones</h2>
+<p>Este trabajo se propuso analizar la evolución de la estructura ocupacional del empleo en los aglomerados urbanos de Argentina entre 2017 y 2024, con el objetivo de caracterizar los cambios en la composición del empleo según el nivel de calificación e identificar diferencias territoriales en estos patrones.</p>
+<p>A nivel agregado, los resultados no muestran evidencia de un proceso de polarización ocupacional generalizado para el conjunto de los aglomerados urbanos analizados. Los estratos de calificación intermedia mantienen un peso predominante a lo largo del período. En particular, la participación conjunta de las ocupaciones Técnicas y Operativas pasó de 69,2% en 2017 a 72,0% en 2024.</p>
+<p>Sin embargo, el análisis territorial muestra que el resultado agregado oculta trayectorias diferenciadas entre los aglomerados. Al aplicar la definición operativa adoptada en este trabajo, se identificaron cuatro casos en los que aumentó simultáneamente la participación de Profesionales y No calificados entre 2017 y 2024: Bahía Blanca Cerri, Gran Resistencia, Formosa y Río Gallegos.</p>
+<p>Esta heterogeneidad territorial resulta consistente con la hipótesis planteada, en cuanto se observan diferencias en la evolución de la estructura ocupacional entre los distintos aglomerados. No obstante, dado que el análisis no incorpora variables directas sobre las características productivas y de servicios de cada territorio, no es posible atribuir los patrones observados a estos factores de manera causal.</p>
+<p>Por otra parte, el análisis complementario de los ingresos laborales muestra que persisten diferencias de ingreso asociadas al nivel de calificación ocupacional. En los tres años analizados, los trabajadores Profesionales presentan los mayores ingresos laborales promedio relativos, seguidos por Técnicos y Operativos, mientras que los No calificados constituyen la categoría de referencia.</p>
+<p>En suma, los resultados destacan la importancia de incorporar la dimensión territorial al estudio de la estructura ocupacional del mercado de trabajo argentino. La ausencia de una polarización generalizada a nivel agregado no implica una evolución uniforme entre los aglomerados, sino que coexisten trayectorias ocupacionales diferenciadas.</p>
+<p>Como futuras líneas de investigación, resultaría pertinente incorporar variables directas sobre las ramas de actividad económica y la estructura productiva de cada aglomerado, con el objetivo de analizar en qué medida estas características contribuyen a explicar las diferencias observadas.</p>
+</section>
+<section id="bibliografía" class="level2">
+<h2 class="anchored" data-anchor-id="bibliografía">Bibliografía</h2>
+<p>Apella, I., &amp; Zunino, G. (2017). <em>Cambio tecnológico y el mercado de trabajo en Argentina y Uruguay: Un análisis desde el enfoque de tareas</em>. Banco Mundial.</p>
+<p>Autor, D. H., Levy, F., &amp; Murnane, R. J. (2003). The skill content of recent technological change: An empirical exploration. <em>The Quarterly Journal of Economics, 118</em>(4), 1279–1333.</p>
+<p>Gmyrek, P., Berg, J., Kamiński, K., Konopczyński, F., Ładna, A., Nafradi, B., Rosłaniec, K., &amp; Troszyński, M. (2025). <em>Inteligencia artificial generativa y empleo: Edición actualizada de 2025</em>. Organización Internacional del Trabajo.</p>
+<p>Goos, M., &amp; Manning, A. (2007). Lousy and lovely jobs: The rising polarization of work in Britain. <em>The Review of Economics and Statistics, 89</em>(1), 118–133.</p>
+<p>Instituto Nacional de Estadística y Censos [INDEC]. (2011). <em>Clasificador Nacional de Ocupaciones (CNO 2011): Estructura, conceptos y definiciones</em>. INDEC.</p>
+<p>Weller, J., Gontero, S., &amp; Campbell, S. (2019). <em>Cambio tecnológico y empleo: Una perspectiva latinoamericana</em>. Comisión Económica para América Latina y el Caribe (CEPAL).</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

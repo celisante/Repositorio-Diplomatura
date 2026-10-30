@@ -1,0 +1,255 @@
+---
+title: "Análisis Empírico de la Estructura Comercial e Industrial de Argentina"
+subtitle: "Evolución del VAM, Canasta Exportadora y Ventajas Comparativas Reveladas (2024)"
+author: "Julián Bruno"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+    code_folding: hide
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+# Configuración global de los chunks de R
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 9,
+  fig.height = 5.5,
+  fig.align = "center"
+)
+
+options(scipen = 999)
+```
+
+# Introducción y Marco Metodológico
+
+El presente trabajo tiene como objetivo analizar la transformación de la estructura productiva y la inserción internacional de la economía argentina durante las últimas décadas. Para ello, se aborda el fenómeno desde tres dimensiones analíticas complementarias:
+
+1.  **Participación Industrial Macro:** La evolución del Valor Agregado Manufacturero (VAM) sobre el PIB en perspectiva comparada (Argentina, Brasil y Corea del Sur).
+2.  **Composición de la Canasta Exportadora:** La evolución del perfil de ventas externas según su contenido tecnológico.
+3.  **Especialización y Ventajas Comparativas Reveladas (VCR):** La determinación de las posiciones arancelarias competitivas a 6 dígitos del Sistema Armonizado (HS22) utilizando el Índice de Balassa (1965) sobre la base de comercio bilateral BACI (CEPII).
+
+------------------------------------------------------------------------
+
+# Carga de Librerías
+
+```{r librerias}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(WDI)
+library(countrycode)
+library(writexl)
+```
+
+------------------------------------------------------------------------
+
+# Indicador 1: Desindustrialización y Participación del VAM en el PIB (1990-2024)
+
+Para evaluar la participación relativa de la industria en la estructura económica general, procesamos la serie del Valor Agregado Manufacturero del Banco Mundial (WDI). Se contrasta la trayectoria de Argentina con Brasil (patrón regional de desindustrialización) y Corea del Sur (caso de industrialización madura y escalamiento productivo).
+
+```{r indicador1_datos}
+# Descarga de datos macroeconómicos de WDI
+base_wdi <- WDI(
+  country = "all", 
+  indicator = c(
+    "vam_pct" = "NV.IND.MANF.ZS",
+    "vam_constante" = "NV.IND.MANF.KD"
+  ),
+  start = 1990,
+  end = 2025
+) 
+
+# Filtrado para países de contraste
+base_filtrada <- base_wdi %>% 
+  filter(iso2c %in% c("AR", "BR", "KR"))
+```
+
+```{r indicador1_grafico}
+ggplot(base_filtrada, aes(x = year, y = vam_pct, color = country)) +
+  geom_line(size = 1.2) +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Evolución de la Participación Industrial en el PIB (1990-2024)",
+    subtitle = "Valor Agregado Manufacturero (% del PIB)",
+    x = "Año",
+    y = "Participación del VAM (%)",
+    color = "País",
+    caption = "Fuente: Elaboración propia en base a WDI (Banco Mundial)."
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13),
+    legend.position = "bottom"
+  )
+```
+
+### Análisis de Resultados
+
+El gráfico refleja la tendencia divergente entre las economías latinoamericanas y la asiática. Mientras que Argentina y Brasil experimentaron un proceso sostenido de **desindustrialización relativa** (el VAM muestra una pendiente descendente a lo largo del período), Corea del Sur mantuvo un peso industrial estructuralmente elevado (superior al 25% del PIB), consolidando su matriz manufacturera.
+
+------------------------------------------------------------------------
+
+# Indicador 2: Evolución de la Canasta Exportadora Argentina por Contenido Tecnológico
+
+A continuación, analizamos la estructura de exportaciones agregada de Argentina utilizando los indicadores WDI del Banco Mundial para categorías de bienes.
+
+```{r indicador2_datos}
+# 1. Descarga de datos para Argentina
+exportaciones_wdi <- WDI(
+  country = "ARG",
+  indicator = c(
+    "alta_tecnologia"      = "TX.VAL.TECH.MF.ZS",
+    "manufacturas_total"   = "TM.VAL.MANF.ZS.UN",
+    "alimentos_procesados" = "TX.VAL.FOOD.ZS.UN",
+    "agricolas_primarios"  = "TX.VAL.AGRI.ZS.UN"
+  ),
+  start = 1990,
+  end = 2025
+)
+
+# 2. Pivoteo de la tabla de Argentina
+exportaciones_wdi_pivot <- exportaciones_wdi %>%
+  select(year, alta_tecnologia, alimentos_procesados, agricolas_primarios) %>%
+  pivot_longer(cols = -year, names_to = "categoria", values_to = "porcentaje") %>%
+  drop_na()
+```
+
+```{r indicador2_grafico}
+ggplot(exportaciones_wdi_pivot, aes(x = year, y = porcentaje, color = categoria)) +
+  geom_line(size = 1.2) +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) +
+  scale_color_manual(
+    values = c("alimentos_procesados" = "#2ca02c", "agricolas_primarios" = "#ff7f0e", "alta_tecnologia" = "#1f77b4"),
+    labels = c("Alimentos Procesados", "Agrícolas Primarios", "Alta Tecnología")
+  ) +
+  labs(
+    title = "Evolución de la Canasta Exportadora Argentina (WDI)",
+    subtitle = "Participación sobre el total exportado (%)",
+    x = "Año",
+    y = "Porcentaje (%)",
+    color = "Rubro",
+    caption = "Fuente: Elaboración propia en base a World Development Indicators."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13),
+    legend.position = "bottom"
+  )
+```
+
+### Análisis de Resultados
+
+La matriz exportadora argentina evidencia un claro predominio de la **agroindustria y productos primarios** (alimentos procesados y bienes agrícolas), en contraste con la marginalidad de los productos manufacturados de alta tecnología (que se ubican persistentemente por debajo del 5% del total). Esto confirma un perfil primario-extractivo y agroindustrial con escaso sesgo de alta complejidad tecnológica.
+
+------------------------------------------------------------------------
+
+# Indicador 3: Ventajas Comparativas Reveladas (VCR - Balassa 1965) sobre Base BACI (2024)
+
+Para alcanzar el máximo nivel de desagregación por producto (6 dígitos del Sistema Armonizado HS22), se procesan las matrices de comercio global del archivo `BACI_HS22_Y2024_V202601.csv`.
+
+Se calcula el **Índice de Balassa (VCR)**:
+
+$$VCR_{arg, k} = \frac{X_{arg, k} / X_{arg, total}}{X_{w, k} / X_{w, total}}$$
+
+```{r indicador3_baci}
+# 1. Carga de la base local BACI
+baci <- read_csv("C:/Users/Julian Bruno/OneDrive/Escritorio/Materiales/Repositorio-Diplomatura/Julian Bruno/Bases/BACI_HS22_Y2024_V202601.csv")
+
+# 2. Asignación de código ISO3
+baci <- baci %>%
+  mutate(iso3_exportador = countrycode(i, origin = "un", destination = "iso3c"))
+
+# 3. Suma total por País y Producto (eliminando flujos bilaterales j)
+exp_totales <- baci %>% 
+  group_by(i, k) %>% 
+  summarise(v_pais_prod = sum(v, na.rm = TRUE), .groups = "drop")
+
+# 4. Totales mundiales por producto y total global
+exp_mundo_prod <- exp_totales %>%
+  group_by(k) %>%
+  summarise(v_mundo_prod = sum(v_pais_prod, na.rm = TRUE), .groups = "drop")
+
+total_mundial_fob <- sum(exp_totales$v_pais_prod, na.rm = TRUE)
+
+# Total exportado por Argentina (ISO numérico 32)
+total_arg_fob <- exp_totales %>%
+  filter(i == 32) %>%
+  summarise(total = sum(v_pais_prod, na.rm = TRUE)) %>%
+  pull(total)
+
+# 5. Cálculo del Índice VCR (Balassa)
+vcr_arg_2024 <- exp_totales %>%
+  filter(i == 32) %>%
+  rename(v_arg_prod = v_pais_prod) %>%
+  inner_join(exp_mundo_prod, by = "k") %>%
+  mutate(
+    share_arg = v_arg_prod / total_arg_fob,
+    share_mundo = v_mundo_prod / total_mundial_fob,
+    vcr = share_arg / share_mundo
+  )
+
+# 6. Selección del Top 15 de productos con mayor VCR
+top15_arg_vcr <- vcr_arg_2024 %>%
+  filter(vcr > 1) %>%
+  arrange(desc(vcr)) %>%
+  slice_head(n = 15)
+
+# 7. Asignación de etiquetas descriptivas en español
+top15_arg_vcr_completo <- top15_arg_vcr %>%
+  mutate(nombre_producto = case_when(
+    k == "320110" ~ "Extracto de quebracho (320110)",
+    k == "150710" ~ "Aceite de soja en bruto (150710)",
+    k == "090300" ~ "Yerba mate (090300)",
+    k == "330113" ~ "Aceite esencial de limón (330113)",
+    k == "150790" ~ "Otros aceites de soja refinados (150790)",
+    k == "230250" ~ "Moyuelos y residuos de leguminosas (230250)",
+    k == "230400" ~ "Harina y pellets de soja (230400)",
+    k == "230800" ~ "Materias vegetales para alimentación animal (230800)",
+    k == "230500" ~ "Tortas y residuos de la extracción de maní (230500)",
+    k == "030474" ~ "Filetes congelados de merluza (030474)",
+    k == "410449" ~ "Cueros bovinos secos/preparados (410449)",
+    k == "120242" ~ "Maní crudo sin cáscara (120242)",
+    k == "200939" ~ "Jugos de cítricos/agrios (200939)",
+    k == "410441" ~ "Cueros bovinos plena flor (410441)",
+    k == "285210" ~ "Compuestos inorgánicos de mercurio (285210)",
+    TRUE ~ paste("Código HS:", k)
+  ))
+```
+
+```{r indicador3_grafico}
+ggplot(top15_arg_vcr_completo, aes(x = reorder(nombre_producto, vcr), y = vcr)) +
+  geom_col(fill = "#2b5c8f", width = 0.7) +
+  geom_text(aes(label = round(vcr, 1)), hjust = -0.2, size = 3.5, fontface = "bold") +
+  coord_flip() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.18))) +
+  labs(
+    title = "Top 15 Productos con Mayor VCR de Argentina (2024)",
+    subtitle = "Especialización exportadora relativa según el Índice de Balassa",
+    x = "Producto / Posición Arancelaria",
+    y = "Índice VCR (Balassa)",
+    caption = "Fuente: Elaboración propia en base a BACI (CEPII) e INDEC."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13),
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(face = "bold")
+  )
+```
+
+------------------------------------------------------------------------
+
+# Conclusiones Generales
+
+1.  **Estructura Productiva Interna:** El análisis macroeconómico confirma una tendencia a la reducción del peso relativo del sector manufacturero sobre el PIB argentino en las últimas décadas.
+2.  **Perfil Exportador:** Las Ventajas Comparativas Reveladas ($VCR > 1$) se encuentran altamente hiperconcentradas en **Manufacturas de Origen Agropecuario (MOA)** y **Productos Primarios**, destacándose los complejos sojero, manisero, pesquero y limonero.
+3.  **Escalamiento Tecnológico:** Los indicadores calculados confirman que la inserción comercial de Argentina carece de la densidad tecnológica requerida para generar encadenamientos productivos de alto valor, situando al perfil exportador nacional en una posición periférica respecto a los bienes que demandan mayor conocimiento acumulado y dinamismo global.
+
+------------------------------------------------------------------------

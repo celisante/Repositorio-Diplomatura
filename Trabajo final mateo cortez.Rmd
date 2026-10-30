@@ -1,0 +1,268 @@
+---
+title: "Informalidad laboral en el sector público de Argentina 2023 - 2026"
+author: "Cortez Jaramillo Mateo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.align = "center"
+)
+
+library(tidyverse)
+library(eph)
+library(ggplot2)
+
+options(scipen = 999)
+```
+
+```{=html}
+<style>
+p {
+  text-align: justify;
+}
+</style>
+```
+
+## Introducción: problemática, discusiones a abordar y alcance del procesamiento
+
+El presente informe tiene como objetivo analizar la situación de la informalidad laboral entre los trabajadores asalariados en Argentina, con especial atención al sector público. Para ello, en primer lugar, se abordan algunos de los principales debates sobre los mercados laborales en América Latina, con el propósito de establecer un marco conceptual que permita comprender el fenómeno de la informalidad y sus vínculos con las características estructurales de las economías de la región.
+
+Posteriormente, se analiza la situación argentina a partir de los microdatos de la Encuesta Permanente de Hogares (EPH) elaborada por el Instituto Nacional de Estadística y Censos (INDEC). El período considerado comprende desde el cuarto trimestre de 2023 hasta el primer trimestre de 2026, es decir, los últimos diez trimestres disponibles al momento de elaboración del informe. El análisis busca caracterizar la evolución de la informalidad entre los asalariados del sector público, desagregando la información según el nivel de gobierno —nacional, provincial y municipal—.
+
+## Desarrollo conceptual
+
+### Los aportes del estructuralismo
+
+Entre las principales contribuciones al estudio del mercado de trabajo en América Latina se encuentran las realizadas por la corriente estructuralista, particularmente a partir de los aportes de Raúl Prebisch. Desde esta perspectiva, las economías latinoamericanas presentan una situación de insuficiencia dinámica, asociada a su estructura productiva y a una capacidad limitada para absorber productivamente a la totalidad de la fuerza de trabajo disponible.
+
+Como consecuencia, una parte de la población puede verse desplazada hacia actividades de baja productividad y bajos ingresos. Este fenómeno constituye una de las expresiones de la denominada *heterogeneidad estructural*, característica de las economías latinoamericanas. De manera esquemática, esta heterogeneidad puede representarse como la coexistencia de un sector que incorpora los avances tecnológicos y presenta mayores niveles de productividad con otro caracterizado por un menor grado de capitalización, bajos niveles de productividad y condiciones productivas más precarias.
+
+En este marco, la informalidad laboral puede vincularse con aquellos segmentos de la estructura productiva en los que predominan unidades económicas de pequeña escala, bajos niveles de capitalización y puestos de trabajo de menor productividad y calificación. En contraste, en los segmentos más modernos de la economía adquiere mayor relevancia el trabajo asalariado registrado, acompañado por mayores niveles de productividad y de protección social.
+
+Desde esta perspectiva, las diferencias entre formalidad e informalidad laboral no constituyen únicamente una característica del mercado de trabajo, sino que también pueden interpretarse como una manifestación de la heterogeneidad que caracteriza a las estructuras productivas latinoamericanas.
+
+### Una economía dual: sector público y sector privado
+
+Para avanzar en el análisis, resulta de interés recuperar la noción de una economía con dos sectores, aunque reformulando los términos de la dicotomía planteada anteriormente. Las aproximaciones vinculadas con la heterogeneidad estructural suelen asociar la informalidad con unidades productivas caracterizadas por bajos niveles de productividad y reducidas capacidades de expansión. En este trabajo, sin embargo, se adopta una definición de informalidad de carácter predominantemente **legalista**, según la cual la informalidad se relaciona con la ausencia de determinadas protecciones y derechos asociados a una relación laboral formal.
+
+A partir de esta definición, en lugar de considerar exclusivamente la oposición entre un sector tradicional y un sector moderno, resulta pertinente analizar la relación entre el **sector privado y el sector público**, reconociendo que dentro de ambos pueden existir segmentos de empleo informal. En este sentido, la informalidad refiere a aquellos puestos de trabajo que, en mayor o menor medida, se encuentran por fuera de las normas que regulan las relaciones laborales y, por lo tanto, presentan un menor grado de protección para los trabajadores.
+
+En los estudios sobre economía laboral, el sector público suele recibir un tratamiento diferenciado debido a sus mecanismos específicos de determinación salarial y a la menor relevancia relativa que adquieren los mecanismos de mercado en la asignación de determinados puestos de trabajo. No obstante, en este informe se propone considerar conjuntamente los sectores público y privado, bajo la premisa de que ambos se encuentran estrechamente vinculados y que las dinámicas de uno pueden afectar las condiciones laborales del otro.
+
+Siguiendo el planteo estructuralista, puede plantearse como hipótesis que, en contextos en los que un sector privado poco diversificado no genera suficientes oportunidades de empleo para absorber a la población disponible, el sector público puede adquirir un papel relevante como generador de puestos de trabajo adicionales. En determinadas circunstancias, parte de esta expansión podría producirse mediante modalidades de contratación que presentan menores niveles de estabilidad o protección laboral.
+
+Esta hipótesis no implica atribuir una única motivación a las decisiones de contratación pública. La expansión del empleo público puede responder a múltiples factores económicos, sociales e institucionales, y también puede encontrarse influida por consideraciones políticas. En cualquier caso, la posible relación entre las características de la estructura productiva, el empleo público y las modalidades de contratación constituye una cuestión empírica que resulta pertinente explorar.
+
+La informalidad laboral es, en este sentido, un fenómeno heterogéneo y multidimensional, cuya presencia atraviesa distintos sectores y grupos de trabajadores. Desde una perspectiva económica y social, puede tener implicancias sobre la equidad, la eficiencia y las posibilidades de crecimiento, mientras que desde una definición legalista supone, fundamentalmente, un menor acceso a los derechos y mecanismos de protección asociados al empleo formal.
+
+## Metodología: descripción de la base, limitaciones de cobertura, decisiones metodológicas
+
+Para analizar la evolución de la informalidad laboral en Argentina se utilizaron las bases de microdatos de la Encuesta Permanente de Hogares (EPH) elaborada por el Instituto Nacional de Estadística y Censos (INDEC), correspondientes al período comprendido entre el cuarto trimestre de 2023 y el primer trimestre de 2026.
+
+La EPH permite caracterizar la situación laboral de la población y, entre otras dimensiones, identificar la existencia de determinadas formas de protección asociadas a las relaciones laborales asalariadas. Para aproximar la informalidad laboral se utiliza, entre otros indicadores, la realización de aportes jubilatorios por parte del empleador. En este trabajo, se considera informal al asalariado que declara no contar con descuentos o aportes jubilatorios derivados de su relación laboral.
+
+Esta definición se corresponde con el enfoque legalista de la informalidad desarrollado en la sección conceptual. Desde esta perspectiva, la informalidad se identifica a partir del grado de acceso de los trabajadores a los mecanismos institucionales de protección asociados al empleo registrado, en particular al sistema de seguridad social.
+
+El universo de análisis está compuesto por los trabajadores ocupados asalariados, distinguiendo entre aquellos pertenecientes al sector público y al sector privado. Esta distinción permite analizar específicamente la situación del empleo público y, dentro de este universo, caracterizar la incidencia y composición de la informalidad laboral.
+
+Si bien la informalidad constituye un fenómeno multidimensional que puede abordarse desde diferentes perspectivas —productivas, laborales, institucionales y sociales—, en este trabajo se optó por concentrar el análisis en la dimensión vinculada con el acceso a la seguridad social. En consecuencia, la calidad del empleo se aproxima mediante la existencia o ausencia de aportes jubilatorios asociados a la relación laboral.
+
+El análisis se desarrolla en dos etapas. En primer lugar, se presentan algunas tasas e indicadores básicos destinados a caracterizar la evolución del empleo público y de la informalidad durante el período considerado. En segundo lugar, se analiza la composición de la informalidad dentro del sector público, desagregando los resultados según el nivel de gobierno —nacional, provincial y municipal— .
+
+```{r}
+# ------------------------------------------------------------------------------
+# 1. Definición de variables y descarga automatizada
+# ------------------------------------------------------------------------------
+
+# Vector en el que definimos las variables que nos interesan
+variables <- c(
+  "CODUSU", "NRO_HOGAR", "COMPONENTE", "ANO4", "TRIMESTRE", "REGION", "AGLOMERADO",
+  "CH04", "CH06", "ESTADO", "CAT_OCUP", "PONDERA", "PONDIIO",
+  "PP04A", "PP04A1", "PP04B_COD", "PP07H", "PP07L", "PP07M"
+)
+
+# Tabla con los 10 trimestres del período de análisis (4T2023 a 1T2026)
+periodos <- tibble(
+  year = c(2023, rep(2024, 4), rep(2025, 4), 2026),
+  trimester = c(4, 1, 2, 3, 4, 1, 2, 3, 4, 1)
+)
+
+# Descarga e integración de microbases con un loop
+base_integrada <- purrr::map2_dfr(
+  periodos$year, 
+  periodos$trimester, 
+  ~ get_microdata(year = .x, trimester = .y, vars = variables)
+)
+```
+
+## Resultados y análisis
+
+### Tasas básicas sobre empleo público e informalidad
+
+Como primer paso, se construyeron indicadores destinados a caracterizar la evolución del empleo público y de la informalidad laboral durante el período analizado.
+
+En primer lugar, se observa una reducción de la participación de los asalariados públicos sobre el total de asalariados. Al comienzo del período, los asalariados del sector público representaban el 24,7% del total, mientras que en el primer trimestre de 2026 esta proporción se ubicó en el 21,9%.
+
+En sentido contrario, la tasa de informalidad del conjunto de los asalariados presentó un incremento durante el período considerado, pasando del 35,7% en el cuarto trimestre de 2023 al 37,9% en el primer trimestre de 2026. Por lo tanto, durante el período analizado se observa simultáneamente una menor participación del empleo público dentro del empleo asalariado y un aumento de la incidencia de la informalidad entre los asalariados.
+
+```{r}
+# ==============================================================================
+# Cálculo de tasas básicas por Trimestre sobre base_integrada
+# ==============================================================================
+
+tasas_basicas <- base_integrada %>%
+  # 1. Filtramos el universo de asalariados ocupados
+  filter(
+    ESTADO == 1,   # Ocupados
+    CAT_OCUP == 3  # Asalariados
+  ) %>%
+  # 2. Creamos la variable de período
+  mutate(
+    periodo = paste0(ANO4, " T", TRIMESTRE),
+    periodo = factor(periodo, levels = unique(periodo))
+  ) %>%
+  # 3. Agrupamos por trimestre
+  group_by(periodo) %>%
+  # 4. Estimamos las cantidades totales de asalariados, asalariados públicos y asalariados públicos informales
+  summarise(
+    # Universo total de asalariados en el trimestre
+    total_asalariados = sum(PONDERA, na.rm = TRUE),
+    
+    # Total de asalariados en el sector público
+    total_publicos = sum(PONDERA[PP04A == 1], na.rm = TRUE),
+    
+    # Total de asalariados informales generales (sin descuento: PP07H == 2)
+    total_informales = sum(PONDERA[PP07H == 2], na.rm = TRUE),
+    
+    # Total de asalariados informales en el sector público
+    total_publicos_informales = sum(PONDERA[PP04A == 1 & PP07H == 2], na.rm = TRUE),
+    
+    .groups = "drop"
+  ) %>%
+  # 5. Calculamos las tres tasas requeridas
+  mutate(
+    # A. Porcentaje de empleados públicos sobre el total de asalariados
+    pct_publicos_s_total = (total_publicos / total_asalariados) * 100,
+    
+    # B. Porcentaje de asalariados informales sobre el total de asalariados (Tasa de informalidad general)
+    pct_informales_s_total = (total_informales / total_asalariados) * 100,
+    
+    # C. Porcentaje de empleados públicos informales sobre el total de empleados públicos (Tasa de informalidad pública)
+    pct_informales_s_publicos = (total_publicos_informales / total_publicos) * 100
+  )
+```
+
+```{r}
+# Para graficar, reestructuramos a formato largo (pivot_longer) 
+tasas_basicas_largas <- tasas_basicas %>%
+  select(periodo, pct_publicos_s_total, pct_informales_s_total, pct_informales_s_publicos) %>%
+  pivot_longer(
+    cols = -periodo,
+    names_to = "indicador",
+    values_to = "porcentaje"
+  ) %>%
+  mutate(
+    indicador = case_when(
+      indicador == "pct_publicos_s_total" ~ "Empleo Público / Total Asalariados",
+      indicador == "pct_informales_s_total" ~ "Informalidad General / Total Asalariados",
+      indicador == "pct_informales_s_publicos" ~ "Informalidad Pública / Total Empleo Público"
+    )
+  )
+
+# Gráfico de evolución temporal de los 3 indicadores
+ggplot(tasas_basicas_largas, aes(x = periodo, y = porcentaje, color = indicador, group = indicador)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2.5) +
+  geom_text(aes(label = paste0(round(porcentaje, 1), "%")), vjust = -0.7, size = 3, show.legend = FALSE) +
+  scale_color_manual(values = c("#2b5c8f", "#d95f02", "#7570b3")) +
+  labs(
+    title = "Evolución de los Indicadores de Empleo público e Informalidad (4T2023 - 1T2026)",
+    subtitle = "Comparación entre la participación del empleo público y las tasas de informalidad",
+    x = "Trimestre",
+    y = "Porcentaje (%)",
+    color = "Indicador"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+```
+
+Estos cambios se produjeron durante un período caracterizado por modificaciones significativas en la política económica y en el mercado laboral argentino. Entre ellas se encuentra la implementación de una política de consolidación fiscal y la sanción de la Ley 27.802 de Modernización Laboral. La coincidencia temporal entre estos cambios institucionales y la evolución de los indicadores descriptos no permite, por sí misma, establecer una relación causal entre ellos, por lo que en este trabajo se los considera como parte del contexto en el que se desarrolla el fenómeno analizado.
+
+Al focalizar el análisis en el sector público, se observa que la proporción de asalariados informales sobre el total de asalariados públicos disminuyó durante el período, pasando del 12,7% en el cuarto trimestre de 2023 al 10,7% en el primer trimestre de 2026. Este descenso se produjo simultáneamente con una reducción del número total de asalariados públicos relevados por la encuesta.
+
+La evolución agregada de la informalidad en el sector público, sin embargo, oculta diferencias importantes entre los distintos niveles de gobierno. Para identificarlas, se desagregaron los asalariados públicos informales según pertenezcan al gobierno nacional, provincial o municipal.
+
+Los resultados muestran un cambio en la composición de los puestos de trabajo informales del sector público. En el cuarto trimestre de 2023, los asalariados informales correspondientes al gobierno nacional representaban el 45,2% del total de asalariados públicos informales. Esta participación se redujo progresivamente hasta alcanzar el 25,2% en el primer trimestre de 2026.
+
+En contraste, los gobiernos provinciales incrementaron su participación dentro del conjunto de asalariados públicos informales. Mientras que en el cuarto trimestre de 2023 representaban el 28,8% del total, en el primer trimestre de 2026 alcanzaron el 41,9%.
+
+```{r}
+base_empleo_pub <- base_integrada %>%
+  filter(
+    ESTADO == 1,    # Ocupados
+    CAT_OCUP == 3,  # Asalariados
+    PP04A == 1      # Sector público
+  ) %>%
+  mutate(
+    # Variable de tiempo continua para gráficos
+    periodo = paste0(ANO4, " T", TRIMESTRE),
+    periodo = factor(periodo, levels = unique(periodo)),
+    
+    # Nivel de gobierno (Jurisdicción)
+    nivel_gobierno = case_when(
+      PP04A1 == 1 ~ "Nacional",
+      PP04A1 == 2 ~ "Provincial",
+      PP04A1 == 3 ~ "Municipal",
+      TRUE ~ "Sin especificar"
+    ),
+    
+    # Condición de Informalidad
+    condicion_informalidad = case_when(
+      PP07H == 2 ~ "Informal",
+      PP07H == 1 & PP07L == 2 ~ "Informal Parcial",
+      PP07H == 1 & PP07L == 1 ~ "Formal",
+      TRUE ~ "Otros / Sin dato"
+    ))
+
+#Estimación de la composición de la informalidad
+
+composicion_jurisdiccion <- base_empleo_pub %>%
+  filter(condicion_informalidad == "Informal") %>%
+  group_by(periodo, nivel_gobierno) %>%
+  summarise(poblacion = sum(PONDERA), .groups = "drop_last") %>%
+  mutate(proporcion = (poblacion / sum(poblacion)) * 100)
+
+#Gráfico
+ggplot(
+  composicion_jurisdiccion, 
+  aes(x = periodo, y = proporcion, fill = nivel_gobierno)
+) +
+  geom_col(position = "stack", color = "white", width = 0.7) +
+  geom_text(
+    aes(label = paste0(round(proporcion, 1), "%")),
+    position = position_stack(vjust = 0.5), size = 3, color = "white", fontface = "bold"
+  ) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(
+    title = "Distribución del Empleo Público Informal según Nivel de Gobierno",
+    subtitle = "Composición porcentual del total de asalariados informales del Estado",
+    x = "Trimestre",
+    y = "Proporción sobre el total informal (%)",
+    fill = "Nivel de Gobierno"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top"
+  )
+```
+
+Estos resultados sugieren que, aunque la incidencia de la informalidad dentro del conjunto del empleo público se redujo durante el período, la composición de dicha informalidad experimentó una modificación significativa según el nivel de gobierno. En particular, se observa una disminución de la participación del gobierno nacional acompañada por un aumento de la participación de los gobiernos provinciales. Este cambio constituye uno de los principales aspectos a profundizar en las siguientes secciones, especialmente mediante el análisis de la evolución del empleo público y de la informalidad en cada nivel de gobierno y según las distintas ramas de actividad.

@@ -5,25 +5,795 @@ date: "2026-09-15"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+# Archivo de BACI
+ruta_baci <- "BACI_HS22_Y2023_V202501.csv"
+# Año a analizar
+anios <- 2023
+# Codigo BACI/ISO numerico de Argentina
+argentina <- 32
+# Nombre del país para gráficos
+nombre_argentina <- "Argentina"
+# Cantidad de productos a mostrar en algunos gráficos
+top_n <- 15
+
+baci <- read.csv("Bases/BACI_HS22_Y2023_V202501.csv")
+
+glimpse(baci)
+
+baci <- baci %>%
+  dplyr::mutate(
+    t = as.integer(t),
+    i = as.integer(i),
+    j = as.integer(j),
+    k = as.character(k),
+    v = as.numeric(v),
+    q = as.numeric(q)
+  )
+
+baci <- baci %>%
+  filter(t %in% anios)
+
+# Comprobar años disponibles
+unique(baci$t)
+
+
 ```
 
-## R Markdown
+# Limitaciones de la Ventaja Comparativa Revelada de Balassa: una comparación con el índice de Lafay
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## 1. Resumen ejecutivo
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+La identificación de patrones de especialización comercial constituye una herramienta relevante para analizar la estructura exportadora de una economía. Una de las medidas más utilizadas para este propósito es el índice de Ventaja Comparativa Revelada (de aquí en adelante lo denominaré como VCR) de Balassa, este identifica aquellos productos cuya participación dentro de las exportaciones de un país es superior a la participación que dichos productos presentan en las exportaciones mundiales. Su utilización resulta atractiva por su sencillez tanto conceptual como matemática y por su interpretación intuitiva, aunque presenta limitaciones asociadas tanto a su construcción como a la información comercial que utiliza.
 
-```{r cars}
-summary(cars)
+Mi trabajo busca analizar esas limitaciones mediante una comparación entre el VCR de Balassa y el índice de especialización de Lafay que no fue utilizado en la cursada para medir el VCR de un determinado país. Mientras que el primero utiliza exclusivamente información de exportaciones y toma como referencia la estructura exportadora mundial, el segundo se destaca por incorporar las importaciones y evalúa la contribución relativa de cada producto a la posición comercial del país. Balassa fue originalmente propuesto como una medida de ventaja comparativa revelada a partir de los patrones observados de comercio (Balassa, 1965), mientras que Lafay desarrolló una medida alternativa que incorpora la posición comercial neta y el peso de cada producto dentro del comercio total (Lafay, 1992).
+
+El análisis empírico a continuación utiliza la base CEPII-BACI a nivel de producto HS6 para Argentina 2023. A partir de los flujos bilaterales de comercio se calculan ambos indicadores y se construye una clasificación de coincidencias y divergencias entre ellos. El objetivo no es establecer cuál de los dos indicadores es superior en términos generales, sino identificar las diferencias que surgen entre ambos y discutir qué información adicional aporta la incorporación de las importaciones.
+
+## 2. Introducción
+
+La estructura de las exportaciones de un país constituye una de las formas habituales de aproximarse a sus patrones de especialización internacional. La observación de los productos que concentran las exportaciones permite identificar sectores en los cuales la economía presenta una presencia relativa particularmente elevada en los mercados internacionales. Sin embargo, la interpretación de esta estructura como evidencia de ventajas comparativas requiere utilizar indicadores que permitan establecer una referencia sistemática.
+
+En este contexto, Balassa (1965) propuso el concepto de Ventaja Comparativa Revelada, posteriormente ampliamente utilizado para caracterizar la especialización exportadora de los países. El indicador compara el peso de un determinado producto dentro de las exportaciones de un país con el peso del mismo producto en las exportaciones mundiales, como se explicó ut supra. De esta manera, un valor superior a uno indica que el producto posee una participación relativa mayor en la canasta exportadora del país que en la canasta exportadora mundial.
+
+La sencillez del indicador constituye una de las principales razones de su amplia utilización. Sin embargo, esa misma construcción genera algunas limitaciones. En primer lugar, el VCR tradicional se construye exclusivamente a partir de las exportaciones. Por lo tanto, dos países con estructuras exportadoras similares pueden obtener valores similares del indicador aun cuando presenten posiciones importadoras muy diferentes; esto puede resultar problemático en contextos de comercio intraindustrial o de fragmentación internacional de la producción.
+
+El presente trabajo se concentra principalmente en el punto anterior: la utilización exclusiva de las exportaciones. Para ello se compara el VCR de Balassa con el índice desarrollado por Gérard Lafay, que incorpora tanto exportaciones como importaciones y considera la posición comercial relativa de cada producto dentro del comercio total del país (Lafay, 1992).
+
+La pregunta central que orienta mi análisis es:
+
+**¿En qué medida la identificación de la especialización comercial argentina cambia cuando se utiliza el VCR de Balassa frente al índice de Lafay?**
+
+A partir de esta pregunta general se busca identificar en qué productos ambos indicadores coinciden, en cuáles divergen y qué características presentan los casos de divergencia para Argentina exportaciones e importaciones de 2023.
+
+## 3. Desarrollo conceptual
+
+### 3.1. La Ventaja Comparativa Revelada de Balassa
+
+El concepto de ventaja comparativa parte originalmente de David Ricardo, de la idea de que las diferencias relativas en la productividad y en los costos de producción generan patrones de especialización internacional. Si bien este principio rige hoy en día en el comercio internacional, en la práctica, las ventajas comparativas no son observables directamente a partir de los datos de comercio internacional. El enfoque de Balassa propone, por ello, inferirlas a partir de los patrones comerciales efectivamente observados. De esta forma, se conoce el VCR ex post.
+
+El índice puede expresarse como:
+
+$$
+VCR_{ik}=
+\frac{X_{ik}/X_i}
+{X_{wk}/X_w}
+$$
+
+donde $X_{ik}$ representa las exportaciones del producto $k$ realizadas por el país $i$, $X_i$ representa sus exportaciones totales, $X_{wk}$ corresponde a las exportaciones mundiales del producto $k$ y $X_w$ representa las exportaciones mundiales totales.
+
+Un valor:
+
+- $VCR>1$ indica una participación del producto superior a la observada en la estructura exportadora mundial;
+- $VCR<1$ indica una participación relativa inferior;
+- $VCR=1$ constituye el punto de referencia o neutralidad.
+
+El atractivo del indicador reside en que permite eliminar parcialmente las diferencias de tamaño entre las economías y concentrarse en la estructura relativa de las exportaciones. El artículo original de Balassa fue publicado en 1965 en *The Manchester School*.
+
+No obstante, el indicador debe interpretarse como una medida de ventaja **revelada**, y no como una medición directa de una ventaja comparativa productiva o tecnológica
+
+Véase su cálculo en R, en código paso a paso:
+
+```{r echo=TRUE}
+
+# EXPORTACIONES MUNDIALES TOTALES
+# Suma de todos los flujos mundiales
+
+exportaciones_mundiales <- baci %>%
+  group_by(t) %>%
+  summarise(
+    exportaciones_mundiales = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# X_wk
+# Exportaciones mundiales de cada producto k
+
+expo_mundiales_producto <- baci %>%
+  group_by(t, k) %>%
+  summarise(
+    exportaciones_mundiales_producto = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# X_Arg,k
+# Argentina aparece como EXPORTADOR -> i = Argentina
+
+expo_argentina <- baci %>%
+  filter(i == argentina) %>%
+  group_by(t, k) %>%
+  summarise(
+    exportaciones_argentina = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# M_Arg,k
+# Argentina aparece como IMPORTADOR -> j = Argentina
+
+impo_argentina <- baci %>%
+  filter(j == argentina) %>%
+  group_by(t, k) %>%
+  summarise(
+    importaciones_argentina = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# X_Arg
+
+exportaciones_totales_argentina <- baci %>%
+  filter(i == argentina) %>%
+  group_by(t) %>%
+  summarise(
+    exportaciones_argentina_total = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# M_Arg
+
+importaciones_totales_argentina <- baci %>%
+  filter(j == argentina) %>%
+  group_by(t) %>%
+  summarise(
+    importaciones_argentina_total = sum(v, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Se unen los datos obtenidos:
+# - exportaciones argentinas por producto
+# - importaciones argentinas por producto
+# - exportaciones mundiales por producto
+# - totales argentinos
+# - total mundial
+
+base_indicadores <- expo_argentina %>%
+  
+  full_join(
+    impo_argentina,
+    by = c("t", "k")
+  ) %>%
+  
+  left_join(
+    expo_mundiales_producto,
+    by = c("t", "k")
+  ) %>%
+  
+  left_join(
+    exportaciones_totales_argentina,
+    by = "t"
+  ) %>%
+  
+  left_join(
+    importaciones_totales_argentina,
+    by = "t"
+  ) %>%
+  
+  left_join(
+    exportaciones_mundiales,
+    by = "t"
+  ) %>%
+  
+  # Productos que Argentina solamente exporta tendrán importaciones = 0
+  # Productos que Argentina solamente importa tendrán exportaciones = 0
+  mutate(
+    exportaciones_argentina = replace_na(exportaciones_argentina, 0),
+    importaciones_argentina = replace_na(importaciones_argentina, 0)
+  )
+
+base_indicadores <- base_indicadores %>%
+  mutate(
+    
+    # Participación del producto k en las exportaciones argentinas
+    participacion_argentina =
+      exportaciones_argentina /
+      exportaciones_argentina_total,
+    
+    # Participación del producto k en las exportaciones mundiales
+    participacion_mundial =
+      exportaciones_mundiales_producto /
+      exportaciones_mundiales
+  )
+
+base_indicadores <- base_indicadores %>%
+  mutate(
+    
+    VCR_Balassa =
+      participacion_argentina /
+      participacion_mundial
+  )
+
 ```
 
-## Including Plots
+### 3.2. Principales limitaciones del indicador de Balassa
 
-You can also embed plots, for example:
+Una primera limitación está relacionada con la ausencia de las importaciones en su construcción. El indicador solamente observa qué productos tienen un peso relativamente elevado dentro de las exportaciones. Esto puede ser insuficiente para caracterizar la posición comercial de un país en aquellos casos donde existe simultáneamente un volumen significativo de importaciones del mismo producto o sector.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Un país puede importar componentes, partes o variedades de un producto y, simultáneamente, exportar productos pertenecientes a la misma categoría. En estoos casos, el valor de las exportaciones por sí solo puede ofrecer una imagen incompleta de la especialización comercial.
+
+Una segunda limitación es su asimetría. Mientras los valores superiores a uno pueden crecer sin límite, los valores inferiores a uno están restringidos al intervalo entre cero y uno. Como resultado, las distancias entre observaciones no necesariamente tienen una interpretación simétrica alrededor del punto de neutralidad. Esto se soluciona con un simple cálculo de todas formas.
+
+El presente trabajo se concentra en la primera limitación, ya que constituye una diferencia sustantiva entre Balassa y Lafay y puede ser analizada directamente utilizando la estructura de datos de BACI.
+
+### 3.3. El índice de Lafay
+
+Lafay (1992) desarrolló una medida alternativa de especialización internacional que incorpora tanto exportaciones como importaciones. En una formulación habitual, el índice puede expresarse como:
+
+$$
+LFI_{ik}
+=
+\left[
+\frac{X_{ik}-M_{ik}}{X_{ik}+M_{ik}}
+-
+\frac{X_i-M_i}{X_i+M_i}
+\right]
+\frac{X_{ik}+M_{ik}}{X_i+M_i}
+$$
+
+donde $X_{ik}$ y $M_{ik}$ representan, respectivamente, las exportaciones e importaciones del producto $k$ del país $i$.
+
+La primera expresión compara la posición comercial del producto con la posición comercial global del país. El segundo término **pondera** la diferencia por la importancia del producto dentro del comercio total. Por construcción, la suma del índice sobre el conjunto de productos tiende a cero. Los valores positivos indican una contribución relativa favorable del producto a la especialización comercial del país, mientras que los valores negativos representan una contribución relativa desfavorable.
+
+Por lo tanto, Balassa y Lafay parten de preguntas relacionadas, pero no idénticas. Balassa pregunta, fundamentalmente, si un producto está sobrerrepresentado dentro de las exportaciones del país en comparación con su peso en las exportaciones mundiales. Lafay, en cambio, incorpora la posición exportadora e importadora y evalúa la contribución relativa del producto a la posición comercial del país.
+
+Esta diferencia conceptual es el fundamento de la [comparación empírica propuesta]{.underline}.
+
+Véase la construcción de esto nuevo indicador en R paso a paso.
+
+```{r echo=TRUE}
+base_indicadores <- base_indicadores %>%
+  mutate(
+    
+    # Saldo comercial del producto
+    saldo_producto =
+      exportaciones_argentina -
+      importaciones_argentina,
+    
+    # Comercio total del producto
+    comercio_producto =
+      exportaciones_argentina +
+      importaciones_argentina,
+    
+    # Saldo comercial total de Argentina
+    saldo_total =
+      exportaciones_argentina_total -
+      importaciones_argentina_total,
+    
+    # Comercio total de Argentina
+    comercio_total =
+      exportaciones_argentina_total +
+      importaciones_argentina_total,
+    
+    # Posición comercial del producto
+    posicion_producto =
+      if_else(
+        comercio_producto > 0,
+        saldo_producto / comercio_producto,
+        0
+      ),
+    
+    # Posición comercial global de Argentina
+    posicion_total =
+      saldo_total /
+      comercio_total,
+    
+    # Peso del producto en el comercio argentino
+    peso_comercio_producto =
+      comercio_producto /
+      comercio_total,
+    
+    # ÍNDICE DE LAFAY
+    Lafay =
+      (
+        posicion_producto -
+          posicion_total
+      ) *
+      peso_comercio_producto
+  )
+
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## 4. Metodología
+
+### 4.1. Fuente de información
+
+El análisis utiliza la base CEPII-BACI, una base de datos de comercio internacional bilateral a nivel de producto utilizada en clase. La BACI registra los flujos entre países utilizando, entre otras variables, el año, el país exportador, el país importador, el producto HS6, el valor monetario y la cantidad física. La versión disponible de BACI proporciona aproximadamente 5.000 productos a nivel de seis dígitos del Sistema Armonizado y cobertura de alrededor de 200 países.
+
+Las variables utilizadas en el procesamiento son:
+
+- `t`: año;
+- `i`: país exportador;
+- `j`: país importador;
+- `k`: producto HS6;
+- `v`: valor del flujo comercial;
+- `q`: cantidad.
+
+La base resulta especialmente apropiada para este ejercicio porque la misma estructura de flujos permite identificar tanto las exportaciones como las importaciones argentinas. Los flujos en los cuales Argentina aparece como exportador se utilizan para calcular $X_{ik}$, mientras que aquellos en los cuales Argentina aparece como importador permiten reconstruir $M_{ik}$. La BACI registra cada observación como un flujo de un producto determinado desde un exportador hacia un importador.
+
+### 4.2. Unidad de análisis
+
+La unidad de análisis es el producto a seis dígitos del Sistema Armonizado (HS6). Para cada producto se calculan:
+
+1.  el VCR de Balassa;
+2.  el índice de Lafay;
+3.  una clasificación de concordancia o divergencia entre ambos indicadores.
+
+Para Balassa, se considera que existe ventaja comparativa revelada cuando $VCR>1$. Para Lafay, se considera especialización relativa cuando $LFI>0$.
+
+### 4.3. Comparación de resultados
+
+La comparación se realiza mediante una matriz de cuatro casos:
+
+|                  | Lafay \> 0   | Lafay \< 0   |
+|------------------|--------------|--------------|
+| **Balassa \> 1** | Coincidencia | Divergencia  |
+| **Balassa \< 1** | Divergencia  | Coincidencia |
+
+Esto permite distinguir dos tipos de divergencia. En el primero, Balassa identifica una ventaja exportadora relativa, pero Lafay no identifica una especialización comercial positiva. En el segundo, Lafay identifica una contribución positiva del producto a la especialización comercial, mientras Balassa no alcanza el valor de uno.
+
+Además de contabilizar la cantidad y proporción de productos en cada categoría, se analizarán las características comerciales de los productos donde ambos indicadores difieren, particularmente sus niveles relativos de exportación e importación.
+
+Véase la construcción de este indicador para medir la convergencia o divergencia entre los índices de VCR:
+
+```{r echo=TRUE, results='hide'}
+
+# CLASIFICACIÓN DE CADA PRODUCTO
+
+base_indicadores <- base_indicadores %>%
+  mutate(
+    
+    clasificacion_balassa = case_when(
+      VCR_Balassa > 1 ~ "Ventaja",
+      VCR_Balassa < 1 ~ "Desventaja",
+      TRUE ~ "Neutral"
+    ),
+    
+    clasificacion_lafay = case_when(
+      Lafay > 0 ~ "Especialización",
+      Lafay < 0 ~ "Desespecialización",
+      TRUE ~ "Neutral"
+    )
+  )
+
+base_indicadores <- base_indicadores %>%
+  mutate(
+    
+    resultado_comparacion = case_when(
+      
+      VCR_Balassa > 1 & Lafay > 0 ~
+        "Coinciden: ventaja / especialización",
+      
+      VCR_Balassa > 1 & Lafay < 0 ~
+        "Divergen: Balassa ventaja / Lafay desespecialización",
+      
+      VCR_Balassa < 1 & Lafay > 0 ~
+        "Divergen: Balassa desventaja / Lafay especialización",
+      
+      VCR_Balassa < 1 & Lafay < 0 ~
+        "Coinciden: desventaja / desespecialización",
+      
+      TRUE ~ "Neutral"
+    )
+  )
+
+
+base_indicadores %>%
+  select(
+    t,
+    k,
+    exportaciones_argentina,
+    importaciones_argentina,
+    VCR_Balassa,
+    Lafay,
+    clasificacion_balassa,
+    clasificacion_lafay,
+    resultado_comparacion
+  ) %>%
+  arrange(desc(VCR_Balassa)) %>%
+  head(20)
+
+control_lafay <- base_indicadores %>%
+  group_by(t) %>%
+  summarise(
+    suma_lafay = sum(Lafay, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
+resumen_comparacion <- base_indicadores %>%
+  count(
+    t,
+    resultado_comparacion,
+    name = "cantidad_productos"
+  ) %>%
+  
+  group_by(t) %>%
+  mutate(
+    porcentaje = cantidad_productos /
+      sum(cantidad_productos) * 100
+  ) %>%
+  
+  ungroup()
+
+#TABLA DE PRODUCTOS CON VCR > 1
+
+productos_con_ventaja <- base_indicadores %>%
+  filter(VCR_Balassa > 1) %>%
+  arrange(desc(VCR_Balassa))
+
+productos_con_ventaja %>%
+  select(
+    t,
+    k,
+    exportaciones_argentina,
+    importaciones_argentina,
+    VCR_Balassa,
+    Lafay,
+    resultado_comparacion
+  ) %>%
+  head(top_n)
+
+# TABLA DE PRODUCTOS CON LAFAY > 0
+
+productos_especializados_lafay <- base_indicadores %>%
+  filter(Lafay > 0) %>%
+  arrange(desc(Lafay))
+
+productos_especializados_lafay %>%
+  select(
+    t,
+    k,
+    exportaciones_argentina,
+    importaciones_argentina,
+    VCR_Balassa,
+    Lafay,
+    resultado_comparacion
+  ) %>%
+  head(top_n)
+
+# 23. PRODUCTOS DONDE AMBOS INDICADORES DIVERGEN
+
+divergencias <- base_indicadores %>%
+  filter(
+    (VCR_Balassa > 1 & Lafay < 0) |
+      (VCR_Balassa < 1 & Lafay > 0)
+  ) %>%
+  arrange(desc(comercio_producto))
+
+divergencias %>%
+  select(
+    t,
+    k,
+    exportaciones_argentina,
+    importaciones_argentina,
+    saldo_producto,
+    comercio_producto,
+    VCR_Balassa,
+    Lafay,
+    resultado_comparacion
+  ) %>%
+  head(30)
+
+
+# INDICADOR DE CONCORDANCIA
+# Variable binaria:
+# 1 = ambos indicadores coinciden
+# 0 = divergen
+
+base_indicadores <- base_indicadores %>%
+  mutate(
+    concordancia = case_when(
+      
+      (VCR_Balassa > 1 & Lafay > 0) |
+        (VCR_Balassa < 1 & Lafay < 0) ~ 1,
+      
+      (VCR_Balassa > 1 & Lafay < 0) |
+        (VCR_Balassa < 1 & Lafay > 0) ~ 0,
+      
+      TRUE ~ NA_real_
+    )
+  )
+
+
+tasa_concordancia <- base_indicadores %>%
+  group_by(t) %>%
+  summarise(
+    porcentaje_concordancia =
+      mean(concordancia, na.rm = TRUE) * 100,
+    .groups = "drop"
+  )
+
+# CARACTERIZAR LAS DIVERGENCIAS
+
+analisis_divergencias <- base_indicadores %>%
+  filter(
+    (VCR_Balassa > 1 & Lafay < 0) |
+      (VCR_Balassa < 1 & Lafay > 0)
+  ) %>%
+  mutate(
+    
+    # Importaciones relativas a exportaciones
+    ratio_importaciones_exportaciones =
+      if_else(
+        exportaciones_argentina > 0,
+        importaciones_argentina /
+          exportaciones_argentina,
+        NA_real_
+      ),
+    
+    # Peso del producto dentro del comercio argentino
+    participacion_comercio =
+      comercio_producto /
+      comercio_total
+  ) %>%
+  arrange(desc(participacion_comercio))
+
+analisis_divergencias %>%
+  select(
+    t,
+    k,
+    exportaciones_argentina,
+    importaciones_argentina,
+    ratio_importaciones_exportaciones,
+    participacion_comercio,
+    VCR_Balassa,
+    Lafay,
+    resultado_comparacion
+  ) %>%
+  head(30)
+
+```
+
+## 5. Resultados y análisis
+
+El primer resultado a presentar es la distribución de los productos según ambos indicadores: sobre un total de 4.980 observaciones correspondientes a productos HS6, se identificaron 465 productos con un VCR superior a uno, lo que representa aproximadamente el 9,3% del total analizado. Estos productos presentan una participación relativa dentro de las exportaciones argentinas superior a la que el mismo producto representa dentro de las exportaciones mundiales, por lo que pueden interpretarse como productos con VCR por Balassa.
+
+Los valores más elevados se concentran en un grupo reducido de productos. Solo a modo de ejemplo, (en este informe no nos interesa saber a qué grupo específicamente corresponde o el rubro económico en sí), el máximo corresponde al producto HS6 320110, con un VCR de 278,62, seguido por los códigos 330113, 150710, 230800 y 110423, todos con valores superiores a 97.
+
+Es interesante ver que estos resultados muestran que un VCR elevado no necesariamente se corresponde con los productos de mayor valor absoluto de exportaciones. El indicador mide especialización relativa, por lo que un producto puede presentar un VCR muy elevado aun cuando su participación dentro de las exportaciones argentinas sea relativamente reducida. En consecuencia, el valor del indicador debe interpretarse en términos relativos y no como una medida directa del volumen exportado, se trata de una cuestión metodológica.
+
+Véase a continuación las diferencias entre los productos con mayor VCR según cada indicador:
+
+```{r echo=FALSE}
+
+top_balassa <- base_indicadores %>%
+  filter(
+    exportaciones_argentina > 0
+  ) %>%
+  slice_max(
+    order_by = VCR_Balassa,
+    n = top_n
+  ) %>%
+  arrange(VCR_Balassa)
+
+ggplot(
+  top_balassa,
+  aes(
+    x = reorder(k, VCR_Balassa),
+    y = VCR_Balassa
+  )
+) +
+  
+  geom_col() +
+  
+  geom_hline(
+    yintercept = 1,
+    linetype = "dashed"
+  ) +
+  
+  coord_flip() +
+  
+  labs(
+    title = "Productos con mayor VCR de Balassa",
+    subtitle = "Argentina 2023, nivel HS6",
+    x = "Producto HS6",
+    y = "VCR de Balassa",
+    caption = "Fuente: elaboración propia sobre BACI-CEPII."
+  ) +
+  
+  theme_minimal()
+
+
+```
+
+```{r echo=FALSE}
+top_lafay <- base_indicadores %>%
+  filter(
+    Lafay > 0
+  ) %>%
+  slice_max(
+    order_by = Lafay,
+    n = top_n
+  ) %>%
+  arrange(Lafay)
+
+ggplot(
+  top_lafay,
+  aes(
+    x = reorder(k, Lafay),
+    y = Lafay
+  )
+) +
+  
+  geom_col() +
+  
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  
+  coord_flip() +
+  
+  labs(
+    title = "Productos con mayor especialización según Lafay",
+    subtitle = "Argentina 2023, nivel HS6",
+    x = "Producto HS6",
+    y = "Índice de Lafay",
+    caption = "Fuente: elaboración propia sobre BACI-CEPII."
+  ) +
+  
+  theme_minimal()
+
+```
+
+¿Por qué difieren? ¿Qué sucede cuando se analiza la balanza comercial además de las exportaciones relativas? El indicador permite distinguir entre productos para los cuales las exportaciones superan a las importaciones y aquellos en los que ocurre lo contrario. La BCR (Balanza Comercial Reltiva) toma valores entre -1 y 1: los valores positivos indican una posición comercial superavitaria, mientras que los valores negativos indican una posición deficitaria.
+
+Los resultados muestran que 3.939 productos presentan una BCR negativa, mientras que 1.041 presentan una BCR igual o superior a cero. Los valores más próximos a 1 corresponden a productos con exportaciones muy superiores a sus importaciones. Por ejemplo, el código HS6 100390 presenta una BCR prácticamente igual a uno, con exportaciones argentinas por aproximadamente 1.161 millones de dólares y prácticamente nulas importaciones.
+
+La comparación conjunta de ambos indicadores permite identificar las 4 situaciones posibles que se plantearon anteriormente. Los productos pueden presentar simultáneamente ventaja según Balassa y Lafay; ventaja según Balassa y posición comercial deficitaria según el indicador de Lafay; desventaja según Balassa y posición comercial superavitaria; o desventaja según Balassa y Lafay.
+
+La mayor concentración se encuentra en el cuadrante correspondiente a VCR Balassa ≤ 1 y BCR \< 0, que reúne 3.891 productos, equivalentes al 78,1% del total. En el extremo opuesto, 417 productos presentan simultáneamente un VCR superior a uno y una BCR no negativa. Estos casos constituyen la situación más consistente entre ambos indicadores, dado que ambos señalan una posición favorable.
+
+La atención principal se concentra, sin embargo, en los productos ubicados en el cuadrante de VCR \> 1 y BCR \< 0, es decir, donde los indicadores divergen. Se identificaron 48 productos en esta situación, equivalentes al 0,96% del total de productos analizados y al 10,3% de los productos que presentan VCR superior a 1.
+
+Estos casos resultan particularmente relevantes para la discusión metodológica porque representan productos que aparecen relativamente especializados dentro de las exportaciones argentinas, pero para los cuales las importaciones superan a las exportaciones.
+
+```{r echo=FALSE}
+
+grafico_concordancia <- resumen_comparacion %>%
+  mutate(
+    resultado_comparacion = str_wrap(
+      resultado_comparacion,
+      width = 35
+    )
+  )
+
+ggplot(
+  grafico_concordancia,
+  aes(
+    x = resultado_comparacion,
+    y = porcentaje
+  )
+) +
+  
+  geom_col() +
+  
+  labs(
+    title = "Coincidencia entre los indicadores de Balassa y Lafay",
+    subtitle = "Distribución de productos según clasificación",
+    x = NULL,
+    y = "Porcentaje de productos",
+    caption = "Fuente: elaboración propia sobre BACI-CEPII."
+  ) +
+  
+  coord_flip() +
+  
+  theme_minimal()
+```
+
+```{r echo=FALSE, results='hide'}
+
+grafico_comparacion <- base_indicadores %>%
+  filter(
+    exportaciones_argentina > 0,
+    VCR_Balassa > 0
+  ) %>%
+  mutate(
+    log_VCR = log(VCR_Balassa)
+  )
+
+ggplot(
+  grafico_comparacion,
+  aes(
+    x = log_VCR,
+    y = Lafay
+  )
+) +
+  
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  
+  geom_vline(
+    xintercept = 0,
+    linetype = "dashed"
+  ) +
+  
+  geom_point(
+    alpha = 0.35
+  ) +
+  
+  labs(
+    title = "Balassa y Lafay: comparación de la especialización exportadora",
+    subtitle = "Argentina, productos HS6",
+    x = "Logaritmo del VCR de Balassa",
+    y = "Índice de Lafay",
+    caption = "Fuente: elaboración propia sobre BACI-CEPII."
+  ) +
+  
+  theme_minimal()
+
+```
+
+El último gráfico permite visualizar los cuatro cuadrantes definidos anteriormente. La línea vertical correspondiente a $VCR=1$ y la línea horizontal correspondiente a $LFI=0$ permitirán identificar de manera directa las coincidencias y divergencias.
+
+El caso más significativo es el producto HS6 120190, que presenta un VCR de 4,96, pero simultáneamente una BCR de -0,59. Las exportaciones argentinas alcanzan aproximadamente 1.395 millones de dólares, pero las importaciones superan los 5.403 millones, dando como resultado una posición comercial claramente deficitaria. Este caso constituye un ejemplo especialmente ilustrativo de la diferencia conceptual entre ambos indicadores.
+
+En conjunto, los 48 productos pertenecientes a este cuadrante registran aproximadamente 2.770 millones de dólares de exportaciones y 8.652 millones de dólares de importaciones. Esto confirma que la divergencia no surge necesariamente de productos sin actividad comercial, sino que puede presentarse incluso cuando existen flujos de comercio de magnitud considerable.
+
+El resultado permite mostrar que una elevada participación relativa dentro de la canasta exportadora no necesariamente implica una posición comercial netamente exportadora. La diferencia surge porque ambos indicadores responden preguntas diferentes. El índice de Balassa compara la estructura de las exportaciones argentinas con la estructura de las exportaciones mundiales, mientras que la BCR (componente del índice de Lafay) compara directamente los flujos de exportación e importación correspondientes a cada producto.
+
+Por lo tanto, un producto puede estar relativamente sobrerrepresentado en las exportaciones argentinas respecto de su peso en el comercio mundial y, al mismo tiempo, presentar un déficit comercial. Esto puede ocurrir, por ejemplo, cuando Argentina exporta una cantidad relativamente importante de ese producto en términos de su propia estructura exportadora, pero también realiza importaciones aún mayores.
+
+Finalmente, el índice de Lafay se retoma desde una perspectiva conceptual y como una extensión del análisis empírico. Su inclusión permite observar que existen indicadores de especialización que incorporan dimensiones adicionales, como la relación entre la posición comercial de un producto y su peso dentro del comercio total del país. De acuerdo con Durán Lima y Álvarez (2011), la formulación presentada del indicador busca aproximarse al grado en que un país puede ser considerado un exportador natural de un determinado producto.
+
+La comparación realizada en la base muestra que los resultados de Balassa y Lafay no son completamente coincidentes. De las 4.980 observaciones, 4.318 presentan una clasificación coincidente, mientras que 662 presentan una divergencia. En términos porcentuales, esto implica una concordancia del 86,7% y una divergencia del 13,3%.
+
+Dentro de las coincidencias, 3.903 productos presentan simultáneamente desventaja según Balassa y desespecialización según Lafay, mientras que 415 productos presentan ventaja y especialización según ambos indicadores. Por otra parte, 612 productos presentan desventaja según Balassa pero especialización según Lafay, mientras que 50 productos presentan ventaja según Balassa pero desespecialización según Lafay.
+
+Estos resultados refuerzan la idea de que los indicadores no son intercambiables. Aunque existe una elevada proporción de coincidencias, las divergencias son suficientemente numerosas como para mostrar que la elección del indicador puede modificar la interpretación de la estructura comercial.
+
+## 6. Conclusiones
+
+El objetivo de este trabajo fue discutir una cuestión metodológica vinculada con la utilización de indicadores de especialización comercial. El VCR de Balassa constituye una herramienta sencilla e intuitiva para identificar productos sobrerrepresentados en la estructura exportadora de un país respecto de la estructura exportadora mundial. Sin embargo, su construcción exclusivamente a partir de las exportaciones implica que no incorpora directamente la posición importadora correspondiente.
+
+El índice de Lafay propone una aproximación diferente al incorporar simultáneamente exportaciones e importaciones y ponderar la posición comercial de cada producto según su importancia dentro del comercio total del país. Por esta razón, ambos indicadores pueden generar clasificaciones diferentes para un mismo producto. La existencia de divergencias constituye, precisamente, el objeto principal del ejercicio empírico.
+
+Los resultados obtenidos para Argentina permitieron determinar hasta qué punto dichas diferencias son relevantes, el análisis no buscó establecer que uno de los indicadores sea universalmente superior al otro, sino mostrar que cada uno resume dimensiones diferentes de la estructura comercial.
+
+El análisis permitió abordar una cuestión central sobre la utilización de indicadores de especialización comercial: distintos indicadores pueden ofrecer representaciones diferentes de una misma estructura comercial porque utilizan información y referencias diferentes.
+
+El VCR de Balassa resulta particularmente útil para identificar productos sobrerrepresentados dentro de la estructura exportadora de un país en comparación con la estructura de las exportaciones mundiales: 465 de los 4.980 productos considerados presentan un valor superior a uno. Su principal fortaleza es, precisamente, su capacidad para sintetizar la especialización exportadora mediante una medida relativamente sencilla y comparable.
+
+Sin embargo, el indicador no incorpora directamente la posición importadora del país. La comparación con VCR Lafay permite incorporar esta dimensión adicional y estudiar los casos en los que ambas medidas presentan señales diferentes. En particular, se identificaron 48 productos con VCR superior a uno y BCR negativa. Estos productos representan un caso metodológicamente relevante porque muestran que la existencia de una ventaja comparativa revelada no implica necesariamente la existencia de un superávit comercial.
+
+El caso del producto HS6 120190 resulta especialmente ilustrativo: presenta un VCR de 4,96, pero una BCR de -0,59, debido a que las importaciones superan ampliamente a las exportaciones. El resultado evidencia que la especialización relativa de la estructura exportadora y la posición comercial de un producto constituyen dimensiones diferentes de la inserción internacional.
+
+La discusión del índice de Lafay aporta una tercera perspectiva. La comparación empírica realizada muestra que Balassa y Lafay presentan una elevada proporción de coincidencias, pero también 662 casos de divergencia, equivalentes al 13,3% de las observaciones. De acuerdo con Durán Lima y Álvarez (2011), la formulación del indicador incorpora una perspectiva diferente de la especialización comercial, vinculada con el peso del producto dentro de los flujos comerciales y con la posición relativa que ocupa dentro de la estructura comercial del país.
+
+Por lo tanto, las diferencias entre indicadores no deben interpretarse necesariamente como una cuestión de cuál es "correcto" y cuál es "incorrecto". Más bien, reflejan diferentes dimensiones de un fenómeno complejo. El VCR de Balassa resulta adecuado para caracterizar la especialización relativa de la canasta exportadora; la BCR permite complementar esta perspectiva incorporando la relación entre exportaciones e importaciones; y el índice de Lafay ofrece una medida alternativa que puede producir resultados diferentes al ponderar de otra manera la posición del producto dentro de la estructura comercial.
+
+La principal contribución del ejercicio fue, entonces, mostrar que la interpretación de una ventaja comparativa revelada requiere considerar qué pregunta responde cada indicador y qué información queda fuera de su construcción. Un producto puede aparecer especializado desde el punto de vista de su participación relativa en las exportaciones y, al mismo tiempo, presentar una posición comercial deficitaria.
+
+
+En consecuencia, la utilización del VCR de Balassa debería interpretarse con cautela cuando se pretende caracterizar integralmente la especialización comercial de un país. La combinación con indicadores que incorporen las importaciones puede aportar información adicional, especialmente en contextos donde existen flujos comerciales significativos en ambos sentidos dentro de una misma categoría de producto.
+
+## 7. Referencias
+
+CEPII. (2026). *BACI: International Trade Database at the Product-Level*. Centre d'Études Prospectives et d'Informations Internationales.
+
+Durán Lima, J. E., & Álvarez, M. (2011). Manual de comercio exterior y política comercial: Nociones básicas, clasificaciones e indicadores de posición y dinamismo. Comisión Económica para América Latina y el Caribe (CEPAL), Naciones Unidas.
