@@ -2,9 +2,11 @@
 title: "Trabajo Final Federico Glustein"
 author: "FedericoGlustein"
 date: "2026-09-15"
-output: html_document
-editor_options: 
-  markdown: 
+output:
+  word_document: default
+  html_document: default
+editor_options:
+  markdown:
     wrap: sentence
 ---
 
