@@ -3166,7 +3166,7 @@ reconfiguración productiva: seis trayectorias manufactureras comparadas
 <h3 class="subtitle">Producción, empleo y comercio exterior a la luz de
 Graña y Terranova</h3>
 <h4 class="author">Martina D’Aversa</h4>
-<h4 class="date">28 de septiembre de 2026</h4>
+<h4 class="date">01 de noviembre de 2026</h4>
 
 </div>
 
@@ -3606,16 +3606,14 @@ VAM / PBI
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>empleo_crudo <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;Bases/empleo_industrial.csv&quot;</span>,</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                         <span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>))</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># La segunda columna trae el código de país; se renombra por posición</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># para evitar problemas con el acento en el nombre original.</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">names</span>(empleo_crudo)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;pais&quot;</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>empleo <span class="ot">&lt;-</span> empleo_crudo <span class="sc">%&gt;%</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">anio =</span> Anio) <span class="sc">%&gt;%</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">valor =</span> <span class="dv">100</span> <span class="sc">*</span> Ocup_INDUSTRIA <span class="sc">/</span> Ocup_TOTAL_ECONOMIA) <span class="sc">%&gt;%</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">filter</span>(pais <span class="sc">%in%</span> paises, anio <span class="sc">&gt;=</span> <span class="dv">1970</span>, anio <span class="sc">&lt;=</span> <span class="dv">2019</span>, <span class="sc">!</span><span class="fu">is.na</span>(valor)) <span class="sc">%&gt;%</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">select</span>(pais, anio, valor) <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">indicador =</span> <span class="st">&quot;Empleo manufacturero&quot;</span>)</span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Se arma la tabla tomando las columnas por posición, sin usar sus nombres</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>empleo <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">pais  =</span> empleo_crudo[[<span class="dv">2</span>]],</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">anio  =</span> empleo_crudo[[<span class="dv">1</span>]],</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">valor =</span> <span class="dv">100</span> <span class="sc">*</span> empleo_crudo[[<span class="dv">5</span>]] <span class="sc">/</span> empleo_crudo[[<span class="dv">4</span>]]</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">filter</span>(pais <span class="sc">%in%</span> paises, anio <span class="sc">&gt;=</span> <span class="dv">1970</span>, anio <span class="sc">&lt;=</span> <span class="dv">2019</span>, <span class="sc">!</span><span class="fu">is.na</span>(valor)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">indicador =</span> <span class="st">&quot;Empleo manufacturero&quot;</span>)</span></code></pre></div>
 <p>El indicador queda construido en 289 observaciones (país-año), como
 se ve en las primeras filas de la tabla siguiente.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">head</span>(empleo, <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>

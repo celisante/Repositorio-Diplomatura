@@ -7,7 +7,7 @@ output:
   html_document:
     toc: true
     toc_float: true
-    toc_depth: 3
+    toc_depth: 3 
     code_folding: hide
     theme: cosmo
     highlight: tango
@@ -238,15 +238,13 @@ head(vam, 5) %>%
 empleo_crudo <- read_csv("Bases/empleo_industrial.csv",
                          locale = locale(encoding = "UTF-8"))
 
-# La segunda columna trae el código de país; se renombra por posición
-# para evitar problemas con el acento en el nombre original.
-names(empleo_crudo)[2] <- "pais"
-
-empleo <- empleo_crudo %>%
-  rename(anio = Anio) %>%
-  mutate(valor = 100 * Ocup_INDUSTRIA / Ocup_TOTAL_ECONOMIA) %>%
+# Se arma la tabla tomando las columnas por posición, sin usar sus nombres
+empleo <- tibble(
+  pais  = empleo_crudo[[2]],
+  anio  = empleo_crudo[[1]],
+  valor = 100 * empleo_crudo[[5]] / empleo_crudo[[4]]
+) %>%
   filter(pais %in% paises, anio >= 1970, anio <= 2019, !is.na(valor)) %>%
-  select(pais, anio, valor) %>%
   mutate(indicador = "Empleo manufacturero")
 ```
 
