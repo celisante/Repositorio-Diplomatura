@@ -97,47 +97,116 @@ Se seleccionaron tres dimensiones fundamentales de la fragilidad sociolaboral:
 * **Población Económicamente Activa (PEA):** `ESTADO == 1` (Ocupados) + `ESTADO == 2` (Desocupados). Rango etario de 18 a 65 años.
 * **Tasa de Desocupación:** `(Desocupados / PEA) * 100`.
 * **Tasa de Subocupación Demandante/ involuntario:** `(Ocupados subocupados que buscan empleo / PEA) * 100` (`ESTADO == 1 & PP3E_TOT < 35 & INTENSI == 1`).
-* **Asalariados no registrados (Informalidad salarial):** Porcentaje de ocupados asalariados (`CATEGORIA == 3`) a quienes no se les realiza descuento jubilatorio (`PP07H == 2`).
+* **Asalariados no registrados (Informalidad salarial):** Porcentaje de ocupados asalariados (`CAT_OCUP == 3`) a quienes no se les realiza descuento jubilatorio (`PP07H == 2`).
 
 ## Reproducibilidad y Código R
+```{r carga_datos_reales}
 
+library(eph)
+library(tidyverse)
 
-```{r simulacion_datos}
-# NOTA METODOLÓGICA:
-# Cargamos la base individual de los microdatos de la EPH desde INDEC.
+# Descarga de microdatos
+eph_2004 <- get_microdata(
+  year = 2004,
+  trimester = 3,
+  type = "individual",
+  base.source = "INDEC"
+)
 
-set.seed(2026)
+eph_2014 <- get_microdata(
+  year = 2014,
+  trimester = 3,
+  type = "individual",
+  base.source = "INDEC"
+)
 
-crear_sim_eph <- function(anio, n=5000, t_des, t_sub, t_as_prec) {
-  tibble(
-    ANIO = anio,
-    TRIMESTRE = 3,
-    PONDERA = round(runif(n, 100, 500)),
-    CH06 = sample(18:65, size = n, replace = TRUE),
-    ESTADO = sample(c(1, 2, 3), size = n, replace = TRUE, prob = c(0.45, 0.45 * (t_des/(1-t_des)), 0.55)),
-    PP3E_TOT = ifelse(ESTADO == 1, sample(c(15, 25, 40, 48), size = n, replace = TRUE, prob = c(t_sub, 0.15, 0.50, 0.25)), NA),
-    INTENSI = ifelse(ESTADO == 1 & PP3E_TOT < 35, 1, 0),
-    CATEGORIA = ifelse(ESTADO == 1, sample(c(3, 2, 1), size = n, replace = TRUE, prob = c(0.75, 0.20, 0.05)), NA),
-    PP07H = ifelse(ESTADO == 1 & CATEGORIA == 3, sample(c(1, 2), size = n, replace = TRUE, prob = c(1 - t_as_prec, t_as_prec)), NA),
-    CH04 = sample(c(1, 2), size = n, replace = TRUE, prob = c(0.48, 0.52)) # 1: Varón, 2: Mujer
-  )
-}
+eph_2024 <- get_microdata(
+  year = 2024,
+  trimester = 3,
+  type = "individual",
+  base.source = "INDEC"
+)
 
-# Carga de valores eph de tendencia observados
-eph_2004 <- crear_sim_eph(2004, t_des = 0.132, t_sub = 0.150, t_as_prec = 0.475)
-eph_2014 <- crear_sim_eph(2014, t_des = 0.075, t_sub = 0.092, t_as_prec = 0.335)
-eph_2024 <- crear_sim_eph(2024, t_des = 0.068, t_sub = 0.108, t_as_prec = 0.370)
+# Homogeneizar nombres de columnas
+eph_2004 <- eph_2004 %>% rename_with(toupper)
+eph_2014 <- eph_2014 %>% rename_with(toupper)
+eph_2024 <- eph_2024 %>% rename_with(toupper)
 
-eph_panel <- bind_rows(eph_2004, eph_2014, eph_2024)
+# Verificar dimensiones
+dim(eph_2004)
+dim(eph_2014)
+dim(eph_2024)
+
+# Verificar nombres de variables
+names(eph_2004)
+names(eph_2014)
+names(eph_2024)
+
+# Unificar las tres bases
+eph_panel <- bind_rows(
+  eph_2004 %>% mutate(ANIO = 2004),
+  eph_2014 %>% mutate(ANIO = 2014),
+  eph_2024 %>% mutate(ANIO = 2024)
+)
+
+# Verificar base unificada
+dim(eph_panel)
+
+# Buscar variables relacionadas con categoría ocupacional
+
+grep("CAT|OCUP", names(eph_2004), value = TRUE)
+grep("CAT|OCUP", names(eph_2014), value = TRUE)
+grep("CAT|OCUP", names(eph_2024), value = TRUE)
 ```
 
----
+```{r revision_variables}
 
+# Variables que necesitamos para el análisis
+variables_revisar <- c(
+  "ESTADO",
+  "CH06",
+  "CH04",
+  "PONDERA",
+  "PP3E_TOT",
+  "PP3F_TOT",
+  "PP03G",
+  "PP03H",
+  "PP03I",
+  "PP03J",
+  "INTENSI",
+  "CAT_OCUP",
+  "PP07H",
+  "TAMANO",
+  "CALOCUP"
+)
+
+# Comprobar variables disponibles en cada período
+list(
+  anio_2004 = setdiff(variables_revisar, names(eph_2004)),
+  anio_2014 = setdiff(variables_revisar, names(eph_2014)),
+  anio_2024 = setdiff(variables_revisar, names(eph_2024))
+)
+
+# Distribución de intensidad ocupacional
+eph_panel %>%
+  count(ANIO, INTENSI)
+
+# Distribución de búsqueda de más horas
+eph_panel %>%
+  count(ANIO, PP03G)
+
+# Distribución de búsqueda de otro empleo
+eph_panel %>%
+  count(ANIO, PP03J)
+
+# Distribución de descuento jubilatorio
+eph_panel %>%
+  filter(ESTADO == 1, CAT_OCUP == 3) %>%
+  count(ANIO, PP07H)
+```
 ## Resultados y Análisis Empírico
 
 ## Indicadores Globales: Desempleo, Subempleo e Informalidad Salarial
-
-Procesamos los microdatos ponderados (`PONDERA`) para estimar los indicadores fundamentales.
 
 ```{r calculo_indicadores}
 indicadores_resumen <- eph_panel %>%
@@ -154,8 +223,8 @@ indicadores_resumen <- eph_panel %>%
     Tasa_Subocupacion = (Subocupados_Dem / Poblacion_Activa) * 100,
     
     # Informalidad salarial (sin descuento jubilatorio sobre total de asalariados)
-    Asalariados_Tot = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3], na.rm = TRUE),
-    Asalariados_Informales = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3 & PP07H == 2], na.rm = TRUE),
+    Asalariados_Tot = sum(PONDERA[ESTADO == 1 & CAT_OCUP == 3], na.rm = TRUE),
+    Asalariados_Informales = sum(PONDERA[ESTADO == 1 & CAT_OCUP == 3 & PP07H == 2], na.rm = TRUE),
     Tasa_Informalidad = (Asalariados_Informales / Asalariados_Tot) * 100
   )
 
@@ -201,8 +270,8 @@ tabla_genero <- eph_panel %>%
     PEA = sum(PONDERA),
     Desocupados = sum(PONDERA[ESTADO == 2]),
     Tasa_Desocupacion = (Desocupados / PEA) * 100,
-    Asalariados = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3], na.rm = TRUE),
-    Informales = sum(PONDERA[ESTADO == 1 & CATEGORIA == 3 & PP07H == 2], na.rm = TRUE),
+    Asalariados = sum(PONDERA[ESTADO == 1 & CAT_OCUP == 3], na.rm = TRUE),
+    Informales = sum(PONDERA[ESTADO == 1 & CAT_OCUP == 3 & PP07H == 2], na.rm = TRUE),
     Tasa_Informalidad = (Informales / Asalariados) * 100,
     .groups = "drop"
   ) %>%
