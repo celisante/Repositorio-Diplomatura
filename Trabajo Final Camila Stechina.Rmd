@@ -1,0 +1,338 @@
+---
+title: "¿Desindustrialización global o relocalización geográfica?" 
+
+subtitle: "Un análisis de la Nueva División Internacional del Trabajo (2000–pospandemia)"
+
+author: "Camila Stechina"
+date: "2026-11-09"
+output: html_document
+---
+```{r setup, include=FALSE}
+library(tidyverse)
+library(imfweo)
+library(WDI)
+library(ggplot2)
+library(writexl)
+library(dplyr)
+library(stringr)
+
+```
+
+```{r bases, echo=FALSE, warning=FALSE, message=FALSE}
+pib_industrial <- read_csv("Bases/pib_industrial_mundial.csv")
+poblacion <- read_csv("Bases/poblacion.csv")
+
+```
+```{r paises, echo=FALSE, warning=FALSE, message=FALSE}
+paises_PBI <- c("Argentina", "Brasil",
+                "Estados Unidos","Reino Unido", "Alemania", "China", "Vietnam")
+
+paises_pob <- c("Argentina", "Brazil", "United Kingdom",
+                "United States", "Germany", "China (mainland)", "Viet Nam")
+
+pib_limpio <- pib_industrial %>%
+  filter(anio >= 2000 & anio <= 2023) %>%
+  group_by(anio) %>%
+  mutate(pib_industrial_mundial = sum(industry_gdp, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(geonombreFundar %in% paises_PBI) %>%
+  mutate(participacion = (industry_gdp / pib_industrial_mundial) * 100)
+
+pib_limpio <- pib_limpio %>%
+  mutate(pais_union = case_when(
+    geonombreFundar == "China" ~ "China (mainland)",
+    geonombreFundar == "Alemania" ~ "Germany",         
+    geonombreFundar == "Argentina" ~ "Argentina", 
+    geonombreFundar == "United States" ~"United States",
+    geonombreFundar == "Brasil" ~ "Brazil",
+    geonombreFundar == "Reino Unido" ~ "United Kingdom",
+    geonombreFundar == "Vietnam" ~ "Viet Nam",
+    TRUE ~ geonombreFundar
+  ))
+
+pob_limpia <- poblacion %>%
+  rename(pais = `Country/Area`, anio = Year) %>%
+  filter(pais %in% paises_pob & anio >= 2000 & anio <= 2023) %>%
+  filter(Population != "...") %>% 
+  mutate(Population = as.numeric(Population)) %>%
+  rename(pais_union = pais)
+
+```
+
+
+```{r bci_completa, echo=FALSE, warning=FALSE, message=FALSE}
+baci_completa <- read_csv("Bases/BACI_HS22_Y2024_V202601.csv")
+diccionario_paises <- read_csv("Bases/country_codes_V202601.csv")
+diccionario_productos <- read.csv("Bases/product_codes_HS22_V202601.csv")
+
+
+#Modifico las bases: renombro las variables
+baci_completa <- baci_completa %>%
+  rename(
+    Año = t,
+    Exportador = i,
+    Importador = j,
+    Producto = k,
+    Valor = v,
+    Cantidad = q) 
+
+diccionario_paises <- diccionario_paises %>%
+  rename(
+    Pais = country_name,
+    Codigo_pais = country_code,
+    Paises = country_iso3)%>%
+  select(-country_iso2)
+
+diccionario_productos <- diccionario_productos %>% 
+  rename(
+    Codigo = code,
+    Descripcion = description)
+
+# 2. Selecciono los paises
+paises_seleccionados <- c("ARG", "BRA",
+                          "USA","UKR", "DEU", "CHN", "VNM")
+
+# 3.Proceso (2 digitos)
+exportaciones <- baci_completa %>%
+  mutate(Productos = str_pad(substr(as.character(Producto), 1, 2), width = 2, pad = "0")) %>%
+  group_by(Exportador, Productos) %>%
+  summarise(exp_pais_prod = sum(Valor, na.rm = TRUE)) %>%
+  ungroup()
+
+diccionario_2digitos <- diccionario_productos %>%
+  mutate(Productos = str_pad(substr(as.character(Codigo), 1, 2), width = 2, pad = "0")) %>%
+  distinct(Productos, Descripcion) 
+exportaciones_con_nombre <- exportaciones %>%
+  left_join(diccionario_2digitos, by = "Productos")
+
+exportaciones_paises <- exportaciones %>%
+  left_join(diccionario_paises, by = c("Exportador" = "Codigo_pais")) %>% 
+  filter(!is.na(Paises)) %>%  
+  select(Paises, Productos, exp_pais_prod) 
+
+paises_seleccionados <- c("ARG", "BRA",
+                "USA","GBR", "DEU", "CHN", "VNM")
+
+# 4. Calculo de variables para las VCR (Fórmula de Balassa)
+total_pais <- exportaciones_paises %>%
+  group_by(Paises) %>%
+  summarise(Expo = sum(exp_pais_prod, na.rm = TRUE))
+
+total_producto <- exportaciones_paises %>%
+  group_by(Productos) %>%
+  summarise(Prod = sum(exp_pais_prod, na.rm = TRUE))
+
+total_mundial <- sum(exportaciones_paises$exp_pais_prod, na.rm = TRUE)
+
+matriz_vcr <- exportaciones_paises %>%
+  left_join(total_pais, by = "Paises") %>%
+  left_join(total_producto, by = "Productos") %>%
+  mutate(Total = total_mundial) %>%
+  mutate(vcr = (exp_pais_prod / Expo) / (Prod / Total))
+
+matriz_vcr_filtrada <- matriz_vcr %>%
+  filter(Paises %in% paises_seleccionados)
+
+Top_productos <- matriz_vcr_filtrada %>%
+  group_by(Productos) %>%
+  summarise(vcr_max = max(vcr, na.rm = TRUE)) %>%
+  slice_max(order_by = vcr_max, n = 8) %>%
+  pull(Productos)
+
+#Filtro productos 
+productos_agro <- c("02", "09", "10", "12", "15", "17", "23", "47")
+
+productos_ind <- c("30", "39", "64", "84", "85", "87", "90")
+
+```
+# Resumen ejecutivo
+
+El presente informe analiza el fenómeno de la desindustrialización contemporánea y los patrones de especialización comercial entre el año 2000 y la etapa pospandemia. A partir del analísis de la bibliografia de Graña y Terranova (2022), se discute si la pérdida de peso manufacturero observada en diversas economías responde a una evolución natural del capitalismo o a una reorganización geográfica de la producción impulsada por diferenciales salariales. 
+
+Para contrastar estas hipótesis de manera empírica, se procesaron datos macroeconómicos y de comercio exterior para una muestra de siete países representativos de distintas inserciones internacionales y con diferentes perfiles en estudio: Alemania (perfil de resistencia industrial), Estados Unidos y Reino Unido (con perfiles de desindustrialización madura), China y Vietnam (sindo polos de reindustrialización) y Argentina y Brasil (con una desindustrialización prematura). A través de tres indicadores: la participación en el PIB industrial mundial, la VCR en productos agroindustriales y la VCR en ramas manufactureras.
+
+# Introducción
+
+Desde la década de 1970, la pérdida de participación del sector manufacturero en el empleo y en el producto total de las economías avanzadas ha despertado un intenso debate académico y político. En las décadas posteriores, esta tendencia también comenzó a registrarse en países de ingresos medios, particularmente en América Latina, dando lugar a diagnósticos sobre una supuesta "desindustrialización prematura".
+
+El objetivo de este trabajo es abordar esta problemática articulando la discusión conceptual con evidencia empírica reciente. Para ello, el informe se organiza en torno a dos preguntas centrales: **¿Qué explica la desindustrialización de unos y otros países?** y **¿Es correcto afirmar que hubo desindustrialización a nivel mundial?**
+
+Con el fin de responder estos interrogantes, el análisis empírico abarca el período comprendido entre el año 2000 y la salida de la pandemia de COVID-19 (2023), etapa clave de consolidación de las cadenas globales de valor y de ascenso industrial asiático. La selección de siete países permite comparar tres trayectorias estructurales divergentes:
+
+* **Economías desarrolladas tradicionales:** Estados Unidos, Alemania y Reino Unido.
+* **Polos industriales de Asia Oriental y Sudoriental:** China y Vietnam, representantes de distintas oleadas de relocalización productiva.
+* **Economías sudamericanas:** Argentina y Brasil, casos paradigmáticos de especialización basada en recursos naturales y retroceso manufacturero relativo.
+
+# Desarrollo conceptual
+
+## Crítica a las visiones "mecánica" y "prematura" de la desindustrialización
+
+La literatura económica tradicional suele explicar la desindustrialización como un proceso lineal e inevitable asociado al desarrollo capitalista. En los países ricos, se la presenta como un resultado **mecánico** de la madurez económica, impulsado por dos factores internos: la menor elasticidad-ingreso de la demanda de bienes manufacturados a medida que crece el ingreso per cápita y el mayor ritmo de crecimiento de la productividad industrial frente a los servicios, lo que reduce el empleo relativo en las fábricas.
+
+Por otra parte, cuando la caída industrial ocurre en países en desarrollo a niveles de ingreso per cápita significativamente inferiores, la bibliografía suele calificarla como **desindustrialización prematura** (Rodrik, 2016; Palma, 2013). Desde esta perspectiva, las reformas de apertura comercial y financiera aplicadas desde los años ochenta habrían interrumpido el desarrollo industrial antes de que estas economías alcanzaran los beneficios dinámicos de la manufactura.
+
+Graña y Terranova cuestionan ambos enfoques por asumir implícitamente una trayectoria única de desarrollo nacional. Señalan que el umbral de ingreso per cápita al cual comienza la desindustrialización ha ido cayendo sostenidamente a lo largo del tiempo, lo que vuelve imprecisa la distinción entre procesos "maduros" y "prematuros" y obliga a buscar explicaciones en la dinámica global del capital.
+
+## La Nueva División Internacional del Trabajo y el rol de los costos laborales
+
+Para los autores, la desindustrialización observada desde los años setenta no es un fenómeno natural, sino el resultado de una transformación cualitativa del capitalismo global: el surgimiento de la **Nueva División Internacional del Trabajo (NDIT)**. Dos innovaciones tecnológicas habilitaron este proceso:
+
+1. **La revolución en las telecomunicaciones y el transporte**, que permitió fragmentar los procesos productivos y gestionar cadenas globales de valor a distancia.
+2. **La automatización flexible**, que simplificó y estandarizó tareas manufactureras, reduciendo la necesidad de mano de obra altamente calificada en las etapas de ensamblaje y producción básica.
+
+Al eliminarse las barreras técnicas para relocalizar plantas (*offshoring*), la competencia internacional pasó a regirse por los **costos laborales unitarios (CLU)** y, fundamentalmente, por los **salarios medidos al tipo de cambio nominal**. De este modo, las empresas transnacionales trasladaron los segmentos manufactureros más simples hacia regiones con salarios sustancialmente más bajos, generando un proceso en el cual **"unos países desindustrializan a otros"**.
+
+Esta reorganización consolidó una estructura global tripartita:
+
+* **Países desarrollados:** Se desprendieron de la manufactura estandarizada, pero conservaron el control de las cadenas de valor y las actividades intensivas en conocimiento, diseño e investigación y desarrollo.
+* **Asia Oriental y Sudoriental:** Se convirtió en el taller industrial del mundo mediante sucesivas "oleadas" de relocalización. Cuando los salarios crecieron en Japón, la producción migró hacia Corea del Sur y Taiwán; posteriormente se desplazó hacia China y Malasia; y, ante el encarecimiento salarial en China durante el siglo XXI, comenzó a trasladarse hacia países de salarios aún menores como **Vietnam** o Bangladesh.
+* **América Latina:** Presentaron salarios en dólares más altos y volátiles que los asiáticos, además de menor productividad relativa. Incapaces de competir en manufacturas, quedaron relegadas a su rol histórico como exportadoras de bienes primarios y commodities.
+
+## ¿Desindustrialización mundial o desplazamiento geográfico?
+
+Al agregar el empleo y el valor agregado manufacturero a escala internacional se demuestra que **no existe una desindustrialización a nivel mundial**. La participación global de la industria se ha mantenido relativamente estable durante las últimas cinco décadas (con una variación anual cercana a cero e incluso repuntes impulsados por el crecimiento chino). Lo que a nivel nacional aparece como un declive industrial en Occidente y Sudamérica es, en realidad, la contracara de un **desplazamiento geográfico del centro manufacturero mundial** hacia Asia.
+
+# Metodología
+
+## Fuentes de información
+
+Para contrastar empíricamente las tendencias conceptuales, se utilizaron bases de datos estadísticas internacionales de acceso público, procesadas íntegramente en lenguaje R:
+
+
+* **Participación en el PIB Industrial Mundial:** 
+* **Comercio exterior desagregado por producto:** 
+
+## Construcción de indicadores
+
+Se construyeron tres indicadores complementarios para capturar tanto la dinámica agregada de la producción como los patrones de especialización comercial:
+
+1. **Participación en el PIB Industrial Mundial (%):** Mide el peso relativo del valor agregado manufacturero de cada país en el año respecto del total mundial:
+ 
+2. **Ventaja Comparativa Revelada (VCR) en Productos Agroindustriales y Forestales:** Calcula el índice de Balassa para ocho complejos primarios y agroindustriales (*azúcares; café, té y yerba; carnes; cereales; forrajes y harinas; grasas y aceites; oleaginosas; pasta de madera*). 
+
+3. **Ventaja Comparativa Revelada (VCR) en Manufacturas e Industria:** Aplica la misma formulación desagregada en siete ramas industriales de distinta intensidad factorial y tecnológica (*calzado, electrónica, farmacéuticos, instrumentos médicos/ópticos, maquinaria, plásticos y vehículos*), permitiendo distinguir entre manufacturas mano de obra intensivas y sectores de alta complejidad tecnológica.
+
+
+# Resultados y análisis
+
+
+## La relocalización de la producción manufacturera mundial
+
+El análisis de la evolución del PBI industrial mundial entre 2000 y la etapa pospandemia confirma de manera contundente la relocalización geográfica frente a la idea de una desindustrialización global.
+
+```{r grafico_part, echo=FALSE, warning=FALSE, message=FALSE}
+grafico_participacion <- ggplot(pib_limpio, aes(x = anio, y = participacion, color = geonombreFundar))  +
+  geom_line(size = 1) + 
+  theme_minimal() + 
+  labs(title = "Participación en el PIB Industrial Mundial (2000- Hasta la pospandemia)",
+       subtitle = "Selección de 7 países representativos",
+       x = "Año", y = "Participación global (%)", color = "País",
+       caption = "Fuente: Elaboración propia en base a datos otorgados por la Diplomatura")  + 
+  theme(legend.position = "bottom")
+
+grafico_participacion
+
+```
+
+Como se observa, las economías desarrolladas experimentaron un retroceso sostenido en su peso relativo dentro de la manufactura global. Estados Unidos, que en el año 2000 concentraba cerca del 24 % del producto industrial mundial, descendió de manera continua hasta ubicarse alrededor del 15 % tras la pandemia. 
+Alemania mostró una trayectoria más resiliente, aunque también registró una reducción moderada (pasando de aproximadamente 7,5 % a 5 %), mientras que el Reino Unido mantuvo una participación marginal inferior al 3 % en todo el período.
+
+Este retroceso occidental encuentra su contracara exacta en el ascenso de China. Partiendo de una cuota cercana al 9 % en 2000, la economía china triplicó su participación hasta superar el 30 % del PIB industrial mundial, desplazando a Estados Unidos como principal potencia manufacturera hacia 2009–2010. 
+
+Por su parte, Argentina y Brasil mantuvieron participaciones bajas y estancadas (en torno al 1 %–2 %), evidenciando su incapacidad para ganar terreno en la producción industrial global, mientras que Vietnam comienza a mostrar una trayectoria ascendente desde niveles iniciales muy bajos.
+
+
+
+## La especialización agroindustrial de América del Sur
+
+El cálculo de la Ventaja Comparativa Revelada en sectores agroindustriales y forestales permite observar el modo en que las economías sudamericanas se insertaron en la Nueva División Internacional del Trabajo.
+
+```{r grafico_matriz_1, echo=FALSE, warning=FALSE, message=FALSE}
+matriz_vcr_filtrada %>%
+  filter(Productos %in% productos_agro) %>%
+  mutate(Nombre_Producto = case_when(
+    Productos == "02" ~ "Carnes",
+    Productos == "09" ~ "Café, té y yerba",
+    Productos == "10" ~ "Cereales",
+    Productos == "12" ~ "Oleaginosas",
+    Productos == "15" ~ "Grasas y aceites",
+    Productos == "17" ~ "Azúcares",
+    Productos == "23" ~ "Forrajes y harinas",
+    Productos == "47" ~ "Pasta de madera"
+  )) %>%
+  ggplot(aes(x = Nombre_Producto, y = vcr, fill = Paises)) +
+  geom_col(position = "dodge") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "black", linewidth = 0.8) +
+  labs(
+    title = "VCR: Productos Agroindustriales y Forestales",
+    subtitle = "La línea punteada indica el umbral de ventaja comparativa (VCR = 1)",
+    x = NULL,
+    y = "Índice VCR",
+    fill = "País",
+    caption = "Fuente: Elaboración propia en base a datos otorgados por la Diplomatura"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1))
+
+```
+
+Los resultados exhiben una marcada polarización entre bloques regionales. Argentina y Brasil presentan índices de VCR extraordinariamente elevados por encima del umbral de especialización:
+
+• Argentina lidera con amplia diferencia en forrajes y harinas, cereales, grasas y aceites, además de registrar ventajas sólidas en oleaginosas y carnes.
+
+• Brasil muestra un dominio contundente en oleaginosas, azúcares, pasta de madera, café, té y yerba, y carnes
+.
+En contraste, tanto las potencias occidentales (Alemania, Estados Unidos y Reino Unido) como las economías asiáticas (China y Vietnam, salvo excepciones puntuales como café/té o pasta de madera) operan mayoritariamente por debajo del umbral de 1. Esto corrobora que: al no contar con los bajos costos salariales necesarios para atraer el offshoring manufacturero, América del Sur consolidó su perfil exportador en torno a las rentas agrarias y los recursos naturales.
+
+
+## La división del trabajo dentro de las manufacturas y las oleadas asiáticas
+
+Finalmente, la desagregación del índice VCR en siete ramas industriales revela la jerarquía interna de la producción manufacturera contemporánea y la dinámica de las "oleadas" asiáticas.
+
+```{r grafico_matriz_2, echo=FALSE, warning=FALSE, message=FALSE}
+matriz_vcr_filtrada %>%
+  filter(Productos %in% productos_ind) %>%
+  mutate(Nombre_Producto = case_when(
+    Productos == "30" ~ "Farmacéuticos",
+    Productos == "39" ~ "Plásticos",
+    Productos == "64" ~ "Calzado",
+    Productos == "84" ~ "Maquinaria",
+    Productos == "85" ~ "Electrónica",
+    Productos == "87" ~ "Vehículos",
+    Productos == "90" ~ "Inst. médicos/ópticos"
+  )) %>%
+  ggplot(aes(x = Nombre_Producto, y = vcr, fill = Paises)) +
+  geom_col(position = "dodge") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "black", linewidth = 0.8) +
+  labs(
+    title = "VCR: Manufacturas e Industria",
+    subtitle = "La línea punteada indica el umbral de ventaja comparativa (VCR = 1)",
+    x = NULL,
+    y = "Índice VCR",
+    fill = "País",
+    caption = "Fuente: Elaboración propia en base a datos otorgados por la Diplomatura"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1))
+  
+```
+
+De este analísis se desprenden tres patrones estructurales claramente diferenciados:
+
+1. Las sucesivas oleadas de Asia Oriental y Sudoriental: Vietnam registra un índice extremo en calzado y una fuerte especialización en electrónica, junto con presencia relevante en maquinaria. Este patrón ilustra la etapa más reciente de la NDIT: ante el aumento de los salarios en China durante las últimas dos décadas, las actividades intensivas en mano de obra simple se relocalizaron hacia economías vecinas con menores costos laborales. Paralelamente, China conserva ventajas comparativas tanto en manufacturas tradicionales (calzado) como en segmentos de mayor complejidad (electrónica, maquinaria, plásticos e instrumentos médicos/ópticos), reflejando su escalamiento productivo.
+
+2. El repliegue selectivo de los países desarrollados: Estados Unidos, Alemania y Reino Unido exhiben índices inferiores a 1 en ramas mano de obra intensivas como calzado y electrónica de consumo, confirmando la deslocalización de estas actividades. Sin embargo, mantienen una fuerte especialización en sectores intensivos en capital, tecnología: Alemania lidera en vehículos, farmacéuticos, instrumentos médicos/ópticos y maquinaria; Estados Unidos destaca en instrumentos médicos/ópticos, plásticos y farmacéuticos; y el Reino Unido sostiene ventajas en farmacéuticos, instrumentos médicos/ópticos y vehículos.
+
+3. La debilidad industrial de Sudamérica: Brasil no logra superar el umbral de ventaja comparativa en ninguno de los siete rubros manufactureros analizados. Argentina, por su parte, también se ubica por debajo de 1 en casi todas las ramas industriales, superando levemente la unidad únicamente en vehículos, un resultado vinculado al comercio administrado dentro del Mercosur más que a una inserción competitiva en cadenas globales.
+
+
+## Síntesis de resultados
+
+La evidencia empírica confirma que el capitalismo contemporáneo no atraviesa una desindustrialización global, sino una profunda reconfiguración geográfica y sectorial.
+
+Los resultados confirman que existe un desplazamiento del centro manufacturero hacia Oriente.
+
+Mientras Asia absorbe el grueso de la manufactura mundial mediante sucesivas oleadas de relocalización salarial y las potencias tradicionales retienen los eslabones de mayor intensidad tecnológica, América del Sur enfrenta una desindustrialización relativa que refuerza su dependencia de las exportaciones primarias.
+
+# Referencias
+Graña, J. M., & Terranova, L. (2022). Neither mechanical nor premature: deindustrialization and the New 
